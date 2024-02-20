@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Types for window rules."><title>pinnacle_api::window::rules - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../pinnacle_api/index.html">pinnacle_api</a><span class="version">0.0.2</span></h2></div><h2 class="location"><a href="#">Module rules</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li></ul></section><h2><a href="../index.html">In pinnacle_api::window</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../pinnacle_api/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">pinnacle_api</a>::<wbr><a href="../index.html">window</a>::<wbr><a class="mod" href="#">rules</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../../src/pinnacle_api/window/rules.rs.html#5-525">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Types for window rules.</p>
+<p>A window rule is a way to set the properties of a window on open.</p>
+<p>They are comprised of two parts: the <a href="struct.WindowRuleCondition.html" title="struct pinnacle_api::window::rules::WindowRuleCondition">condition</a> and the actual <a href="struct.WindowRule.html" title="struct pinnacle_api::window::rules::WindowRule">rule</a>.</p>
+<h2 id="windowruleconditions"><a href="#windowruleconditions"><code>WindowRuleCondition</code>s</a></h2>
+<p><code>WindowRuleCondition</code>s are conditions that the window needs to open with in order to apply a
+rule. For example, you may want to set a window to maximized if it has the class “steam”, or
+you might want to open all Firefox instances on tag “3”.</p>
+<p>To do this, you must build a <code>WindowRuleCondition</code> to tell the compositor when to apply any
+rules.</p>
+<h3 id="building-windowruleconditions"><a href="#building-windowruleconditions">Building <code>WindowRuleCondition</code>s</a></h3>
+<p>A condition is created through <a href="struct.WindowRuleCondition.html#method.new" title="associated function pinnacle_api::window::rules::WindowRuleCondition::new"><code>WindowRuleCondition::new</code></a>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new();</code></pre></div>
+<p>In order to understand conditions, you must understand the concept of “any” and “all”.</p>
+<p><strong>“Any”</strong></p>
+<p>“Any” conditions only need one of their constituent items to be true for the whole condition to
+evaluate to true. Think of it as one big <code>if a || b || c || d || ... {}</code> block.</p>
+<p><strong>“All”</strong></p>
+<p>“All” conditions need <em>all</em> of their constituent items to be true for the condition to evaluate
+to true. This is like a big <code>if a &amp;&amp; b &amp;&amp; c &amp;&amp; d &amp;&amp; ... {}</code> block.</p>
+<p>Note that any items in a top level <code>WindowRuleCondition</code> fall under “all”, so all those items
+must be true.</p>
+<p>With that out of the way, we can get started building conditions.</p>
+<h4 id="windowruleconditionclasses"><a href="#windowruleconditionclasses"><code>WindowRuleCondition::classes</code></a></h4>
+<p>With <a href="struct.WindowRuleCondition.html#method.classes" title="method pinnacle_api::window::rules::WindowRuleCondition::classes"><code>WindowRuleCondition::classes</code></a>, you can specify what classes a window needs to have for
+a rule to apply.</p>
+<p>The following will apply to windows with the class “firefox”:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new().classes([<span class="string">"firefox"</span>]);</code></pre></div>
+<p>Note that you pass in some <code>impl IntoIterator&lt;Item = impl Into&lt;String&gt;&gt;</code>. This means you can
+pass in more than one class here:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>failing_cond = WindowRuleCondition::new().classes([<span class="string">"firefox"</span>, <span class="string">"steam"</span>]);</code></pre></div>
+<p><em>HOWEVER</em>: this will not work. Recall that top level conditions are implicitly “all”. This
+means the above would require windows to have <em>both classes</em>, which is impossible. Thus, the
+condition above will never be true.</p>
+<h4 id="windowruleconditiontitles"><a href="#windowruleconditiontitles"><code>WindowRuleCondition::titles</code></a></h4>
+<p>Like <code>classes</code>, you can use <code>titles</code> to specify that the window needs to open with a specific
+title for the condition to apply.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new().titles([<span class="string">"Steam"</span>]);</code></pre></div>
+<p>Like <code>classes</code>, passing in multiple titles at the top level will cause the condition to always
+fail.</p>
+<h4 id="windowruleconditiontags"><a href="#windowruleconditiontags"><code>WindowRuleCondition::tags</code></a></h4>
+<p>You can specify that the window needs to open on the given tags in order to apply a rule.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new().tags([<span class="kw-2">&amp;</span>tag.get(<span class="string">"3"</span>, output.get_by_name(<span class="string">"HDMI-1"</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span>]);</code></pre></div>
+<p>Here, if you have tag “3” active on “HDMI-1” and spawn a window on that output, this condition
+will apply.</p>
+<p>Unlike <code>classes</code> and <code>titles</code>, you can specify multiple tags at the top level:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>op = output.get_by_name(<span class="string">"HDMI-1"</span>)<span class="question-mark">?</span>;
+<span class="kw">let </span>tag1 = tag.get(<span class="string">"1"</span>, <span class="kw-2">&amp;</span>op)<span class="question-mark">?</span>;
+<span class="kw">let </span>tag2 = tag.get(<span class="string">"2"</span>, <span class="kw-2">&amp;</span>op)<span class="question-mark">?</span>;
+
+<span class="kw">let </span>cond = WindowRuleCondition::new().tags([<span class="kw-2">&amp;</span>tag1, <span class="kw-2">&amp;</span>tag2]);</code></pre></div>
+<p>Now, you must have both tags “1” and “2” active and spawn a window for the condition to apply.</p>
+<h4 id="windowruleconditionany"><a href="#windowruleconditionany"><code>WindowRuleCondition::any</code></a></h4>
+<p>Now we can get to ways to compose more complex conditions.</p>
+<p><code>WindowRuleCondition::any</code> takes in conditions and will evaluate to true if <em>anything</em> in those
+conditions are true.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new()
+    .any([
+        WindowRuleCondition::new().classes([<span class="string">"Alacritty"</span>]),
+        WindowRuleCondition::new().tags([<span class="kw-2">&amp;</span>tag.get(<span class="string">"2"</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>]),
+    ]);</code></pre></div>
+<p>This condition will apply if the window is <em>either</em> “Alacritty” <em>or</em> opens on tag “2”.</p>
+<h4 id="windowruleconditionall"><a href="#windowruleconditionall"><code>WindowRuleCondition::all</code></a></h4>
+<p>With <code>WindowRuleCondition::all</code>, <em>all</em> specified conditions must be true for the condition to
+be true.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new()
+    .all([
+        WindowRuleCondition::new().classes([<span class="string">"Alacritty"</span>]),
+        WindowRuleCondition::new().tags([<span class="kw-2">&amp;</span>tag.get(<span class="string">"2"</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>]),
+    ]);</code></pre></div>
+<p>This condition applies if the window has the class “Alacritty” <em>and</em> opens on tag “2”.</p>
+<p>You can write the above a bit shorter, as top level conditions are already “all”:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cond = WindowRuleCondition::new()
+    .classes([<span class="string">"Alacritty"</span>])
+    .tags([<span class="kw-2">&amp;</span>tag.get(<span class="string">"2"</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>]);</code></pre></div>
+<h3 id="complex-condition-composition"><a href="#complex-condition-composition">Complex condition composition</a></h3>
+<p>You can arbitrarily nest <code>any</code> and <code>all</code> to achieve desired logic.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>op = output.get_by_name(<span class="string">"HDMI-1"</span>)<span class="question-mark">?</span>;
+<span class="kw">let </span>tag1 = tag.get(<span class="string">"1"</span>, <span class="kw-2">&amp;</span>op)<span class="question-mark">?</span>;
+<span class="kw">let </span>tag2 = tag.get(<span class="string">"2"</span>, <span class="kw-2">&amp;</span>op)<span class="question-mark">?</span>;
+
+<span class="kw">let </span>complex_cond = WindowRuleCondition::new()
+    .any([
+        WindowRuleCondition::new().all([
+            WindowRuleCondition::new()
+                .classes(<span class="string">"Alacritty"</span>)
+                .tags([<span class="kw-2">&amp;</span>tag1, <span class="kw-2">&amp;</span>tag2])
+        ]),
+        WindowRuleCondition::new().all([
+            WindowRuleCondition::new().any([
+                WindowRuleCondition::new().titles([<span class="string">"nvim"</span>, <span class="string">"emacs"</span>, <span class="string">"nano"</span>]),
+            ]),
+            WindowRuleCondition::new().any([
+                WindowRuleCondition::new().tags([<span class="kw-2">&amp;</span>tag1, <span class="kw-2">&amp;</span>tag2]),
+            ]),
+        ])
+    ])</code></pre></div>
+<p>The above is true if either of the following are true:</p>
+<ul>
+<li>The window has class “Alacritty” and opens on both tags “1” and “2”, or</li>
+<li>The window’s class is either “nvim”, “emacs”, or “nano” <em>and</em> it opens on either tag “1” or
+“2”.</li>
+</ul>
+<h2 id="windowrules"><a href="#windowrules"><code>WindowRule</code>s</a></h2>
+<p><code>WindowRuleCondition</code>s are half of a window rule. The other half is the <a href="struct.WindowRule.html" title="struct pinnacle_api::window::rules::WindowRule"><code>WindowRule</code></a> itself.</p>
+<p>A <code>WindowRule</code> is what will apply to a window if a condition is true.</p>
+<h3 id="building-windowrules"><a href="#building-windowrules">Building <code>WindowRule</code>s</a></h3>
+<p>Create a new window rule with <a href="struct.WindowRule.html#method.new" title="associated function pinnacle_api::window::rules::WindowRule::new"><code>WindowRule::new</code></a>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>rule = WindowRule::new();</code></pre></div>
+<p>There are several rules you can set currently.</p>
+<h4 id="windowruleoutput"><a href="#windowruleoutput"><code>WindowRule::output</code></a></h4>
+<p>This will cause the window to open on the specified output.</p>
+<h4 id="windowruletags"><a href="#windowruletags"><code>WindowRule::tags</code></a></h4>
+<p>This will cause the window to open with the given tags.</p>
+<h4 id="windowrulefloating"><a href="#windowrulefloating"><code>WindowRule::floating</code></a></h4>
+<p>This will cause the window to open either floating or tiled.</p>
+<h4 id="windowrulefullscreen_or_maximized"><a href="#windowrulefullscreen_or_maximized"><code>WindowRule::fullscreen_or_maximized</code></a></h4>
+<p>This will cause the window to open either fullscreen, maximized, or neither.</p>
+<h4 id="windowrulex"><a href="#windowrulex"><code>WindowRule::x</code></a></h4>
+<p>This will cause the window to open at the given x-coordinate.</p>
+<p>Note: this only applies to floating windows; tiled windows’ geometry will be overridden by
+layouting.</p>
+<h4 id="windowruley"><a href="#windowruley"><code>WindowRule::y</code></a></h4>
+<p>This will cause the window to open at the given y-coordinate.</p>
+<p>Note: this only applies to floating windows; tiled windows’ geometry will be overridden by
+layouting.</p>
+<h4 id="windowrulewidth"><a href="#windowrulewidth"><code>WindowRule::width</code></a></h4>
+<p>This will cause the window to open with the given width in pixels.</p>
+<p>Note: this only applies to floating windows; tiled windows’ geometry will be overridden by
+layouting.</p>
+<h4 id="windowruleheight"><a href="#windowruleheight"><code>WindowRule::height</code></a></h4>
+<p>This will cause the window to open with the given height in pixels.</p>
+<p>Note: this only applies to floating windows; tiled windows’ geometry will be overridden by
+layouting.</p>
+</div></details><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.WindowRule.html" title="struct pinnacle_api::window::rules::WindowRule">WindowRule</a></div><div class="desc docblock-short">A window rule.</div></li><li><div class="item-name"><a class="struct" href="struct.WindowRuleCondition.html" title="struct pinnacle_api::window::rules::WindowRuleCondition">WindowRuleCondition</a></div><div class="desc docblock-short">A condition for a <a href="struct.WindowRule.html" title="struct pinnacle_api::window::rules::WindowRule"><code>WindowRule</code></a> to apply to a window.</div></li></ul></section></div></main></body></html>
