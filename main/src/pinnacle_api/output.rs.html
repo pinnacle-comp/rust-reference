@@ -530,6 +530,82 @@
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -553,15 +629,16 @@
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
-<span class="kw">use crate</span>::{block_on_tokio, tag::TagHandle};
+<span class="kw">use crate</span>::{block_on_tokio, tag::TagHandle, util::Batch};
 
 <span class="doccomment">/// A struct that allows you to get handles to connected outputs and set them up.
 ///
 /// See [`OutputHandle`] for more information.
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Output {
-    channel: Channel,
     fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
+    output_client: OutputServiceClient&lt;Channel&gt;,
+    tag_client: TagServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Output {
@@ -570,17 +647,10 @@
         fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            channel,
+            output_client: OutputServiceClient::new(channel.clone()),
+            tag_client: TagServiceClient::new(channel),
             fut_sender,
         }
-    }
-
-    <span class="kw">fn </span>create_output_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputServiceClient&lt;Channel&gt; {
-        OutputServiceClient::new(<span class="self">self</span>.channel.clone())
-    }
-
-    <span class="kw">fn </span>create_tag_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagServiceClient&lt;Channel&gt; {
-        TagServiceClient::new(<span class="self">self</span>.channel.clone())
     }
 
     <span class="doccomment">/// Get a handle to all connected outputs.
@@ -591,15 +661,22 @@
     /// let outputs = output.get_all();
     /// ```
     </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_output_client();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.create_tag_client();
-        block_on_tokio(client.get(output::v0alpha1::GetRequest {}))
-            .unwrap()
+        block_on_tokio(<span class="self">self</span>.get_all_async())
+    }
+
+    <span class="doccomment">/// The async version of [`Output::get_all`].
+    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
+        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
+        client
+            .get(output::v0alpha1::GetRequest {})
+            .<span class="kw">await
+            </span>.unwrap()
             .into_inner()
             .output_names
             .into_iter()
             .map(<span class="kw">move </span>|name| OutputHandle {
-                client: client.clone(),
+                output_client: client.clone(),
                 tag_client: tag_client.clone(),
                 name,
             })
@@ -616,8 +693,15 @@
     /// let op2 = output.get_by_name("HDMI-2")?;
     /// ```
     </span><span class="kw">pub fn </span>get_by_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+        block_on_tokio(<span class="self">self</span>.get_by_name_async(name))
+    }
+
+    <span class="doccomment">/// The async version of [`Output::get_by_name`].
+    </span><span class="kw">pub async fn </span>get_by_name_async(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
         <span class="kw">let </span>name: String = name.into();
-        <span class="self">self</span>.get_all().find(|output| output.name == name)
+        <span class="self">self</span>.get_all_async()
+            .<span class="kw">await
+            </span>.find(|output| output.name == name)
     }
 
     <span class="doccomment">/// Get a handle to the focused output.
@@ -632,6 +716,14 @@
     </span><span class="kw">pub fn </span>get_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
         <span class="self">self</span>.get_all()
             .find(|output| <span class="macro">matches!</span>(output.props().focused, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)))
+    }
+
+    <span class="doccomment">/// The async version of [`Output::get_focused`].
+    </span><span class="kw">pub async fn </span>get_focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+        <span class="self">self</span>.get_all_async().<span class="kw">await</span>.batch_find(
+            |output| output.props_async().boxed(),
+            |props| props.focused.is_some_and(|focused| focused),
+        )
     }
 
     <span class="doccomment">/// Connect a closure to be run on all current and future outputs.
@@ -658,8 +750,8 @@
             for_all(output);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_output_client();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.create_tag_client();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
+        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
 
         <span class="self">self</span>.fut_sender
             .unbounded_send(
@@ -676,7 +768,7 @@
                         };
 
                         <span class="kw">let </span>output = OutputHandle {
-                            client: client.clone(),
+                            output_client: client.clone(),
                             tag_client: tag_client.clone(),
                             name: output_name,
                         };
@@ -695,7 +787,7 @@
 /// This allows you to manipulate outputs and get their properties.
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>OutputHandle {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) client: OutputServiceClient&lt;Channel&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) output_client: OutputServiceClient&lt;Channel&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) tag_client: TagServiceClient&lt;Channel&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) name: String,
 }
@@ -777,7 +869,7 @@
     /// //          ^x=1920
     /// ```
     </span><span class="kw">pub fn </span>set_location(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;i32&gt;&gt;, y: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;i32&gt;&gt;) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
         block_on_tokio(client.set_location(SetLocationRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             x: x.into(),
@@ -909,14 +1001,19 @@
     /// } = output.get_focused()?.props();
     /// ```
     </span><span class="kw">pub fn </span>props(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputProperties {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-        <span class="kw">let </span>response = block_on_tokio(client.get_properties(
-            output::v0alpha1::GetPropertiesRequest {
+        block_on_tokio(<span class="self">self</span>.props_async())
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::props`].
+    </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputProperties {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
+        <span class="kw">let </span>response = client
+            .get_properties(output::v0alpha1::GetPropertiesRequest {
                 output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            },
-        ))
-        .unwrap()
-        .into_inner();
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner();
 
         OutputProperties {
             make: response.make,
@@ -933,8 +1030,8 @@
                 .tag_ids
                 .into_iter()
                 .map(|id| TagHandle {
-                    client: <span class="self">self</span>.tag_client.clone(),
-                    output_client: <span class="self">self</span>.client.clone(),
+                    tag_client: <span class="self">self</span>.tag_client.clone(),
+                    output_client: <span class="self">self</span>.output_client.clone(),
                     id,
                 })
                 .collect(),
@@ -950,11 +1047,21 @@
         <span class="self">self</span>.props().make
     }
 
+    <span class="doccomment">/// The async version of [`OutputHandle::make`].
+    </span><span class="kw">pub async fn </span>make_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.make
+    }
+
     <span class="doccomment">/// Get this output's model.
     ///
     /// Shorthand for `self.props().make`.
     </span><span class="kw">pub fn </span>model(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="self">self</span>.props().model
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::model`].
+    </span><span class="kw">pub async fn </span>model_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.model
     }
 
     <span class="doccomment">/// Get this output's x position in the global space.
@@ -964,11 +1071,21 @@
         <span class="self">self</span>.props().x
     }
 
+    <span class="doccomment">/// The async version of [`OutputHandle::x`].
+    </span><span class="kw">pub async fn </span>x_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.x
+    }
+
     <span class="doccomment">/// Get this output's y position in the global space.
     ///
     /// Shorthand for `self.props().y`.
     </span><span class="kw">pub fn </span>y(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
         <span class="self">self</span>.props().y
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::y`].
+    </span><span class="kw">pub async fn </span>y_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.y
     }
 
     <span class="doccomment">/// Get this output's screen width in pixels.
@@ -978,11 +1095,21 @@
         <span class="self">self</span>.props().pixel_width
     }
 
+    <span class="doccomment">/// The async version of [`OutputHandle::pixel_width`].
+    </span><span class="kw">pub async fn </span>pixel_width_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.pixel_width
+    }
+
     <span class="doccomment">/// Get this output's screen height in pixels.
     ///
     /// Shorthand for `self.props().pixel_height`.
     </span><span class="kw">pub fn </span>pixel_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
         <span class="self">self</span>.props().pixel_height
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::pixel_height`].
+    </span><span class="kw">pub async fn </span>pixel_height_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.pixel_height
     }
 
     <span class="doccomment">/// Get this output's refresh rate in millihertz.
@@ -994,6 +1121,11 @@
         <span class="self">self</span>.props().refresh_rate
     }
 
+    <span class="doccomment">/// The async version of [`OutputHandle::refresh_rate`].
+    </span><span class="kw">pub async fn </span>refresh_rate_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.refresh_rate
+    }
+
     <span class="doccomment">/// Get this output's physical width in millimeters.
     ///
     /// Shorthand for `self.props().physical_width`.
@@ -1001,11 +1133,21 @@
         <span class="self">self</span>.props().physical_width
     }
 
+    <span class="doccomment">/// The async version of [`OutputHandle::physical_width`].
+    </span><span class="kw">pub async fn </span>physical_width_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.physical_width
+    }
+
     <span class="doccomment">/// Get this output's physical height in millimeters.
     ///
     /// Shorthand for `self.props().physical_height`.
     </span><span class="kw">pub fn </span>physical_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
         <span class="self">self</span>.props().physical_height
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::physical_height`].
+    </span><span class="kw">pub async fn </span>physical_height_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.physical_height
     }
 
     <span class="doccomment">/// Get whether this output is focused or not.
@@ -1017,11 +1159,21 @@
         <span class="self">self</span>.props().focused
     }
 
+    <span class="doccomment">/// The async version of [`OutputHandle::focused`].
+    </span><span class="kw">pub async fn </span>focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.focused
+    }
+
     <span class="doccomment">/// Get the tags this output has.
     ///
     /// Shorthand for `self.props().tags`
     </span><span class="kw">pub fn </span>tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
         <span class="self">self</span>.props().tags
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::tags`].
+    </span><span class="kw">pub async fn </span>tags_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.tags
     }
 
     <span class="doccomment">/// Get this output's unique name (the name of its connector).
@@ -1031,7 +1183,7 @@
 }
 
 <span class="doccomment">/// The properties of an output.
-</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 </span><span class="kw">pub struct </span>OutputProperties {
     <span class="doccomment">/// The make of the output
     </span><span class="kw">pub </span>make: <span class="prelude-ty">Option</span>&lt;String&gt;,

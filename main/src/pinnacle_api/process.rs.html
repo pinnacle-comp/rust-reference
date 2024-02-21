@@ -181,6 +181,7 @@
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -207,6 +208,7 @@
 }
 
 <span class="doccomment">/// Optional callbacks to be run when a spawned process prints to stdout or stderr or exits.
+</span><span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>SpawnCallbacks {
     <span class="doccomment">/// A callback that will be run when a process prints to stdout with a line
     </span><span class="kw">pub </span>stdout: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(String) + Send&gt;&gt;,

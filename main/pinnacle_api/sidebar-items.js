@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"attr":["config"],"fn":["connect","listen"],"mod":["input","output","pinnacle","process","tag","util","window"],"struct":["ApiModules"]};
+window.SIDEBAR_ITEMS = {"attr":["config"],"fn":["connect","listen"],"macro":["batch_boxed","batch_boxed_async"],"mod":["input","output","pinnacle","process","tag","util","window"],"struct":["ApiModules"]};

@@ -561,6 +561,57 @@
 <a href="#560" id="560">560</a>
 <a href="#561" id="561">561</a>
 <a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -597,7 +648,7 @@
     sync::{Arc, Mutex},
 };
 
-<span class="kw">use </span>futures::{channel::mpsc::UnboundedSender, future::BoxFuture};
+<span class="kw">use </span>futures::{channel::mpsc::UnboundedSender, future::BoxFuture, FutureExt};
 <span class="kw">use </span>num_enum::TryFromPrimitive;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
     output::v0alpha1::output_service_client::OutputServiceClient,
@@ -614,6 +665,7 @@
 <span class="kw">use crate</span>::{
     block_on_tokio,
     output::{Output, OutputHandle},
+    util::Batch,
 };
 
 <span class="doccomment">/// A struct that allows you to add and remove tags and get [`TagHandle`]s.
@@ -621,6 +673,8 @@
 </span><span class="kw">pub struct </span>Tag {
     channel: Channel,
     fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
+    tag_client: TagServiceClient&lt;Channel&gt;,
+    output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Tag {
@@ -629,17 +683,11 @@
         fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
+            tag_client: TagServiceClient::new(channel.clone()),
+            output_client: OutputServiceClient::new(channel.clone()),
             channel,
             fut_sender,
         }
-    }
-
-    <span class="kw">fn </span>create_tag_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagServiceClient&lt;Channel&gt; {
-        TagServiceClient::new(<span class="self">self</span>.channel.clone())
-    }
-
-    <span class="kw">fn </span>create_output_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputServiceClient&lt;Channel&gt; {
-        OutputServiceClient::new(<span class="self">self</span>.channel.clone())
     }
 
     <span class="doccomment">/// Add tags to the specified output.
@@ -660,20 +708,31 @@
         output: <span class="kw-2">&amp;</span>OutputHandle,
         tag_names: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>Into&lt;String&gt;&gt;,
     ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_tag_client();
-        <span class="kw">let </span>output_client = <span class="self">self</span>.create_output_client();
+        block_on_tokio(<span class="self">self</span>.add_async(output, tag_names))
+    }
+
+    <span class="doccomment">/// The async version of [`Tag::add`].
+    </span><span class="kw">pub async fn </span>add_async(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        output: <span class="kw-2">&amp;</span>OutputHandle,
+        tag_names: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>Into&lt;String&gt;&gt;,
+    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
+        <span class="kw">let </span>output_client = <span class="self">self</span>.output_client.clone();
 
         <span class="kw">let </span>tag_names = tag_names.into_iter().map(Into::into).collect();
 
-        <span class="kw">let </span>response = block_on_tokio(client.add(AddRequest {
-            output_name: <span class="prelude-val">Some</span>(output.name.clone()),
-            tag_names,
-        }))
-        .unwrap()
-        .into_inner();
+        <span class="kw">let </span>response = client
+            .add(AddRequest {
+                output_name: <span class="prelude-val">Some</span>(output.name.clone()),
+                tag_names,
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner();
 
         response.tag_ids.into_iter().map(<span class="kw">move </span>|id| TagHandle {
-            client: client.clone(),
+            tag_client: client.clone(),
             output_client: output_client.clone(),
             id,
         })
@@ -687,15 +746,22 @@
     /// let all_tags = tag.get_all();
     /// ```
     </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_tag_client();
-        <span class="kw">let </span>output_client = <span class="self">self</span>.create_output_client();
+        block_on_tokio(<span class="self">self</span>.get_all_async())
+    }
 
-        <span class="kw">let </span>response = block_on_tokio(client.get(tag::v0alpha1::GetRequest {}))
-            .unwrap()
+    <span class="doccomment">/// The async version of [`Tag::get_all`].
+    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
+        <span class="kw">let </span>output_client = <span class="self">self</span>.output_client.clone();
+
+        <span class="kw">let </span>response = client
+            .get(tag::v0alpha1::GetRequest {})
+            .<span class="kw">await
+            </span>.unwrap()
             .into_inner();
 
         response.tag_ids.into_iter().map(<span class="kw">move </span>|id| TagHandle {
-            client: client.clone(),
+            tag_client: client.clone(),
             output_client: output_client.clone(),
             id,
         })
@@ -712,18 +778,20 @@
     /// let tg = tag.get("Thing");
     /// ```
     </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
+        block_on_tokio(<span class="self">self</span>.get_async(name))
+    }
+
+    <span class="doccomment">/// The async version of [`Tag::get`].
+    </span><span class="kw">pub async fn </span>get_async(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
         <span class="kw">let </span>name = name.into();
         <span class="kw">let </span>output_module = Output::new(<span class="self">self</span>.channel.clone(), <span class="self">self</span>.fut_sender.clone());
         <span class="kw">let </span>focused_output = output_module.get_focused();
 
-        <span class="self">self</span>.get_all().find(|tag| {
-            <span class="kw">let </span>props = tag.props();
-
-            <span class="kw">let </span>same_tag_name = props.name.as_ref() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>name);
-            <span class="kw">let </span>same_output = props.output.is_some_and(|op| <span class="prelude-val">Some</span>(op) == focused_output);
-
-            same_tag_name &amp;&amp; same_output
-        })
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = focused_output {
+            <span class="self">self</span>.get_on_output_async(name, <span class="kw-2">&amp;</span>output).<span class="kw">await
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
     }
 
     <span class="doccomment">/// Get a handle to the first tag with the given name on the specified output.
@@ -741,16 +809,26 @@
         name: <span class="kw">impl </span>Into&lt;String&gt;,
         output: <span class="kw-2">&amp;</span>OutputHandle,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
+        block_on_tokio(<span class="self">self</span>.get_on_output_async(name, output))
+    }
+
+    <span class="doccomment">/// The async version of [`Tag::get_on_output`].
+    </span><span class="kw">pub async fn </span>get_on_output_async(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        name: <span class="kw">impl </span>Into&lt;String&gt;,
+        output: <span class="kw-2">&amp;</span>OutputHandle,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
         <span class="kw">let </span>name = name.into();
 
-        <span class="self">self</span>.get_all().find(|tag| {
-            <span class="kw">let </span>props = tag.props();
+        <span class="self">self</span>.get_all_async().<span class="kw">await</span>.batch_find(
+            |tag| tag.props_async().boxed(),
+            |props| {
+                <span class="kw">let </span>same_tag_name = props.name.as_ref() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>name);
+                <span class="kw">let </span>same_output = props.output.as_ref().is_some_and(|op| op == output);
 
-            <span class="kw">let </span>same_tag_name = props.name.as_ref() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>name);
-            <span class="kw">let </span>same_output = props.output.is_some_and(|op| <span class="kw-2">&amp;</span>op == output);
-
-            same_tag_name &amp;&amp; same_output
-        })
+                same_tag_name &amp;&amp; same_output
+            },
+        )
     }
 
     <span class="doccomment">/// Remove the given tags from their outputs.
@@ -765,7 +843,7 @@
     </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;</span><span class="self">self</span>, tags: <span class="kw">impl </span>IntoIterator&lt;Item = TagHandle&gt;) {
         <span class="kw">let </span>tag_ids = tags.into_iter().map(|handle| handle.id).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_tag_client();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
 
         block_on_tokio(client.remove(RemoveRequest { tag_ids })).unwrap();
     }
@@ -896,9 +974,9 @@
 /// This handle allows you to do things like switch to tags and get their properties.
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>TagHandle {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) client: TagServiceClient&lt;Channel&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) output_client: OutputServiceClient&lt;Channel&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: u32,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) tag_client: TagServiceClient&lt;Channel&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>TagHandle {
@@ -951,7 +1029,7 @@
     /// tag.get("3")?.switch_to(); // Displays Steam
     /// ```
     </span><span class="kw">pub fn </span>switch_to(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         block_on_tokio(client.switch_to(SwitchToRequest {
             tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
         }))
@@ -977,7 +1055,7 @@
     /// tag.get("2")?.set_active(false); // Displays Steam
     /// ```
     </span><span class="kw">pub fn </span>set_active(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         block_on_tokio(client.set_active(SetActiveRequest {
             tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(tag::v0alpha1::set_active_request::SetOrToggle::Set(set)),
@@ -1005,7 +1083,7 @@
     /// tag.get("2")?.toggle(); // Displays nothing
     /// ```
     </span><span class="kw">pub fn </span>toggle_active(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         block_on_tokio(client.set_active(SetActiveRequest {
             tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(tag::v0alpha1::set_active_request::SetOrToggle::Toggle(())),
@@ -1026,8 +1104,9 @@
     /// tags[3].remove();
     /// // "DP-1" now only has tags "1" and "Buckle"
     /// ```
-    </span><span class="kw">pub fn </span>remove(<span class="kw-2">mut </span><span class="self">self</span>) {
-        block_on_tokio(<span class="self">self</span>.client.remove(RemoveRequest {
+    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">let </span><span class="kw-2">mut </span>tag_client = <span class="self">self</span>.tag_client.clone();
+        block_on_tokio(tag_client.remove(RemoveRequest {
             tag_ids: <span class="macro">vec!</span>[<span class="self">self</span>.id],
         }))
         .unwrap();
@@ -1050,7 +1129,7 @@
     /// tag.get("1", None)?.set_layout(Layout::CornerTopLeft);
     /// ```
     </span><span class="kw">pub fn </span>set_layout(<span class="kw-2">&amp;</span><span class="self">self</span>, layout: Layout) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         block_on_tokio(client.set_layout(SetLayoutRequest {
             tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             layout: <span class="prelude-val">Some</span>(layout <span class="kw">as </span>i32),
@@ -1072,20 +1151,27 @@
     /// } = tag.get("1", None)?.props();
     /// ```
     </span><span class="kw">pub fn </span>props(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagProperties {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        block_on_tokio(<span class="self">self</span>.props_async())
+    }
+
+    <span class="doccomment">/// The async version of [`TagHandle::props`].
+    </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagProperties {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         <span class="kw">let </span>output_client = <span class="self">self</span>.output_client.clone();
 
-        <span class="kw">let </span>response = block_on_tokio(client.get_properties(tag::v0alpha1::GetPropertiesRequest {
-            tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        }))
-        .unwrap()
-        .into_inner();
+        <span class="kw">let </span>response = client
+            .get_properties(tag::v0alpha1::GetPropertiesRequest {
+                tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner();
 
         TagProperties {
             active: response.active,
             name: response.name,
             output: response.output_name.map(|name| OutputHandle {
-                client: output_client,
+                output_client,
                 tag_client: client,
                 name,
             }),
@@ -1099,11 +1185,21 @@
         <span class="self">self</span>.props().active
     }
 
+    <span class="doccomment">/// The async version of [`TagHandle::active`].
+    </span><span class="kw">pub async fn </span>active_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.active
+    }
+
     <span class="doccomment">/// Get this tag's name.
     ///
     /// Shorthand for `self.props().name`.
     </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="self">self</span>.props().name
+    }
+
+    <span class="doccomment">/// The async version of [`TagHandle::name`].
+    </span><span class="kw">pub async fn </span>name_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.name
     }
 
     <span class="doccomment">/// Get a handle to the output this tag is on.
@@ -1112,9 +1208,15 @@
     </span><span class="kw">pub fn </span>output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
         <span class="self">self</span>.props().output
     }
+
+    <span class="doccomment">/// The async version of [`TagHandle::output`].
+    </span><span class="kw">pub async fn </span>output_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.output
+    }
 }
 
 <span class="doccomment">/// Properties of a tag.
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 </span><span class="kw">pub struct </span>TagProperties {
     <span class="doccomment">/// Whether the tag is active or not
     </span><span class="kw">pub </span>active: <span class="prelude-ty">Option</span>&lt;bool&gt;,

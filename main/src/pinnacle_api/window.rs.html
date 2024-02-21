@@ -546,6 +546,68 @@
 <a href="#545" id="545">545</a>
 <a href="#546" id="546">546</a>
 <a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -560,7 +622,8 @@
 //!
 //! This module also allows you to set window rules; see the [rules] module for more information.
 
-</span><span class="kw">use </span>num_enum::TryFromPrimitive;
+</span><span class="kw">use </span>futures::FutureExt;
+<span class="kw">use </span>num_enum::TryFromPrimitive;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
     output::v0alpha1::output_service_client::OutputServiceClient,
     tag::v0alpha1::tag_service_client::TagServiceClient,
@@ -578,7 +641,12 @@
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
-<span class="kw">use crate</span>::{block_on_tokio, input::MouseButton, tag::TagHandle, util::Geometry};
+<span class="kw">use crate</span>::{
+    block_on_tokio,
+    input::MouseButton,
+    tag::TagHandle,
+    util::{Batch, Geometry},
+};
 
 <span class="kw">use </span><span class="self">self</span>::rules::{WindowRule, WindowRuleCondition};
 
@@ -589,24 +657,18 @@
 /// See [`WindowHandle`] for more information.
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Window {
-    channel: Channel,
+    window_client: WindowServiceClient&lt;Channel&gt;,
+    tag_client: TagServiceClient&lt;Channel&gt;,
+    output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Window {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ channel }
-    }
-
-    <span class="kw">fn </span>create_window_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowServiceClient&lt;Channel&gt; {
-        WindowServiceClient::new(<span class="self">self</span>.channel.clone())
-    }
-
-    <span class="kw">fn </span>create_tag_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagServiceClient&lt;Channel&gt; {
-        TagServiceClient::new(<span class="self">self</span>.channel.clone())
-    }
-
-    <span class="kw">fn </span>create_output_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputServiceClient&lt;Channel&gt; {
-        OutputServiceClient::new(<span class="self">self</span>.channel.clone())
+        <span class="self">Self </span>{
+            window_client: WindowServiceClient::new(channel.clone()),
+            tag_client: TagServiceClient::new(channel.clone()),
+            output_client: OutputServiceClient::new(channel),
+        }
     }
 
     <span class="doccomment">/// Start moving the window with the mouse.
@@ -614,7 +676,7 @@
     /// This will begin moving the window under the pointer using the specified [`MouseButton`].
     /// The button must be held down at the time this method is called for the move to start.
     ///
-    /// This is intended to be used with [`Input::keybind`][crate::input::Input::keybind].
+    /// This is intended to be used with [`Input::mousebind`][crate::input::Input::mousebind].
     ///
     /// # Examples
     ///
@@ -627,11 +689,12 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>begin_move(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_window_client();
-        block_on_tokio(client.move_grab(MoveGrabRequest {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(status) = block_on_tokio(client.move_grab(MoveGrabRequest {
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">eprintln!</span>(<span class="string">"ERROR: {status}"</span>);
+        }
     }
 
     <span class="doccomment">/// Start resizing the window with the mouse.
@@ -639,7 +702,7 @@
     /// This will begin resizing the window under the pointer using the specified [`MouseButton`].
     /// The button must be held down at the time this method is called for the resize to start.
     ///
-    /// This is intended to be used with [`Input::keybind`][crate::input::Input::keybind].
+    /// This is intended to be used with [`Input::mousebind`][crate::input::Input::mousebind].
     ///
     /// # Examples
     ///
@@ -652,7 +715,7 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>begin_resize(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_window_client();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.resize_grab(ResizeGrabRequest {
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
         }))
@@ -667,16 +730,23 @@
     /// let windows = window.get_all();
     /// ```
     </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_window_client();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.create_tag_client();
-        <span class="kw">let </span>output_client = <span class="self">self</span>.create_output_client();
-        block_on_tokio(client.get(GetRequest {}))
-            .unwrap()
+        block_on_tokio(<span class="self">self</span>.get_all_async())
+    }
+
+    <span class="doccomment">/// The async version of [`Window::get_all`].
+    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
+        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
+        <span class="kw">let </span>output_client = <span class="self">self</span>.output_client.clone();
+        client
+            .get(GetRequest {})
+            .<span class="kw">await
+            </span>.unwrap()
             .into_inner()
             .window_ids
             .into_iter()
             .map(<span class="kw">move </span>|id| WindowHandle {
-                client: client.clone(),
+                window_client: client.clone(),
                 id,
                 tag_client: tag_client.clone(),
                 output_client: output_client.clone(),
@@ -691,8 +761,15 @@
     /// let focused_window = window.get_focused()?;
     /// ```
     </span><span class="kw">pub fn </span>get_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;WindowHandle&gt; {
-        <span class="self">self</span>.get_all()
-            .find(|window| <span class="macro">matches!</span>(window.props().focused, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)))
+        block_on_tokio(<span class="self">self</span>.get_focused_async())
+    }
+
+    <span class="doccomment">/// The async version of [`Window::get_focused`].
+    </span><span class="kw">pub async fn </span>get_focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;WindowHandle&gt; {
+        <span class="self">self</span>.get_all_async().<span class="kw">await</span>.batch_find(
+            |win| win.focused_async().boxed(),
+            |focused| focused.is_some_and(|focused| focused),
+        )
     }
 
     <span class="doccomment">/// Add a window rule.
@@ -702,7 +779,7 @@
     ///
     /// TODO:
     </span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">&amp;</span><span class="self">self</span>, cond: WindowRuleCondition, rule: WindowRule) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_window_client();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
 
         block_on_tokio(client.add_window_rule(AddWindowRuleRequest {
             cond: <span class="prelude-val">Some</span>(cond.<span class="number">0</span>),
@@ -717,10 +794,10 @@
 /// This allows you to manipulate the window and get its properties.
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>WindowHandle {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) client: WindowServiceClient&lt;Channel&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) id: u32,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) tag_client: TagServiceClient&lt;Channel&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) output_client: OutputServiceClient&lt;Channel&gt;,
+    id: u32,
+    window_client: WindowServiceClient&lt;Channel&gt;,
+    tag_client: TagServiceClient&lt;Channel&gt;,
+    output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>WindowHandle {
@@ -750,7 +827,7 @@
 }
 
 <span class="doccomment">/// Properties of a window.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 </span><span class="kw">pub struct </span>WindowProperties {
     <span class="doccomment">/// The location and size of the window
     </span><span class="kw">pub </span>geometry: <span class="prelude-ty">Option</span>&lt;Geometry&gt;,
@@ -763,7 +840,7 @@
     <span class="doccomment">/// Whether the window is floating or not
     ///
     /// Note that a window can still be floating even if it's fullscreen or maximized; those two
-    /// state will just override the floating state.
+    /// states will just override the floating state.
     </span><span class="kw">pub </span>floating: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     <span class="doccomment">/// Whether the window is fullscreen, maximized, or neither
     </span><span class="kw">pub </span>fullscreen_or_maximized: <span class="prelude-ty">Option</span>&lt;FullscreenOrMaximized&gt;,
@@ -782,8 +859,9 @@
     /// // Close the focused window
     /// window.get_focused()?.close()
     /// ```
-    </span><span class="kw">pub fn </span>close(<span class="kw-2">mut </span><span class="self">self</span>) {
-        block_on_tokio(<span class="self">self</span>.client.close(CloseRequest {
+    </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">let </span><span class="kw-2">mut </span>window_client = <span class="self">self</span>.window_client.clone();
+        block_on_tokio(window_client.close(CloseRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
         }))
         .unwrap();
@@ -800,7 +878,7 @@
     /// window.get_focused()?.set_fullscreen(true);
     /// ```
     </span><span class="kw">pub fn </span>set_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.set_fullscreen(SetFullscreenRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(window::v0alpha1::set_fullscreen_request::SetOrToggle::Set(
@@ -821,7 +899,7 @@
     /// window.get_focused()?.toggle_fullscreen();
     /// ```
     </span><span class="kw">pub fn </span>toggle_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.set_fullscreen(SetFullscreenRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(window::v0alpha1::set_fullscreen_request::SetOrToggle::Toggle(())),
@@ -840,7 +918,7 @@
     /// window.get_focused()?.set_maximized(true);
     /// ```
     </span><span class="kw">pub fn </span>set_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.set_maximized(SetMaximizedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(window::v0alpha1::set_maximized_request::SetOrToggle::Set(
@@ -852,7 +930,7 @@
 
     <span class="doccomment">/// Toggle this window between maximized and not.
     ///
-    /// If it is fullscreen, setting it to maximized will remove the fullscreen state.
+    /// If it is fullscreen, toggling it to maximized will remove the fullscreen state.
     ///
     /// # Examples
     ///
@@ -861,7 +939,7 @@
     /// window.get_focused()?.toggle_maximized();
     /// ```
     </span><span class="kw">pub fn </span>toggle_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.set_maximized(SetMaximizedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(window::v0alpha1::set_maximized_request::SetOrToggle::Toggle(())),
@@ -883,7 +961,7 @@
     /// window.get_focused()?.set_floating(true);
     /// ```
     </span><span class="kw">pub fn </span>set_floating(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.set_floating(SetFloatingRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(window::v0alpha1::set_floating_request::SetOrToggle::Set(
@@ -907,7 +985,7 @@
     /// window.get_focused()?.toggle_floating();
     /// ```
     </span><span class="kw">pub fn </span>toggle_floating(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         block_on_tokio(client.set_floating(SetFloatingRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(window::v0alpha1::set_floating_request::SetOrToggle::Toggle(
@@ -929,7 +1007,7 @@
     /// window.get_focused()?.move_to_tag(&amp;tag.get("Code", None)?);
     /// ```
     </span><span class="kw">pub fn </span>move_to_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
 
         block_on_tokio(client.move_to_tag(MoveToTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
@@ -950,7 +1028,7 @@
     /// focused.set_tag(&amp;tg, false); // `focused` no longer has tag "Potato"
     /// ```
     </span><span class="kw">pub fn </span>set_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
 
         block_on_tokio(client.set_tag(SetTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
@@ -974,7 +1052,7 @@
     /// focused.toggle_tag(&amp;tg); // `focused` no longer has tag "Potato"
     /// ```
     </span><span class="kw">pub fn </span>toggle_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
 
         block_on_tokio(client.set_tag(SetTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
@@ -1002,15 +1080,26 @@
     /// } = window.get_focused()?.props();
     /// ```
     </span><span class="kw">pub fn </span>props(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowProperties {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
+        block_on_tokio(<span class="self">self</span>.props_async())
+    }
+
+    <span class="doccomment">/// The async version of [`props`][Self::props].
+    </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowProperties {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
-        <span class="kw">let </span>response = block_on_tokio(client.get_properties(
-            window::v0alpha1::GetPropertiesRequest {
+
+        <span class="kw">let </span>response = <span class="kw">match </span>client
+            .get_properties(window::v0alpha1::GetPropertiesRequest {
                 window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            },
-        ))
-        .unwrap()
-        .into_inner();
+            })
+            .<span class="kw">await
+        </span>{
+            <span class="prelude-val">Ok</span>(response) =&gt; response.into_inner(),
+            <span class="prelude-val">Err</span>(status) =&gt; {
+                <span class="macro">eprintln!</span>(<span class="string">"ERROR: {status}"</span>);
+                <span class="kw">return </span>WindowProperties::default();
+            }
+        };
 
         <span class="kw">let </span>fullscreen_or_maximized = response
             .fullscreen_or_maximized
@@ -1036,7 +1125,7 @@
                 .tag_ids
                 .into_iter()
                 .map(|id| TagHandle {
-                    client: tag_client.clone(),
+                    tag_client: tag_client.clone(),
                     output_client: <span class="self">self</span>.output_client.clone(),
                     id,
                 })
@@ -1051,11 +1140,21 @@
         <span class="self">self</span>.props().geometry
     }
 
+    <span class="doccomment">/// The async version of [`geometry`][Self::geometry].
+    </span><span class="kw">pub async fn </span>geometry_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Geometry&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.geometry
+    }
+
     <span class="doccomment">/// Get this window's class.
     ///
     /// Shorthand for `self.props().class`.
     </span><span class="kw">pub fn </span>class(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="self">self</span>.props().class
+    }
+
+    <span class="doccomment">/// The async version of [`class`][Self::class].
+    </span><span class="kw">pub async fn </span>class_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.class
     }
 
     <span class="doccomment">/// Get this window's title.
@@ -1065,11 +1164,21 @@
         <span class="self">self</span>.props().title
     }
 
+    <span class="doccomment">/// The async version of [`title`][Self::title].
+    </span><span class="kw">pub async fn </span>title_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.title
+    }
+
     <span class="doccomment">/// Get whether or not this window is focused.
     ///
     /// Shorthand for `self.props().focused`.
     </span><span class="kw">pub fn </span>focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
         <span class="self">self</span>.props().focused
+    }
+
+    <span class="doccomment">/// The async version of [`focused`][Self::focused].
+    </span><span class="kw">pub async fn </span>focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.focused
     }
 
     <span class="doccomment">/// Get whether or not this window is floating.
@@ -1079,6 +1188,11 @@
         <span class="self">self</span>.props().floating
     }
 
+    <span class="doccomment">/// The async version of [`floating`][Self::floating]
+    </span><span class="kw">pub async fn </span>floating_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.floating
+    }
+
     <span class="doccomment">/// Get whether this window is fullscreen, maximized, or neither.
     ///
     /// Shorthand for `self.props().fullscreen_or_maximized`.
@@ -1086,11 +1200,21 @@
         <span class="self">self</span>.props().fullscreen_or_maximized
     }
 
+    <span class="doccomment">/// The async version of [`fullscreen_or_maximized`][Self::fullscreen_or_maximized].
+    </span><span class="kw">pub async fn </span>fullscreen_or_maximized_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;FullscreenOrMaximized&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.fullscreen_or_maximized
+    }
+
     <span class="doccomment">/// Get all the tags on this window.
     ///
     /// Shorthand for `self.props().tags`.
     </span><span class="kw">pub fn </span>tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
         <span class="self">self</span>.props().tags
+    }
+
+    <span class="doccomment">/// The async version of [`tags`][Self::tags].
+    </span><span class="kw">pub async fn </span>tags_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.tags
     }
 }
 </code></pre></div></section></main></body></html>
