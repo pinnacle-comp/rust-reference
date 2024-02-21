@@ -183,6 +183,7 @@
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -255,8 +256,7 @@
 /// ```
 ///
 </span><span class="kw">pub fn </span>batch&lt;T&gt;(requests: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>Future&lt;Output = T&gt;&gt;) -&gt; Vec&lt;T&gt; {
-    <span class="kw">let </span>results = FuturesOrdered::from_iter(requests).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-    block_on_tokio(results)
+    block_on_tokio(batch_async(requests))
 }
 
 <span class="doccomment">/// The async version of [`batch`].
@@ -279,17 +279,19 @@
 /// ```
 /// use pinnacle_api::util::batch_boxed;
 ///
-/// let windows = window.get_all();
+/// let mut windows = window.get_all();
 /// let first = windows.next()?;
 /// let last = windows.last()?;
 ///
 /// let classes: Vec&lt;String&gt; = batch_boxed![
 ///     async {
-///         let mut class = first.class_async().await;
+///         let class = first.class_async().await;
 ///         class.unwrap_or("no class".to_string())
 ///     },
 ///     async {
-///         last.class_async().await
+///         let mut class = last.class_async().await.unwrap_or("alalala");
+///         class += "hello";
+///         class
 ///     },
 /// ];
 /// ```
