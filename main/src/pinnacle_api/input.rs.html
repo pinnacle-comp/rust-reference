@@ -386,6 +386,8 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -565,6 +567,7 @@
 
                     <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(_response)) = stream.next().<span class="kw">await </span>{
                         action();
+                        tokio::task::yield_now().<span class="kw">await</span>;
                     }
                 }
                 .boxed(),
@@ -620,6 +623,7 @@
 
                     <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(_response)) = stream.next().<span class="kw">await </span>{
                         action();
+                        tokio::task::yield_now().<span class="kw">await</span>;
                     }
                 }
                 .boxed(),
