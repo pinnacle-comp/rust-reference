@@ -372,7 +372,34 @@
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
-</pre></div><pre class="rust"><code><span class="doccomment">//! Signals TODO:
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
+//!
+//! Your config can connect to various compositor signals that allow you to, for example, do
+//! something when an output is connected or when the pointer enters a window.
+//!
+//! Some of the other modules have a `connect_signal` method that will allow you to pass in
+//! callbacks to run on each signal. Use them to connect to the signals defined here.
 
 </span><span class="kw">use </span>std::{
     collections::{btree_map, BTreeMap},
@@ -463,7 +490,7 @@
                         <span class="self">self</span>.callback_count.clone(),
                         |out| {
                             block_on_tokio(<span class="self">self</span>.client.<span class="macro-nonterminal">$req</span>(out))
-                                .expect(<span class="string">"TODO"</span>)
+                                .expect(<span class="string">"failed to request signal connection"</span>)
                                 .into_inner()
                         },
                         <span class="macro-nonterminal">$on_resp</span>,
@@ -488,6 +515,11 @@
     <span class="doccomment">/// Signals relating to tag events.
     </span>TagSignal =&gt; {
         <span class="doccomment">/// The compositor requested that the given windows be laid out.
+        ///
+        /// Callbacks receive the tag that is being laid out and the windows being laid out.
+        ///
+        /// Note: if multiple tags are active, only the first will be received, but all windows on those
+        /// active tags will be received.
         </span>Layout = {
             enum_name = Layout,
             callback_type = LayoutFn,
@@ -514,6 +546,11 @@
     <span class="doccomment">/// Signals relating to output events.
     </span>OutputSignal =&gt; {
         <span class="doccomment">/// An output was connected.
+        ///
+        /// Callbacks receive the newly connected output.
+        ///
+        /// FIXME: This will not run on outputs that have been previously connected.
+        /// |      Tell the dev to fix this in the compositor.
         </span>OutputConnect = {
             enum_name = Connect,
             callback_type = SingleOutputFn,
@@ -533,6 +570,8 @@
     <span class="doccomment">/// Signals relating to window events.
     </span>WindowSignal =&gt; {
         <span class="doccomment">/// The pointer entered a window.
+        ///
+        /// Callbacks receive the window the pointer entered.
         </span>WindowPointerEnter = {
             enum_name = PointerEnter,
             callback_type = SingleWindowFn,
@@ -549,6 +588,8 @@
             },
         }
         <span class="doccomment">/// The pointer left a window.
+        ///
+        /// Callbacks receive the window the pointer left.
         </span>WindowPointerLeave = {
             enum_name = PointerLeave,
             callback_type = SingleWindowFn,
@@ -674,11 +715,12 @@
                     <span class="kw">match </span>response {
                         <span class="prelude-val">Ok</span>(response) =&gt; {
                             on_response(response, callbacks.values_mut());
-                            tokio::task::yield_now().<span class="kw">await</span>;
 
                             control_sender
                                 .send(Req::from_control(StreamControl::Ready))
                                 .expect(<span class="string">"send failed"</span>);
+
+                            tokio::task::yield_now().<span class="kw">await</span>;
                         }
                         <span class="prelude-val">Err</span>(status) =&gt; <span class="macro">eprintln!</span>(<span class="string">"Error in recv: {status}"</span>),
                     }

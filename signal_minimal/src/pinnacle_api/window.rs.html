@@ -614,8 +614,6 @@
 <a href="#613" id="613">613</a>
 <a href="#614" id="614">614</a>
 <a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -740,12 +738,12 @@
     /// ```
     /// let windows = window.get_all();
     /// ```
-    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
         block_on_tokio(<span class="self">self</span>.get_all_async())
     }
 
     <span class="doccomment">/// The async version of [`Window::get_all`].
-    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
         client
             .get(GetRequest {})
@@ -756,8 +754,6 @@
             .into_iter()
             .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-            <span class="comment">// TODO: consider changing return type to Vec to avoid this into_iter
-            </span>.into_iter()
     }
 
     <span class="doccomment">/// Get the currently focused window.
@@ -784,7 +780,7 @@
     /// A window rule is a set of criteria that a window must open with.
     /// For it to apply, a [`WindowRuleCondition`] must evaluate to true for the window in question.
     ///
-    /// TODO:
+    /// See the [`rules`] module for more information.
     </span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">&amp;</span><span class="self">self</span>, cond: WindowRuleCondition, rule: WindowRule) {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
 
