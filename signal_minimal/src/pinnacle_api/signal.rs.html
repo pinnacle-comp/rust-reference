@@ -371,6 +371,7 @@
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Signals TODO:
 
 </span><span class="kw">use </span>std::{
@@ -636,7 +637,7 @@
 ) -&gt; ConnectSignalChannels&lt;F&gt;
 <span class="kw">where
     </span>Req: SignalRequest + Send + <span class="lifetime">'static</span>,
-    Resp: <span class="lifetime">'static</span>,
+    Resp: Send + <span class="lifetime">'static</span>,
     F: Send + <span class="lifetime">'static</span>,
     T: FnOnce(UnboundedReceiverStream&lt;Req&gt;) -&gt; Streaming&lt;Resp&gt;,
     O: FnMut(Resp, btree_map::ValuesMut&lt;<span class="lifetime">'_</span>, SignalConnId, F&gt;) + Send + <span class="lifetime">'static</span>,
@@ -673,6 +674,7 @@
                     <span class="kw">match </span>response {
                         <span class="prelude-val">Ok</span>(response) =&gt; {
                             on_response(response, callbacks.values_mut());
+                            tokio::task::yield_now().<span class="kw">await</span>;
 
                             control_sender
                                 .send(Req::from_control(StreamControl::Ready))
