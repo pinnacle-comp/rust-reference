@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["batch","batch_async"],"macro":["batch_boxed","batch_boxed_async"],"struct":["Geometry"],"trait":["Batch"]};
