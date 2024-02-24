@@ -616,6 +616,12 @@
 <a href="#615" id="615">615</a>
 <a href="#616" id="616">616</a>
 <a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -654,12 +660,15 @@
 
 <span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>num_enum::TryFromPrimitive;
-<span class="kw">use </span>pinnacle_api_defs::pinnacle::tag::{
-    <span class="self">self</span>,
-    v0alpha1::{
-        tag_service_client::TagServiceClient, AddRequest, RemoveRequest, SetActiveRequest,
-        SetLayoutRequest, SwitchToRequest,
+<span class="kw">use </span>pinnacle_api_defs::pinnacle::{
+    tag::{
+        <span class="self">self</span>,
+        v0alpha1::{
+            tag_service_client::TagServiceClient, AddRequest, RemoveRequest, SetActiveRequest,
+            SetLayoutRequest, SwitchToRequest,
+        },
     },
+    v0alpha1::SetOrToggle,
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
@@ -1069,7 +1078,10 @@
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         block_on_tokio(client.set_active(SetActiveRequest {
             tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(tag::v0alpha1::set_active_request::SetOrToggle::Set(set)),
+            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
+                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+            } <span class="kw">as </span>i32),
         }))
         .unwrap();
     }
@@ -1097,7 +1109,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
         block_on_tokio(client.set_active(SetActiveRequest {
             tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(tag::v0alpha1::set_active_request::SetOrToggle::Toggle(())),
+            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
         }))
         .unwrap();
     }
