@@ -589,24 +589,6 @@
 <a href="#588" id="588">588</a>
 <a href="#589" id="589">589</a>
 <a href="#590" id="590">590</a>
-<a href="#591" id="591">591</a>
-<a href="#592" id="592">592</a>
-<a href="#593" id="593">593</a>
-<a href="#594" id="594">594</a>
-<a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a>
-<a href="#606" id="606">606</a>
-<a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -618,39 +600,40 @@
 //! This module provides [`Output`], which allows you to get [`OutputHandle`]s for different
 //! connected monitors and set them up.
 
-</span><span class="kw">use </span>futures::{channel::mpsc::UnboundedSender, future::BoxFuture, FutureExt, StreamExt};
-<span class="kw">use </span>pinnacle_api_defs::pinnacle::{
-    output::{
-        <span class="self">self</span>,
-        v0alpha1::{
-            output_service_client::OutputServiceClient, ConnectForAllRequest, SetLocationRequest,
-        },
-    },
-    tag::v0alpha1::tag_service_client::TagServiceClient,
+</span><span class="kw">use </span>futures::FutureExt;
+<span class="kw">use </span>pinnacle_api_defs::pinnacle::output::{
+    <span class="self">self</span>,
+    v0alpha1::{output_service_client::OutputServiceClient, SetLocationRequest},
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
-<span class="kw">use crate</span>::{block_on_tokio, tag::TagHandle, util::Batch};
+<span class="kw">use crate</span>::{
+    block_on_tokio,
+    signal::{OutputSignal, SignalHandle},
+    tag::TagHandle,
+    util::Batch,
+    SIGNAL, TAG,
+};
 
 <span class="doccomment">/// A struct that allows you to get handles to connected outputs and set them up.
 ///
 /// See [`OutputHandle`] for more information.
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Output {
-    fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
     output_client: OutputServiceClient&lt;Channel&gt;,
-    tag_client: TagServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Output {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        channel: Channel,
-        fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
-    ) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             output_client: OutputServiceClient::new(channel.clone()),
-            tag_client: TagServiceClient::new(channel),
-            fut_sender,
+        }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; OutputHandle {
+        OutputHandle {
+            name: name.into(),
+            output_client: <span class="self">self</span>.output_client.clone(),
         }
     }
 
@@ -661,14 +644,14 @@
     /// ```
     /// let outputs = output.get_all();
     /// ```
-    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
         block_on_tokio(<span class="self">self</span>.get_all_async())
     }
 
     <span class="doccomment">/// The async version of [`Output::get_all`].
-    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
+
         client
             .get(output::v0alpha1::GetRequest {})
             .<span class="kw">await
@@ -676,11 +659,8 @@
             .into_inner()
             .output_names
             .into_iter()
-            .map(<span class="kw">move </span>|name| OutputHandle {
-                output_client: client.clone(),
-                tag_client: tag_client.clone(),
-                name,
-            })
+            .map(<span class="kw">move </span>|name| <span class="self">self</span>.new_handle(name))
+            .collect()
     }
 
     <span class="doccomment">/// Get a handle to the output with the given name.
@@ -702,7 +682,8 @@
         <span class="kw">let </span>name: String = name.into();
         <span class="self">self</span>.get_all_async()
             .<span class="kw">await
-            </span>.find(|output| output.name == name)
+            </span>.into_iter()
+            .find(|output| output.name == name)
     }
 
     <span class="doccomment">/// Get a handle to the focused output.
@@ -716,6 +697,7 @@
     /// ```
     </span><span class="kw">pub fn </span>get_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
         <span class="self">self</span>.get_all()
+            .into_iter()
             .find(|output| <span class="macro">matches!</span>(output.props().focused, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)))
     }
 
@@ -746,41 +728,26 @@
     ///     tags.next().unwrap().set_active(true);
     /// });
     /// ```
-    </span><span class="kw">pub fn </span>connect_for_all(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>for_all: <span class="kw">impl </span>FnMut(OutputHandle) + Send + <span class="lifetime">'static</span>) {
+    </span><span class="kw">pub fn </span>connect_for_all(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>for_all: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>) {
         <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.get_all() {
-            for_all(output);
+            for_all(<span class="kw-2">&amp;</span>output);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(SIGNAL.get().expect(<span class="string">"SIGNAL doesn't exist"</span>).write());
+        signal_state.output_connect.add_callback(Box::new(for_all));
+    }
 
-        <span class="self">self</span>.fut_sender
-            .unbounded_send(
-                <span class="kw">async move </span>{
-                    <span class="kw">let </span><span class="kw-2">mut </span>stream = client
-                        .connect_for_all(ConnectForAllRequest {})
-                        .<span class="kw">await
-                        </span>.unwrap()
-                        .into_inner();
+    <span class="doccomment">/// Connect to an output signal.
+    ///
+    /// The compositor will fire off signals that your config can listen for and act upon.
+    /// You can pass in an [`OutputSignal`] along with a callback and it will get run
+    /// with the necessary arguments every time a signal of that type is received.
+    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: OutputSignal) -&gt; SignalHandle {
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(SIGNAL.get().expect(<span class="string">"SIGNAL doesn't exist"</span>).write());
 
-                    <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
-                        <span class="kw">let </span><span class="prelude-val">Some</span>(output_name) = response.output_name <span class="kw">else </span>{
-                            <span class="kw">continue</span>;
-                        };
-
-                        <span class="kw">let </span>output = OutputHandle {
-                            output_client: client.clone(),
-                            tag_client: tag_client.clone(),
-                            name: output_name,
-                        };
-
-                        for_all(output);
-                        tokio::task::yield_now().<span class="kw">await</span>;
-                    }
-                }
-                .boxed(),
-            )
-            .unwrap();
+        <span class="kw">match </span>signal {
+            OutputSignal::Connect(f) =&gt; signal_state.output_connect.add_callback(f),
+        }
     }
 }
 
@@ -789,9 +756,8 @@
 /// This allows you to manipulate outputs and get their properties.
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>OutputHandle {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) output_client: OutputServiceClient&lt;Channel&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) tag_client: TagServiceClient&lt;Channel&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) name: String,
+    output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>OutputHandle {
@@ -1017,6 +983,8 @@
             </span>.unwrap()
             .into_inner();
 
+        <span class="kw">let </span>tag = TAG.get().expect(<span class="string">"TAG doesn't exist"</span>);
+
         OutputProperties {
             make: response.make,
             model: response.model,
@@ -1031,11 +999,7 @@
             tags: response
                 .tag_ids
                 .into_iter()
-                .map(|id| TagHandle {
-                    tag_client: <span class="self">self</span>.tag_client.clone(),
-                    output_client: <span class="self">self</span>.output_client.clone(),
-                    id,
-                })
+                .map(|id| tag.new_handle(id))
                 .collect(),
         }
     }

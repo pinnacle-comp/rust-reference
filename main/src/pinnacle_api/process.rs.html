@@ -183,6 +183,7 @@
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -192,10 +193,11 @@
 //! This module provides [`Process`], which allows you to spawn processes and set environment
 //! variables.
 
-</span><span class="kw">use </span>futures::{channel::mpsc::UnboundedSender, future::BoxFuture, FutureExt, StreamExt};
+</span><span class="kw">use </span>futures::{future::BoxFuture, FutureExt, StreamExt};
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::process::v0alpha1::{
     process_service_client::ProcessServiceClient, SetEnvRequest, SpawnRequest,
 };
+<span class="kw">use </span>tokio::sync::mpsc::UnboundedSender;
 <span class="kw">use </span>tonic::transport::Channel;
 
 <span class="kw">use </span><span class="kw">crate</span>::block_on_tokio;
@@ -318,7 +320,7 @@
         };
 
         <span class="self">self</span>.fut_sender
-            .unbounded_send(
+            .send(
                 <span class="kw">async move </span>{
                     <span class="kw">let </span><span class="kw-2">mut </span>stream = client.spawn(request).<span class="kw">await</span>.unwrap().into_inner();
                     <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>callbacks) = callbacks <span class="kw">else </span>{ <span class="kw">return </span>};

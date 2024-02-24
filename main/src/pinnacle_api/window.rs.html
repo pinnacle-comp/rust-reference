@@ -608,6 +608,12 @@
 <a href="#607" id="607">607</a>
 <a href="#608" id="608">608</a>
 <a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -625,8 +631,6 @@
 </span><span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>num_enum::TryFromPrimitive;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
-    output::v0alpha1::output_service_client::OutputServiceClient,
-    tag::v0alpha1::tag_service_client::TagServiceClient,
     window::v0alpha1::{
         window_service_client::WindowServiceClient, AddWindowRuleRequest, CloseRequest,
         MoveToTagRequest, SetTagRequest,
@@ -644,8 +648,10 @@
 <span class="kw">use crate</span>::{
     block_on_tokio,
     input::MouseButton,
+    signal::{SignalHandle, WindowSignal},
     tag::TagHandle,
     util::{Batch, Geometry},
+    SIGNAL, TAG,
 };
 
 <span class="kw">use </span><span class="self">self</span>::rules::{WindowRule, WindowRuleCondition};
@@ -658,16 +664,19 @@
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Window {
     window_client: WindowServiceClient&lt;Channel&gt;,
-    tag_client: TagServiceClient&lt;Channel&gt;,
-    output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Window {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             window_client: WindowServiceClient::new(channel.clone()),
-            tag_client: TagServiceClient::new(channel.clone()),
-            output_client: OutputServiceClient::new(channel),
+        }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u32) -&gt; WindowHandle {
+        WindowHandle {
+            id,
+            window_client: <span class="self">self</span>.window_client.clone(),
         }
     }
 
@@ -729,15 +738,13 @@
     /// ```
     /// let windows = window.get_all();
     /// ```
-    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
         block_on_tokio(<span class="self">self</span>.get_all_async())
     }
 
     <span class="doccomment">/// The async version of [`Window::get_all`].
-    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
-        <span class="kw">let </span>output_client = <span class="self">self</span>.output_client.clone();
         client
             .get(GetRequest {})
             .<span class="kw">await
@@ -745,12 +752,8 @@
             .into_inner()
             .window_ids
             .into_iter()
-            .map(<span class="kw">move </span>|id| WindowHandle {
-                window_client: client.clone(),
-                id,
-                tag_client: tag_client.clone(),
-                output_client: output_client.clone(),
-            })
+            .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
     }
 
     <span class="doccomment">/// Get the currently focused window.
@@ -777,7 +780,7 @@
     /// A window rule is a set of criteria that a window must open with.
     /// For it to apply, a [`WindowRuleCondition`] must evaluate to true for the window in question.
     ///
-    /// TODO:
+    /// See the [`rules`] module for more information.
     </span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">&amp;</span><span class="self">self</span>, cond: WindowRuleCondition, rule: WindowRule) {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
 
@@ -786,6 +789,20 @@
             rule: <span class="prelude-val">Some</span>(rule.<span class="number">0</span>),
         }))
         .unwrap();
+    }
+
+    <span class="doccomment">/// Connect to a window signal.
+    ///
+    /// The compositor will fire off signals that your config can listen for and act upon.
+    /// You can pass in a [`WindowSignal`] along with a callback and it will get run
+    /// with the necessary arguments every time a signal of that type is received.
+    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: WindowSignal) -&gt; SignalHandle {
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(SIGNAL.get().expect(<span class="string">"SIGNAL doesn't exist"</span>).write());
+
+        <span class="kw">match </span>signal {
+            WindowSignal::PointerEnter(f) =&gt; signal_state.window_pointer_enter.add_callback(f),
+            WindowSignal::PointerLeave(f) =&gt; signal_state.window_pointer_leave.add_callback(f),
+        }
     }
 }
 
@@ -796,8 +813,6 @@
 </span><span class="kw">pub struct </span>WindowHandle {
     id: u32,
     window_client: WindowServiceClient&lt;Channel&gt;,
-    tag_client: TagServiceClient&lt;Channel&gt;,
-    output_client: OutputServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>WindowHandle {
@@ -1086,7 +1101,6 @@
     <span class="doccomment">/// The async version of [`props`][Self::props].
     </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowProperties {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        <span class="kw">let </span>tag_client = <span class="self">self</span>.tag_client.clone();
 
         <span class="kw">let </span>response = <span class="kw">match </span>client
             .get_properties(window::v0alpha1::GetPropertiesRequest {
@@ -1114,6 +1128,8 @@
             height: geo.height() <span class="kw">as </span>u32,
         });
 
+        <span class="kw">let </span>tag = TAG.get().expect(<span class="string">"TAG doesn't exist"</span>);
+
         WindowProperties {
             geometry,
             class: response.class,
@@ -1124,11 +1140,7 @@
             tags: response
                 .tag_ids
                 .into_iter()
-                .map(|id| TagHandle {
-                    tag_client: tag_client.clone(),
-                    output_client: <span class="self">self</span>.output_client.clone(),
-                    id,
-                })
+                .map(|id| tag.new_handle(id))
                 .collect(),
         }
     }

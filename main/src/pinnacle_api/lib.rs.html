@@ -200,6 +200,20 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -284,7 +298,6 @@
 </span><span class="kw">use </span>std::sync::OnceLock;
 
 <span class="kw">use </span>futures::{
-    channel::mpsc::UnboundedReceiver,
     future::{BoxFuture, Either},
     stream::FuturesUnordered,
     Future, StreamExt,
@@ -293,7 +306,13 @@
 <span class="kw">use </span>output::Output;
 <span class="kw">use </span>pinnacle::Pinnacle;
 <span class="kw">use </span>process::Process;
+<span class="kw">use </span>signal::SignalState;
 <span class="kw">use </span>tag::Tag;
+<span class="kw">use </span>tokio::sync::{
+    mpsc::{unbounded_channel, UnboundedReceiver},
+    RwLock,
+};
+<span class="kw">use </span>tokio_stream::wrappers::UnboundedReceiverStream;
 <span class="kw">use </span>tonic::transport::{Endpoint, Uri};
 <span class="kw">use </span>tower::service_fn;
 <span class="kw">use </span>window::Window;
@@ -302,6 +321,7 @@
 <span class="kw">pub mod </span>output;
 <span class="kw">pub mod </span>pinnacle;
 <span class="kw">pub mod </span>process;
+<span class="kw">pub mod </span>signal;
 <span class="kw">pub mod </span>tag;
 <span class="kw">pub mod </span>util;
 <span class="kw">pub mod </span>window;
@@ -316,6 +336,7 @@
 <span class="kw">static </span>INPUT: OnceLock&lt;Input&gt; = OnceLock::new();
 <span class="kw">static </span>OUTPUT: OnceLock&lt;Output&gt; = OnceLock::new();
 <span class="kw">static </span>TAG: OnceLock&lt;Tag&gt; = OnceLock::new();
+<span class="kw">static </span>SIGNAL: OnceLock&lt;RwLock&lt;SignalState&gt;&gt; = OnceLock::new();
 
 <span class="doccomment">/// A struct containing static references to all of the configuration structs.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -349,16 +370,21 @@
         }))
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(fut_sender, fut_recv) = futures::channel::mpsc::unbounded::&lt;BoxFuture&lt;()&gt;&gt;();
-
-    <span class="kw">let </span>output = Output::new(channel.clone(), fut_sender.clone());
+    <span class="kw">let </span>(fut_sender, fut_recv) = unbounded_channel::&lt;BoxFuture&lt;()&gt;&gt;();
 
     <span class="kw">let </span>pinnacle = PINNACLE.get_or_init(|| Pinnacle::new(channel.clone()));
     <span class="kw">let </span>process = PROCESS.get_or_init(|| Process::new(channel.clone(), fut_sender.clone()));
     <span class="kw">let </span>window = WINDOW.get_or_init(|| Window::new(channel.clone()));
     <span class="kw">let </span>input = INPUT.get_or_init(|| Input::new(channel.clone(), fut_sender.clone()));
-    <span class="kw">let </span>tag = TAG.get_or_init(|| Tag::new(channel.clone(), fut_sender.clone()));
-    <span class="kw">let </span>output = OUTPUT.get_or_init(|| output);
+    <span class="kw">let </span>tag = TAG.get_or_init(|| Tag::new(channel.clone()));
+    <span class="kw">let </span>output = OUTPUT.get_or_init(|| Output::new(channel.clone()));
+
+    SIGNAL
+        .set(RwLock::new(SignalState::new(
+            channel.clone(),
+            fut_sender.clone(),
+        )))
+        .map_err(|<span class="kw">_</span>| <span class="string">"failed to create SIGNAL"</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>modules = ApiModules {
         pinnacle,
@@ -379,8 +405,10 @@
 ///
 /// This function is inserted at the end of your config through the [`config`] macro.
 /// You should use the macro instead of this function directly.
-</span><span class="kw">pub async fn </span>listen(<span class="kw-2">mut </span>fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
+</span><span class="kw">pub async fn </span>listen(fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
     <span class="kw">let </span><span class="kw-2">mut </span>future_set = FuturesUnordered::&lt;BoxFuture&lt;()&gt;&gt;::new();
+
+    <span class="kw">let </span><span class="kw-2">mut </span>fut_recv = UnboundedReceiverStream::new(fut_recv);
 
     <span class="kw">loop </span>{
         <span class="kw">match </span>futures::future::select(fut_recv.next(), future_set.next()).<span class="kw">await </span>{
