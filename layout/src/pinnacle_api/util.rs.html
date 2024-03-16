@@ -275,6 +275,14 @@
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -303,14 +311,22 @@
     </span><span class="kw">pub </span>height: u32,
 }
 
-<span class="attr">#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
+<span class="doccomment">/// A horizontal or vertical axis.
+</span><span class="attr">#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
 </span><span class="kw">pub enum </span>Axis {
-    Horizontal,
-    Vertical,
+    <span class="doccomment">/// A horizontal axis.
+    </span>Horizontal,
+    <span class="doccomment">/// A vertical axis.
+    </span>Vertical,
 }
 
 <span class="kw">impl </span>Geometry {
-    <span class="kw">pub fn </span>split_at(<span class="kw-2">mut </span><span class="self">self</span>, axis: Axis, at: i32, thickness: u32) -&gt; (Geometry, <span class="prelude-ty">Option</span>&lt;Geometry&gt;) {
+    <span class="doccomment">/// Split this geometry along the given [`Axis`] at `at`.
+    ///
+    /// `thickness` denotes how thick the split will be from `at`.
+    ///
+    /// Returns the top/left geometry along with the bottom/right one if it exists.
+    </span><span class="kw">pub fn </span>split_at(<span class="kw-2">mut </span><span class="self">self</span>, axis: Axis, at: i32, thickness: u32) -&gt; (Geometry, <span class="prelude-ty">Option</span>&lt;Geometry&gt;) {
         <span class="kw">match </span>axis {
             Axis::Horizontal =&gt; {
                 <span class="kw">if </span>at &lt;= <span class="self">self</span>.y {
