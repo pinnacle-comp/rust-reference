@@ -356,7 +356,6 @@
 <a href="#355" id="355">355</a>
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
 //!
 //! Your config can connect to various compositor signals that allow you to, for example, do
@@ -672,7 +671,6 @@
                     }
                 }
                 _dc = dc_ping_recv_fuse =&gt; {
-                    <span class="macro">println!</span>(<span class="string">"dc"</span>);
                     control_sender.send(Req::from_control(StreamControl::Disconnect)).expect(<span class="string">"send failed"</span>);
                     <span class="kw">break</span>;
                 }
