@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["OutputSignal","TagSignal","WindowSignal"],"struct":["SignalHandle"]};
+window.SIDEBAR_ITEMS = {"enum":["OutputSignal","WindowSignal"],"struct":["SignalHandle"]};
