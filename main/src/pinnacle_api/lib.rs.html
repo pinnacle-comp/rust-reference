@@ -222,6 +222,8 @@
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
 <a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -304,13 +306,9 @@
 //! ## 5. Begin crafting your config!
 //! You can peruse the documentation for things to configure.
 
-</span><span class="kw">use </span>std::sync::OnceLock;
+</span><span class="kw">use </span>std::{sync::OnceLock, time::Duration};
 
-<span class="kw">use </span>futures::{
-    future::{BoxFuture, Either},
-    stream::FuturesUnordered,
-    Future, StreamExt,
-};
+<span class="kw">use </span>futures::{future::BoxFuture, Future, StreamExt};
 <span class="kw">use </span>input::Input;
 <span class="kw">use </span>layout::Layout;
 <span class="kw">use </span>output::Output;
@@ -375,7 +373,8 @@
 /// You should use that macro instead of this function directly.
 </span><span class="kw">pub async fn </span>connect(
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(ApiModules, UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
-    <span class="kw">let </span>channel = Endpoint::try_from(<span class="string">"http://[::]:50051"</span>)<span class="question-mark">? </span><span class="comment">// port doesn't matter, we use a unix socket
+    <span class="comment">// port doesn't matter, we use a unix socket
+    </span><span class="kw">let </span>channel = Endpoint::try_from(<span class="string">"http://[::]:50051"</span>)<span class="question-mark">?
         </span>.connect_with_connector(service_fn(|<span class="kw">_</span>: Uri| {
             tokio::net::UnixStream::connect(
                 std::env::var(<span class="string">"PINNACLE_GRPC_SOCKET"</span>)
@@ -422,19 +421,24 @@
 /// This function is inserted at the end of your config through the [`config`] macro.
 /// You should use the macro instead of this function directly.
 </span><span class="kw">pub async fn </span>listen(fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
-    <span class="kw">let </span><span class="kw-2">mut </span>future_set = FuturesUnordered::&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;::new();
-
     <span class="kw">let </span><span class="kw-2">mut </span>fut_recv = UnboundedReceiverStream::new(fut_recv);
 
-    <span class="kw">loop </span>{
-        <span class="kw">match </span>futures::future::select(fut_recv.next(), future_set.next()).<span class="kw">await </span>{
-            Either::Left((fut, <span class="kw">_</span>)) =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(fut) = fut {
-                    future_set.push(fut);
-                }
+    <span class="kw">let </span>pinnacle = PINNACLE.get().unwrap();
+
+    <span class="kw">let </span>keepalive = <span class="kw">async move </span>{
+        <span class="kw">loop </span>{
+            tokio::time::sleep(Duration::from_secs(<span class="number">60</span>)).<span class="kw">await</span>;
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = pinnacle.ping().<span class="kw">await </span>{
+                <span class="macro">eprintln!</span>(<span class="string">"Failed to ping compositor: {err}"</span>);
+                std::process::exit(<span class="number">1</span>);
             }
-            Either::Right(<span class="kw">_</span>) =&gt; (),
         }
+    };
+
+    tokio::spawn(keepalive);
+
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(fut) = fut_recv.next().<span class="kw">await </span>{
+        tokio::spawn(fut);
     }
 }
 
