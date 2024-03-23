@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AccelProfile","ClickMethod","LibinputSetting","ScrollMethod","TapButtonMap"]};

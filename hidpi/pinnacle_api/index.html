@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The Rust implementation of Pinnacle’s configuration API."><title>pinnacle_api - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../pinnacle_api/index.html">pinnacle_api</a><span class="version">0.0.2</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#functions">Functions</a></li><li><a href="#attributes">Attribute Macros</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../pinnacle_api/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">pinnacle_api</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/pinnacle_api/lib.rs.html#5-225">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The Rust implementation of <a href="https://github.com/pinnacle-comp/pinnacle">Pinnacle</a>’s
+configuration API.</p>
+<p>This library allows you to interface with the Pinnacle compositor and configure various aspects
+like input and the tag system.</p>
+<h2 id="configuration"><a href="#configuration">Configuration</a></h2><h3 id="1-create-a-cargo-project"><a href="#1-create-a-cargo-project">1. Create a cargo project</a></h3>
+<p>To create your own Rust config, create a Cargo project in <code>~/.config/pinnacle</code>.</p>
+<h3 id="2-create-metaconfigtoml"><a href="#2-create-metaconfigtoml">2. Create <code>metaconfig.toml</code></a></h3>
+<p>Then, create a file named <code>metaconfig.toml</code>. This is the file Pinnacle will use to determine
+what to run, kill and reload-config keybinds, an optional socket directory, and any environment
+variables to give the config client.</p>
+<p>In <code>metaconfig.toml</code>, put the following:</p>
+<div class="example-wrap"><pre class="language-toml"><code># `command` will tell Pinnacle to run `cargo run` in your config directory.
+# You can add stuff like &quot;--release&quot; here if you want to.
+command = [&quot;cargo&quot;, &quot;run&quot;]
+
+# You must define a keybind to reload your config if it crashes, otherwise you&#39;ll get stuck if
+# the Lua config doesn&#39;t kick in properly.
+reload_keybind = { modifiers = [&quot;Ctrl&quot;, &quot;Alt&quot;], key = &quot;r&quot; }
+
+# Similarly, you must define a keybind to kill Pinnacle.
+kill_keybind = { modifiers = [&quot;Ctrl&quot;, &quot;Alt&quot;, &quot;Shift&quot;], key = &quot;escape&quot; }
+
+# You can specify an optional socket directory if you need to place the socket Pinnacle will
+# use for configuration in a different place.
+# socket_dir = &quot;your/dir/here&quot;
+
+# If you need to set any environment variables for the config process, you can do so here if
+# you don&#39;t want to do it in the config itself.
+[envs]
+# key = &quot;value&quot;
+</code></pre></div><h3 id="3-set-up-dependencies"><a href="#3-set-up-dependencies">3. Set up dependencies</a></h3>
+<p>In your <code>Cargo.toml</code>, add a dependency to <code>pinnacle-api</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code># Cargo.toml
+
+[dependencies]
+pinnacle-api = { git = &quot;https://github.com/pinnacle-comp/pinnacle&quot; }
+</code></pre></div><h3 id="4-set-up-the-main-function"><a href="#4-set-up-the-main-function">4. Set up the main function</a></h3>
+<p>In <code>main.rs</code>, change <code>fn main()</code> to <code>async fn main()</code> and annotate it with the
+<a href="attr.config.html" title="attr pinnacle_api::config"><code>pinnacle_api::config</code></a> macro. Pass in the identifier you want to bind the
+config modules to:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>pinnacle_api::ApiModules;
+
+<span class="attr">#[pinnacle_api::config(modules)]
+</span><span class="kw">async fn </span>main() {
+    <span class="comment">// `modules` is now available in the function body.
+    // You can deconstruct `ApiModules` to get all the config structs.
+    </span><span class="kw">let </span>ApiModules {
+        pinnacle,
+        process,
+        window,
+        input,
+        output,
+        tag,
+    } = modules;
+}</code></pre></div>
+<h3 id="5-begin-crafting-your-config"><a href="#5-begin-crafting-your-config">5. Begin crafting your config!</a></h3>
+<p>You can peruse the documentation for things to configure.</p>
+</div></details><h2 id="reexports" class="section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.tokio"><code>pub use <a class="mod" href="../tokio/index.html" title="mod tokio">tokio</a>;</code></div></li><li><div class="item-name" id="reexport.xkbcommon"><code>pub use <a class="mod" href="../xkbcommon/index.html" title="mod xkbcommon">xkbcommon</a>;</code></div></li></ul><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="input/index.html" title="mod pinnacle_api::input">input</a></div><div class="desc docblock-short">Input management.</div></li><li><div class="item-name"><a class="mod" href="layout/index.html" title="mod pinnacle_api::layout">layout</a></div><div class="desc docblock-short">Layout management.</div></li><li><div class="item-name"><a class="mod" href="output/index.html" title="mod pinnacle_api::output">output</a></div><div class="desc docblock-short">Output management.</div></li><li><div class="item-name"><a class="mod" href="pinnacle/index.html" title="mod pinnacle_api::pinnacle">pinnacle</a></div><div class="desc docblock-short">Compositor management.</div></li><li><div class="item-name"><a class="mod" href="process/index.html" title="mod pinnacle_api::process">process</a></div><div class="desc docblock-short">Process management.</div></li><li><div class="item-name"><a class="mod" href="signal/index.html" title="mod pinnacle_api::signal">signal</a></div><div class="desc docblock-short">Compositor signals.</div></li><li><div class="item-name"><a class="mod" href="tag/index.html" title="mod pinnacle_api::tag">tag</a></div><div class="desc docblock-short">Tag management.</div></li><li><div class="item-name"><a class="mod" href="util/index.html" title="mod pinnacle_api::util">util</a></div><div class="desc docblock-short">Utility types.</div></li><li><div class="item-name"><a class="mod" href="window/index.html" title="mod pinnacle_api::window">window</a></div><div class="desc docblock-short">Window management.</div></li></ul><h2 id="macros" class="section-header"><a href="#macros">Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="macro" href="macro.batch_boxed.html" title="macro pinnacle_api::batch_boxed">batch_boxed</a></div><div class="desc docblock-short">A convenience macro to batch API calls in different concrete futures.</div></li><li><div class="item-name"><a class="macro" href="macro.batch_boxed_async.html" title="macro pinnacle_api::batch_boxed_async">batch_boxed_async</a></div><div class="desc docblock-short">The async version of <a href="util/macro.batch_boxed.html" title="macro pinnacle_api::util::batch_boxed"><code>batch_boxed</code></a>.</div></li></ul><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.ApiModules.html" title="struct pinnacle_api::ApiModules">ApiModules</a></div><div class="desc docblock-short">A struct containing static references to all of the configuration structs.</div></li></ul><h2 id="functions" class="section-header"><a href="#functions">Functions</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.connect.html" title="fn pinnacle_api::connect">connect</a></div><div class="desc docblock-short">Connects to Pinnacle and builds the configuration structs.</div></li><li><div class="item-name"><a class="fn" href="fn.listen.html" title="fn pinnacle_api::listen">listen</a></div><div class="desc docblock-short">Listen to Pinnacle for incoming messages.</div></li></ul><h2 id="attributes" class="section-header"><a href="#attributes">Attribute Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="attr" href="attr.config.html" title="attr pinnacle_api::config">config</a></div><div class="desc docblock-short">Transform the annotated function into one used to configure the Pinnacle compositor.</div></li></ul></section></div></main></body></html>
