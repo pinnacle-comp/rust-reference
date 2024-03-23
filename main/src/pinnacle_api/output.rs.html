@@ -589,6 +589,73 @@
 <a href="#588" id="588">588</a>
 <a href="#589" id="589">589</a>
 <a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -603,7 +670,7 @@
 </span><span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::output::{
     <span class="self">self</span>,
-    v0alpha1::{output_service_client::OutputServiceClient, SetLocationRequest},
+    v0alpha1::{output_service_client::OutputServiceClient, SetLocationRequest, SetModeRequest},
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
@@ -891,11 +958,13 @@
         </span><span class="kw">let </span>attempt_set_loc = || -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
             <span class="kw">let </span>other_x = other_props.x<span class="question-mark">?</span>;
             <span class="kw">let </span>other_y = other_props.y<span class="question-mark">?</span>;
-            <span class="kw">let </span>other_width = other_props.pixel_width<span class="question-mark">? </span><span class="kw">as </span>i32;
-            <span class="kw">let </span>other_height = other_props.pixel_height<span class="question-mark">? </span><span class="kw">as </span>i32;
+            <span class="kw">let </span>other_mode = other_props.current_mode<span class="question-mark">?</span>;
+            <span class="kw">let </span>other_width = other_mode.pixel_width <span class="kw">as </span>i32;
+            <span class="kw">let </span>other_height = other_mode.pixel_height <span class="kw">as </span>i32;
 
-            <span class="kw">let </span>self_width = self_props.pixel_width<span class="question-mark">? </span><span class="kw">as </span>i32;
-            <span class="kw">let </span>self_height = self_props.pixel_height<span class="question-mark">? </span><span class="kw">as </span>i32;
+            <span class="kw">let </span>self_mode = self_props.current_mode<span class="question-mark">?</span>;
+            <span class="kw">let </span>self_width = self_mode.pixel_width <span class="kw">as </span>i32;
+            <span class="kw">let </span>self_height = self_mode.pixel_height <span class="kw">as </span>i32;
 
             <span class="kw">use </span>Alignment::<span class="kw-2">*</span>;
 
@@ -947,6 +1016,38 @@
         attempt_set_loc();
     }
 
+    <span class="doccomment">/// Set this output's mode.
+    ///
+    /// If `refresh_rate_millihertz` is provided, Pinnacle will attempt to use the mode with that
+    /// refresh rate. If it is not, Pinnacle will attempt to use the mode with the
+    /// highest refresh rate that matches the given size.
+    ///
+    /// The refresh rate should be given in millihertz. For example, if you want a refresh rate of
+    /// 60Hz, use 60000.
+    ///
+    /// If this output doesn't support the given mode, it will be ignored.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// output.get_focused()?.set_mode(2560, 1440, 144000);
+    /// ```
+    </span><span class="kw">pub fn </span>set_mode(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        pixel_width: u32,
+        pixel_height: u32,
+        refresh_rate_millihertz: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt;,
+    ) {
+        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.output_client.clone();
+        block_on_tokio(client.set_mode(SetModeRequest {
+            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
+            pixel_width: <span class="prelude-val">Some</span>(pixel_width),
+            pixel_height: <span class="prelude-val">Some</span>(pixel_height),
+            refresh_rate_millihz: refresh_rate_millihertz.into(),
+        }))
+        .unwrap();
+    }
+
     <span class="doccomment">/// Get all properties of this output.
     ///
     /// # Examples
@@ -990,9 +1091,31 @@
             model: response.model,
             x: response.x,
             y: response.y,
-            pixel_width: response.pixel_width,
-            pixel_height: response.pixel_height,
-            refresh_rate: response.refresh_rate,
+            current_mode: response.current_mode.and_then(|mode| {
+                <span class="prelude-val">Some</span>(Mode {
+                    pixel_width: mode.pixel_width<span class="question-mark">?</span>,
+                    pixel_height: mode.pixel_height<span class="question-mark">?</span>,
+                    refresh_rate_millihertz: mode.refresh_rate_millihz<span class="question-mark">?</span>,
+                })
+            }),
+            preferred_mode: response.preferred_mode.and_then(|mode| {
+                <span class="prelude-val">Some</span>(Mode {
+                    pixel_width: mode.pixel_width<span class="question-mark">?</span>,
+                    pixel_height: mode.pixel_height<span class="question-mark">?</span>,
+                    refresh_rate_millihertz: mode.refresh_rate_millihz<span class="question-mark">?</span>,
+                })
+            }),
+            modes: response
+                .modes
+                .into_iter()
+                .flat_map(|mode| {
+                    <span class="prelude-val">Some</span>(Mode {
+                        pixel_width: mode.pixel_width<span class="question-mark">?</span>,
+                        pixel_height: mode.pixel_height<span class="question-mark">?</span>,
+                        refresh_rate_millihertz: mode.refresh_rate_millihz<span class="question-mark">?</span>,
+                    })
+                })
+                .collect(),
             physical_width: response.physical_width,
             physical_height: response.physical_height,
             focused: response.focused,
@@ -1054,42 +1177,40 @@
         <span class="self">self</span>.props_async().<span class="kw">await</span>.y
     }
 
-    <span class="doccomment">/// Get this output's screen width in pixels.
+    <span class="doccomment">/// Get this output's current mode.
     ///
-    /// Shorthand for `self.props().pixel_width`.
-    </span><span class="kw">pub fn </span>pixel_width(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().pixel_width
+    /// Shorthand for `self.props().current_mode`.
+    </span><span class="kw">pub fn </span>current_mode(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
+        <span class="self">self</span>.props().current_mode
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::pixel_width`].
-    </span><span class="kw">pub async fn </span>pixel_width_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.pixel_width
+    <span class="doccomment">/// The async version of [`OutputHandle::current_mode`].
+    </span><span class="kw">pub async fn </span>current_mode_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.current_mode
     }
 
-    <span class="doccomment">/// Get this output's screen height in pixels.
+    <span class="doccomment">/// Get this output's preferred mode.
     ///
-    /// Shorthand for `self.props().pixel_height`.
-    </span><span class="kw">pub fn </span>pixel_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().pixel_height
+    /// Shorthand for `self.props().preferred_mode`.
+    </span><span class="kw">pub fn </span>preferred_mode(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
+        <span class="self">self</span>.props().preferred_mode
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::pixel_height`].
-    </span><span class="kw">pub async fn </span>pixel_height_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.pixel_height
+    <span class="doccomment">/// The async version of [`OutputHandle::preferred_mode`].
+    </span><span class="kw">pub async fn </span>preferred_mode_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.preferred_mode
     }
 
-    <span class="doccomment">/// Get this output's refresh rate in millihertz.
+    <span class="doccomment">/// Get all available modes this output supports.
     ///
-    /// For example, 144Hz will be returned as 144000.
-    ///
-    /// Shorthand for `self.props().refresh_rate`.
-    </span><span class="kw">pub fn </span>refresh_rate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().refresh_rate
+    /// Shorthand for `self.props().modes`.
+    </span><span class="kw">pub fn </span>modes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Mode&gt; {
+        <span class="self">self</span>.props().modes
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::refresh_rate`].
-    </span><span class="kw">pub async fn </span>refresh_rate_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.refresh_rate
+    <span class="doccomment">/// The async version of [`OutputHandle::modes`].
+    </span><span class="kw">pub async fn </span>modes_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Mode&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.modes
     }
 
     <span class="doccomment">/// Get this output's physical width in millimeters.
@@ -1148,35 +1269,48 @@
     }
 }
 
+<span class="doccomment">/// A possible output pixel dimension and refresh rate configuration.
+</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash, Default)]
+</span><span class="kw">pub struct </span>Mode {
+    <span class="doccomment">/// The width of the output, in pixels.
+    </span><span class="kw">pub </span>pixel_width: u32,
+    <span class="doccomment">/// The height of the output, in pixels.
+    </span><span class="kw">pub </span>pixel_height: u32,
+    <span class="doccomment">/// The output's refresh rate, in millihertz.
+    ///
+    /// For example, 60Hz is returned as 60000.
+    </span><span class="kw">pub </span>refresh_rate_millihertz: u32,
+}
+
 <span class="doccomment">/// The properties of an output.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 </span><span class="kw">pub struct </span>OutputProperties {
-    <span class="doccomment">/// The make of the output
+    <span class="doccomment">/// The make of the output.
     </span><span class="kw">pub </span>make: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// The model of the output
+    <span class="doccomment">/// The model of the output.
     ///
     /// This is something like "27GL83A" or whatever crap monitor manufacturers name their monitors
     /// these days.
     </span><span class="kw">pub </span>model: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// The x position of the output in the global space
+    <span class="doccomment">/// The x position of the output in the global space.
     </span><span class="kw">pub </span>x: <span class="prelude-ty">Option</span>&lt;i32&gt;,
-    <span class="doccomment">/// The y position of the output in the global space
+    <span class="doccomment">/// The y position of the output in the global space.
     </span><span class="kw">pub </span>y: <span class="prelude-ty">Option</span>&lt;i32&gt;,
-    <span class="doccomment">/// The output's screen width in pixels
-    </span><span class="kw">pub </span>pixel_width: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The output's screen height in pixels
-    </span><span class="kw">pub </span>pixel_height: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The output's refresh rate in millihertz
-    </span><span class="kw">pub </span>refresh_rate: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The output's physical width in millimeters
+    <span class="doccomment">/// The output's current mode.
+    </span><span class="kw">pub </span>current_mode: <span class="prelude-ty">Option</span>&lt;Mode&gt;,
+    <span class="doccomment">/// The output's preferred mode.
+    </span><span class="kw">pub </span>preferred_mode: <span class="prelude-ty">Option</span>&lt;Mode&gt;,
+    <span class="doccomment">/// All available modes the output supports.
+    </span><span class="kw">pub </span>modes: Vec&lt;Mode&gt;,
+    <span class="doccomment">/// The output's physical width in millimeters.
     </span><span class="kw">pub </span>physical_width: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The output's physical height in millimeters
+    <span class="doccomment">/// The output's physical height in millimeters.
     </span><span class="kw">pub </span>physical_height: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// Whether this output is focused or not
+    <span class="doccomment">/// Whether this output is focused or not.
     ///
     /// This is currently implemented as the output with the most recent pointer motion.
     </span><span class="kw">pub </span>focused: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// The tags this output has
+    <span class="doccomment">/// The tags this output has.
     </span><span class="kw">pub </span>tags: Vec&lt;TagHandle&gt;,
 }
 </code></pre></div></section></main></body></html>
