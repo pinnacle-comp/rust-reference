@@ -23,7 +23,7 @@ displayed on every tag instead.</p>
 process.spawn_with_callbacks([<span class="string">"alacritty"</span>], SpawnCallbacks {
     stdout: <span class="prelude-val">Some</span>(Box::new(|line| <span class="macro">println!</span>(<span class="string">"stdout: {line}"</span>))),
     stderr: <span class="prelude-val">Some</span>(Box::new(|line| <span class="macro">println!</span>(<span class="string">"stderr: {line}"</span>))),
-    stdout: <span class="prelude-val">Some</span>(Box::new(|code, msg| <span class="macro">println!</span>(<span class="string">"exit code: {code:?}, exit_msg: {msg}"</span>))),
+    exit: <span class="prelude-val">Some</span>(Box::new(|code, msg| <span class="macro">println!</span>(<span class="string">"exit code: {code:?}, exit_msg: {msg}"</span>))),
 });</code></pre></div>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.spawn_once" class="method"><a class="src rightside" href="../../src/pinnacle_api/process.rs.html#102-104">source</a><h4 class="code-header">pub fn <a href="#method.spawn_once" class="fn">spawn_once</a>(&amp;self, args: impl <a class="trait" href="https://doc.rust-lang.org/1.77.0/core/iter/traits/collect/trait.IntoIterator.html" title="trait core::iter::traits::collect::IntoIterator">IntoIterator</a>&lt;Item = impl <a class="trait" href="https://doc.rust-lang.org/1.77.0/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.77.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;&gt;)</h4></section></summary><div class="docblock"><p>Spawn a process only if it isn’t already running.</p>
 <p>This is useful for startup programs.</p>

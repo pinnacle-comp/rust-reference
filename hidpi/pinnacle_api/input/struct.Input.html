@@ -80,7 +80,7 @@ something, consider using channels or <a href="https://doc.rust-lang.org/1.77.0/
 <h5 id="examples-2"><a class="doc-anchor" href="#examples-2">§</a>Examples</h5>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>pinnacle_api::input::XkbConfig;
 
-input.set_xkb_config(Xkbconfig {
+input.set_xkb_config(XkbConfig {
     layout: <span class="prelude-val">Some</span>(<span class="string">"us,fr,ge"</span>),
     options: <span class="prelude-val">Some</span>(<span class="string">"ctrl:swapcaps,caps:shift"</span>),
     ..Default::default()
