@@ -225,6 +225,13 @@
 <a href="#223" id="223">223</a>
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -315,6 +322,7 @@
 <span class="kw">use </span>output::Output;
 <span class="kw">use </span>pinnacle::Pinnacle;
 <span class="kw">use </span>process::Process;
+<span class="kw">use </span>render::Render;
 <span class="kw">use </span>signal::SignalState;
 <span class="kw">use </span>tag::Tag;
 <span class="kw">use </span>tokio::sync::{
@@ -331,6 +339,7 @@
 <span class="kw">pub mod </span>output;
 <span class="kw">pub mod </span>pinnacle;
 <span class="kw">pub mod </span>process;
+<span class="kw">pub mod </span>render;
 <span class="kw">pub mod </span>signal;
 <span class="kw">pub mod </span>tag;
 <span class="kw">pub mod </span>util;
@@ -348,6 +357,7 @@
 <span class="kw">static </span>TAG: OnceLock&lt;Tag&gt; = OnceLock::new();
 <span class="kw">static </span>SIGNAL: OnceLock&lt;RwLock&lt;SignalState&gt;&gt; = OnceLock::new();
 <span class="kw">static </span>LAYOUT: OnceLock&lt;Layout&gt; = OnceLock::new();
+<span class="kw">static </span>RENDER: OnceLock&lt;Render&gt; = OnceLock::new();
 
 <span class="doccomment">/// A struct containing static references to all of the configuration structs.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -366,6 +376,8 @@
     </span><span class="kw">pub </span>tag: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Tag,
     <span class="doccomment">/// The [`Layout`] struct
     </span><span class="kw">pub </span>layout: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Layout,
+    <span class="doccomment">/// The [`Render`] struct
+    </span><span class="kw">pub </span>render: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Render,
 }
 
 <span class="doccomment">/// Connects to Pinnacle and builds the configuration structs.
@@ -393,6 +405,7 @@
     <span class="kw">let </span>tag = TAG.get_or_init(|| Tag::new(channel.clone()));
     <span class="kw">let </span>output = OUTPUT.get_or_init(|| Output::new(channel.clone()));
     <span class="kw">let </span>layout = LAYOUT.get_or_init(|| Layout::new(channel.clone()));
+    <span class="kw">let </span>render = RENDER.get_or_init(|| Render::new(channel.clone()));
 
     SIGNAL
         .set(RwLock::new(SignalState::new(
@@ -409,6 +422,7 @@
         output,
         tag,
         layout,
+        render,
     };
 
     <span class="prelude-val">Ok</span>((modules, fut_recv))
