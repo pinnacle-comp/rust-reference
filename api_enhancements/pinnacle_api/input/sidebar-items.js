@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Mod","MouseButton","MouseEdge"],"mod":["libinput"],"struct":["Input","XkbConfig"],"trait":["Key"]};

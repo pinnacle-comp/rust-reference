@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FullscreenOrMaximized"],"mod":["rules"],"struct":["Window","WindowHandle","WindowProperties"]};
