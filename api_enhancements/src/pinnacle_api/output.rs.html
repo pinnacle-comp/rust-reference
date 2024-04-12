@@ -740,6 +740,8 @@
 <a href="#738" id="738">738</a>
 <a href="#739" id="739">739</a>
 <a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -901,6 +903,8 @@
 
         <span class="kw">match </span>signal {
             OutputSignal::Connect(f) =&gt; signal_state.output_connect.add_callback(f),
+            OutputSignal::Resize(f) =&gt; signal_state.output_resize.add_callback(f),
+            OutputSignal::Move(f) =&gt; signal_state.output_move.add_callback(f),
         }
     }
 }
