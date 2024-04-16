@@ -1118,6 +1118,30 @@
 <a href="#1116" id="1116">1116</a>
 <a href="#1117" id="1117">1117</a>
 <a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1129,12 +1153,10 @@
 //! This module provides [`Output`], which allows you to get [`OutputHandle`]s for different
 //! connected monitors and set them up.
 
-</span><span class="kw">use </span>std::{
-    collections::{HashMap, HashSet},
-    sync::{Arc, OnceLock},
-};
+</span><span class="kw">use </span>std::sync::OnceLock;
 
 <span class="kw">use </span>futures::FutureExt;
+<span class="kw">use </span>indexmap::IndexMap;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::output::{
     <span class="self">self</span>,
     v0alpha1::{
@@ -1301,18 +1323,29 @@
     ///
     /// This method allows you to specify [`OutputSetup`]s that will be applied to outputs already
     /// connected and that will be connected in the future. It handles the setting of modes,
-    /// scales, tags, and locations of your outputs.
+    /// scales, tags, and more.
+    ///
+    /// See [`OutputSetup`] for more information.
     ///
     /// # Examples
     ///
     /// ```
-    /// // TODO:
+    /// use pinnacle_api::output::OutputSetup;
+    ///
+    /// output.setup([
+    ///     // Give all outputs tags 1 through 5
+    ///     OutputSetup::new_with_matcher(|_| true).with_tags(["1", "2", "3", "4", "5"]),
+    ///     // Give outputs with a preferred mode of 4K a scale of 2.0
+    ///     OutputSetup::new_with_matcher(|op| op.preferred_mode().unwrap().pixel_width == 2160)
+    ///         .with_scale(2.0),
+    ///     // Additionally give eDP-1 tags 6 and 7
+    ///     OutputSetup::new("eDP-1").with_tags(["6", "7"]),
+    /// ]);
     /// ```
     </span><span class="kw">pub fn </span>setup(<span class="kw-2">&amp;</span><span class="self">self</span>, setups: <span class="kw">impl </span>IntoIterator&lt;Item = OutputSetup&gt;) {
-        <span class="kw">let </span>setups = setups.into_iter().map(Arc::new).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="comment">// let setups_clone = setups.clone();
+        <span class="kw">let </span>setups = setups.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-        </span><span class="kw">let </span>tag_mod = <span class="self">self</span>.api.get().unwrap().tag.clone();
+        <span class="kw">let </span>tag_mod = <span class="self">self</span>.api.get().unwrap().tag.clone();
         <span class="kw">let </span>apply_setups = <span class="kw">move </span>|output: <span class="kw-2">&amp;</span>OutputHandle| {
             <span class="kw">for </span>setup <span class="kw">in </span>setups.iter() {
                 <span class="kw">if </span>setup.output.matches(output) {
@@ -1324,22 +1357,57 @@
             }
         };
 
-        <span class="kw">let </span>outputs = <span class="self">self</span>.get_all();
-        <span class="kw">for </span>output <span class="kw">in </span>outputs {
-            apply_setups(<span class="kw-2">&amp;</span>output);
-        }
-
-        <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|output| {
+        <span class="self">self</span>.connect_for_all(<span class="kw">move </span>|output| {
             apply_setups(output);
-        })));
+        });
     }
 
-    <span class="kw">pub fn </span>setup_locs(
+    <span class="doccomment">/// Specify locations for outputs and when they should be laid out.
+    ///
+    /// This method allows you to specify locations for outputs, either as a specific point
+    /// or relative to another output.
+    ///
+    /// This will relayout outputs according to the given [`UpdateLocsOn`] flags.
+    ///
+    /// Layouts not specified in `setup` or that have cyclic relative-to outputs will be
+    /// laid out in a line to the right of the rightmost output.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use pinnacle_api::output::UpdateLocsOn;
+    /// use pinnacle_api::output::OutputLoc;
+    ///
+    /// output.setup_locs(
+    ///     // Relayout all outputs when outputs are connected, disconnected, and resized
+    ///     UpdateLocsOn::all(),
+    ///     [
+    ///         // Anchor eDP-1 to (0, 0) so other outputs can be placed relative to it
+    ///         ("eDP-1", OutputLoc::Point(0, 0)),
+    ///         // Place HDMI-A-1 below it centered
+    ///         (
+    ///             "HDMI-A-1",
+    ///             OutputLoc::relative_to("eDP-1", Alignment::BottomAlignCenter),
+    ///         ),
+    ///         // Place HDMI-A-2 below HDMI-A-1.
+    ///         // Additionally, if HDMI-A-1 isn't connected, place it below eDP-1 instead.
+    ///         (
+    ///             "HDMI-A-2",
+    ///             OutputLoc::relative_to_with_fallbacks(
+    ///                 "HDMI-A-1",
+    ///                 Alignment::BottomAlignCenter,
+    ///                 [("eDP-1", Alignment::BottomAlignCenter)],
+    ///             ),
+    ///         ),
+    ///     ]
+    /// );
+    /// ```
+    </span><span class="kw">pub fn </span>setup_locs(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         update_locs_on: UpdateLocsOn,
         setup: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, OutputLoc)&gt;,
     ) {
-        <span class="kw">let </span>setup: HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = setup
+        <span class="kw">let </span>setup: IndexMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = setup
             .into_iter()
             .map(|(name, align)| (name.to_string(), align))
             .collect();
@@ -1350,43 +1418,14 @@
 
             <span class="kw">let </span><span class="kw-2">mut </span>rightmost_output_and_x: <span class="prelude-ty">Option</span>&lt;(OutputHandle, i32)&gt; = <span class="prelude-val">None</span>;
 
-            <span class="comment">// `OutputHandle`'s Hash impl only hashes the string, therefore this is a false positive
-            </span><span class="attr">#[allow(clippy::mutable_key_type)]
-            </span><span class="kw">let </span><span class="kw-2">mut </span>placed_outputs = HashSet::&lt;OutputHandle&gt;::new();
+            <span class="kw">let </span><span class="kw-2">mut </span>placed_outputs = Vec::&lt;OutputHandle&gt;::new();
 
             <span class="comment">// Place outputs with OutputSetupLoc::Point
             </span><span class="kw">for </span>output <span class="kw">in </span>outputs.iter() {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>OutputLoc::Point(x, y)) = setup.get(output.name()) {
                     output.set_location(x, y);
 
-                    placed_outputs.insert(output.clone());
-                    <span class="kw">let </span>props = output.props();
-                    <span class="kw">let </span>x = props.x.unwrap();
-                    <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
-                    <span class="kw">if </span>rightmost_output_and_x.is_none()
-                        || rightmost_output_and_x
-                            .as_ref()
-                            .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
-                    {
-                        rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
-                    }
-                }
-            }
-
-            <span class="comment">// Place everything without an explicit location to the right of the rightmost output
-            </span><span class="kw">for </span>output <span class="kw">in </span>outputs
-                .iter()
-                .filter(|op| !placed_outputs.contains(op))
-                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-            {
-                <span class="kw">if </span>setup.get(output.name()).is_none() {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>((rm_op, <span class="kw">_</span>)) = rightmost_output_and_x.as_ref() {
-                        output.set_loc_adj_to(rm_op, Alignment::RightAlignTop);
-                    } <span class="kw">else </span>{
-                        output.set_location(<span class="number">0</span>, <span class="number">0</span>);
-                    }
-
-                    placed_outputs.insert(output.clone());
+                    placed_outputs.push(output.clone());
                     <span class="kw">let </span>props = output.props();
                     <span class="kw">let </span>x = props.x.unwrap();
                     <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
@@ -1401,16 +1440,21 @@
             }
 
             <span class="comment">// Attempt to place relative outputs
+            //
+            // Because this code is hideous I'm gonna comment what it does
             </span><span class="kw">while let </span><span class="prelude-val">Some</span>((output, relative_to, alignment)) =
                 setup.iter().find_map(|(setup_op_name, loc)| {
-                    outputs
+                    <span class="comment">// For every location setup,
+                    // find the first unplaced output it refers to that has a relative location
+                    </span>outputs
                         .iter()
                         .find(|setup_op| {
                             !placed_outputs.contains(setup_op) &amp;&amp; setup_op.name() == setup_op_name
                         })
                         .and_then(|setup_op| <span class="kw">match </span>loc {
                             OutputLoc::RelativeTo(relative_tos) =&gt; {
-                                relative_tos.iter().find_map(|(rel_name, align)| {
+                                <span class="comment">// Return the first placed output in the relative-to list
+                                </span>relative_tos.iter().find_map(|(rel_name, align)| {
                                     placed_outputs.iter().find_map(|pl_op| {
                                         (pl_op.name() == rel_name)
                                             .then_some((setup_op, pl_op, align))
@@ -1423,7 +1467,7 @@
             {
                 output.set_loc_adj_to(relative_to, <span class="kw-2">*</span>alignment);
 
-                placed_outputs.insert(output.clone());
+                placed_outputs.push(output.clone());
                 <span class="kw">let </span>props = output.props();
                 <span class="kw">let </span>x = props.x.unwrap();
                 <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
@@ -1436,28 +1480,19 @@
                 }
             }
 
-            <span class="comment">// dbg!(&amp;placed_outputs);
-            // dbg!(&amp;outputs);
-
-            // Place all remaining outputs right of the rightmost one
+            <span class="comment">// Place all remaining outputs right of the rightmost one
             </span><span class="kw">for </span>output <span class="kw">in </span>outputs
                 .iter()
-                .filter(|op| {
-                    <span class="comment">// println!("CHECKING {}", op.name());
-                    </span>!placed_outputs.contains(op)
-                })
+                .filter(|op| !placed_outputs.contains(op))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
             {
-                <span class="comment">// println!("ATTEMPTING TO PLACE {}", output.name());
-                </span><span class="kw">if let </span><span class="prelude-val">Some</span>((rm_op, <span class="kw">_</span>)) = rightmost_output_and_x.as_ref() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>((rm_op, <span class="kw">_</span>)) = rightmost_output_and_x.as_ref() {
                     output.set_loc_adj_to(rm_op, Alignment::RightAlignTop);
-                    <span class="comment">// println!("SET LOC FOR {} TO RIGHTMOST, REMAINING", output.name());
-                </span>} <span class="kw">else </span>{
+                } <span class="kw">else </span>{
                     output.set_location(<span class="number">0</span>, <span class="number">0</span>);
-                    <span class="comment">// println!("SET LOC FOR {} TO (0, 0), REMAINING", output.name());
-                </span>}
+                }
 
-                placed_outputs.insert(output.clone());
+                placed_outputs.push(output.clone());
                 <span class="kw">let </span>props = output.props();
                 <span class="kw">let </span>x = props.x.unwrap();
                 <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
@@ -1477,8 +1512,10 @@
         <span class="kw">let </span>layout_outputs_clone2 = layout_outputs.clone();
 
         <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::CONNECT) {
-            <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|<span class="kw">_</span>| {
+            <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|output| {
+                <span class="macro">println!</span>(<span class="string">"GOT CONNECT SIGNAL FOR {}"</span>, output.name());
                 layout_outputs_clone2();
+                <span class="macro">println!</span>(<span class="string">"FINISHED CONNECT SIGNAL FOR {}"</span>, output.name());
             })));
         }
 
@@ -1497,7 +1534,7 @@
 }
 
 <span class="doccomment">/// A matcher for outputs.
-</span><span class="kw">pub enum </span>OutputMatcher {
+</span><span class="kw">enum </span>OutputMatcher {
     <span class="doccomment">/// Match outputs by name.
     </span>Name(String),
     <span class="doccomment">/// Match outputs using a function that returns a bool.
@@ -1506,32 +1543,11 @@
 
 <span class="kw">impl </span>OutputMatcher {
     <span class="doccomment">/// Returns whether this matcher matches the given output.
-    </span><span class="kw">pub fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; bool {
+    </span><span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; bool {
         <span class="kw">match </span><span class="self">self </span>{
             OutputMatcher::Name(name) =&gt; output.name() == name,
             OutputMatcher::Fn(matcher) =&gt; matcher(output),
         }
-    }
-}
-
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>OutputMatcher {
-    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Name(value.to_string())
-    }
-}
-
-<span class="kw">impl </span>From&lt;String&gt; <span class="kw">for </span>OutputMatcher {
-    <span class="kw">fn </span>from(value: String) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Name(value)
-    }
-}
-
-<span class="kw">impl</span>&lt;F&gt; From&lt;F&gt; <span class="kw">for </span>OutputMatcher
-<span class="kw">where
-    </span>F: <span class="kw">for</span>&lt;<span class="lifetime">'a</span>&gt; Fn(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>OutputHandle) -&gt; bool + Send + Sync + <span class="lifetime">'static</span>,
-{
-    <span class="kw">fn </span>from(value: F) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Fn(Box::new(value))
     }
 }
 
@@ -1635,30 +1651,62 @@
 <span class="kw">impl </span>OutputLoc {
     <span class="doccomment">/// Creates an `OutputLoc` that will place outputs relative to
     /// the output with the given name using the given alignment.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use pinnacle_api::output::OutputLoc;
+    /// use pinnacle_api::output::Alignment;
+    ///
+    /// let output_loc = OutputLoc::relative_to("HDMI-1", Alignment::LeftAlignBottom);
+    /// ```
     </span><span class="kw">pub fn </span>relative_to(name: <span class="kw">impl </span>ToString, alignment: Alignment) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::RelativeTo(<span class="macro">vec!</span>[(name.to_string(), alignment)])
     }
 
-    <span class="doccomment">/// Creates an `OutputLoc` from multiple (output_name, alignment) pairs
-    /// that serve as fallbacks.
+    <span class="doccomment">/// Like [`OutputLoc::relative_to`] but will additionally try to place outputs
+    /// relative to the specified fallbacks if the given output is not connected.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use pinnacle_api::output::OutputLoc;
+    /// use pinnacle_api::output::Alignment;
+    ///
+    /// let output_loc = OutputLoc::relative_to_with_fallbacks(
+    ///     "HDMI-1",
+    ///     Alignment::LeftAlignBottom,
+    ///     [
+    ///         ("HDMI-2", Alignment::LeftAlignBottom),
+    ///         ("HDMI-3", Alignment::LeftAlignBottom),
+    ///     ],
+    /// );
+    /// ```
     </span><span class="kw">pub fn </span>relative_to_with_fallbacks(
-        relatives: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, Alignment)&gt;,
+        name: <span class="kw">impl </span>ToString,
+        alignment: Alignment,
+        fallbacks: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, Alignment)&gt;,
     ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::RelativeTo(
-            relatives
+        <span class="kw">let </span><span class="kw-2">mut </span>relatives = <span class="macro">vec!</span>[(name.to_string(), alignment)];
+        relatives.extend(
+            fallbacks
                 .into_iter()
-                .map(|(name, align)| (name.to_string(), align))
-                .collect(),
-        )
+                .map(|(name, align)| (name.to_string(), align)),
+        );
+        <span class="self">Self</span>::RelativeTo(relatives)
     }
 }
 
 <span class="macro">bitflags::bitflags! </span>{
-    <span class="attr">#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
+    <span class="doccomment">/// Flags for when [`Output::setup_locs`] should relayout outputs.
+    </span><span class="attr">#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
     </span><span class="kw">pub struct </span>UpdateLocsOn: u8 {
-        <span class="kw">const </span>CONNECT = <span class="number">1</span>;
-        <span class="kw">const </span>DISCONNECT = <span class="number">1 </span>&lt;&lt; <span class="number">1</span>;
-        <span class="kw">const </span>RESIZE = <span class="number">1 </span>&lt;&lt; <span class="number">2</span>;
+        <span class="doccomment">/// Relayout when an output is connected.
+        </span><span class="kw">const </span>CONNECT = <span class="number">1</span>;
+        <span class="doccomment">/// Relayout when an output is disconnected.
+        </span><span class="kw">const </span>DISCONNECT = <span class="number">1 </span>&lt;&lt; <span class="number">1</span>;
+        <span class="doccomment">/// Relayout when an output is resized, either through a scale or mode change.
+        </span><span class="kw">const </span>RESIZE = <span class="number">1 </span>&lt;&lt; <span class="number">2</span>;
     }
 }
 
