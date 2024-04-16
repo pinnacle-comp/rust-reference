@@ -420,6 +420,19 @@
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
 //!
 //! Your config can connect to various compositor signals that allow you to, for example, do
@@ -434,7 +447,7 @@
     collections::{btree_map, BTreeMap},
     sync::{
         atomic::{AtomicU32, Ordering},
-        Arc,
+        Arc, OnceLock,
     },
 };
 
@@ -449,7 +462,7 @@
 <span class="kw">use </span>tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 <span class="kw">use </span>tonic::{transport::Channel, Streaming};
 
-<span class="kw">use crate</span>::{block_on_tokio, output::OutputHandle, window::WindowHandle, OUTPUT, WINDOW};
+<span class="kw">use crate</span>::{block_on_tokio, output::OutputHandle, window::WindowHandle, ApiModules};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>Signal {
     <span class="kw">type </span>Callback;
@@ -522,6 +535,7 @@
                                 .into_inner()
                         },
                         <span class="macro-nonterminal">$on_resp</span>,
+                        <span class="self">self</span>.api.get().unwrap().clone(),
                     );
 
                     <span class="self">self</span>.callback_sender.replace(channels.callback_sender);
@@ -552,10 +566,9 @@
             enum_name = Connect,
             callback_type = SingleOutputFn,
             client_request = output_connect,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = response.output_name {
-                    <span class="kw">let </span>output = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
-                    <span class="kw">let </span>handle = output.new_handle(output_name);
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
@@ -570,10 +583,9 @@
             enum_name = Disconnect,
             callback_type = SingleOutputFn,
             client_request = output_disconnect,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = response.output_name {
-                    <span class="kw">let </span>output = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
-                    <span class="kw">let </span>handle = output.new_handle(output_name);
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
@@ -588,10 +600,9 @@
             enum_name = Resize,
             callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle, u32, u32) + Send + <span class="lifetime">'static</span>&gt;,
             client_request = output_resize,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = <span class="kw-2">&amp;</span>response.output_name {
-                    <span class="kw">let </span>output = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
-                    <span class="kw">let </span>handle = output.new_handle(output_name);
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle, response.logical_width(), response.logical_height())
@@ -606,10 +617,9 @@
             enum_name = Move,
             callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle, i32, i32) + Send + <span class="lifetime">'static</span>&gt;,
             client_request = output_move,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = <span class="kw-2">&amp;</span>response.output_name {
-                    <span class="kw">let </span>output = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
-                    <span class="kw">let </span>handle = output.new_handle(output_name);
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle, response.x(), response.y())
@@ -627,10 +637,9 @@
             enum_name = PointerEnter,
             callback_type = SingleWindowFn,
             client_request = window_pointer_enter,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(window_id) = response.window_id {
-                    <span class="kw">let </span>window = WINDOW.get().expect(<span class="string">"WINDOW doesn't exist"</span>);
-                    <span class="kw">let </span>handle = window.new_handle(window_id);
+                    <span class="kw">let </span>handle = api.window.new_handle(window_id);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
@@ -645,10 +654,9 @@
             enum_name = PointerLeave,
             callback_type = SingleWindowFn,
             client_request = window_pointer_leave,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(window_id) = response.window_id {
-                    <span class="kw">let </span>window = WINDOW.get().expect(<span class="string">"WINDOW doesn't exist"</span>);
-                    <span class="kw">let </span>handle = window.new_handle(window_id);
+                    <span class="kw">let </span>handle = api.window.new_handle(window_id);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
@@ -671,6 +679,12 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_leave: SignalData&lt;WindowPointerLeave&gt;,
 }
 
+<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>SignalState {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"SignalState"</span>).finish()
+    }
+}
+
 <span class="kw">impl </span>SignalState {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
         channel: Channel,
@@ -686,6 +700,15 @@
             window_pointer_leave: SignalData::new(client.clone(), fut_sender.clone()),
         }
     }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
+        <span class="self">self</span>.output_connect.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.output_disconnect.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.output_resize.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.output_move.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.window_pointer_enter.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.window_pointer_leave.api.set(api.clone()).unwrap();
+    }
 }
 
 <span class="attr">#[derive(Default, Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -693,6 +716,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SignalData&lt;S: Signal&gt; {
     client: SignalServiceClient&lt;Channel&gt;,
+    api: OnceLock&lt;ApiModules&gt;,
     fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
     callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;(SignalConnId, S::Callback)&gt;&gt;,
     remove_callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;SignalConnId&gt;&gt;,
@@ -708,6 +732,7 @@
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             client,
+            api: OnceLock::new(),
             fut_sender,
             callback_sender: Default::default(),
             remove_callback_sender: Default::default(),
@@ -729,13 +754,14 @@
     callback_count: Arc&lt;AtomicU32&gt;,
     to_in_stream: T,
     <span class="kw-2">mut </span>on_response: O,
+    api: ApiModules,
 ) -&gt; ConnectSignalChannels&lt;F&gt;
 <span class="kw">where
     </span>Req: SignalRequest + Send + <span class="lifetime">'static</span>,
     Resp: Send + <span class="lifetime">'static</span>,
     F: Send + <span class="lifetime">'static</span>,
     T: FnOnce(UnboundedReceiverStream&lt;Req&gt;) -&gt; Streaming&lt;Resp&gt;,
-    O: FnMut(Resp, btree_map::ValuesMut&lt;<span class="lifetime">'_</span>, SignalConnId, F&gt;) + Send + <span class="lifetime">'static</span>,
+    O: FnMut(Resp, btree_map::ValuesMut&lt;<span class="lifetime">'_</span>, SignalConnId, F&gt;, <span class="kw-2">&amp;</span>ApiModules) + Send + <span class="lifetime">'static</span>,
 {
     <span class="kw">let </span>(control_sender, recv) = unbounded_channel::&lt;Req&gt;();
     <span class="kw">let </span>out_stream = UnboundedReceiverStream::new(recv);
@@ -768,7 +794,7 @@
 
                     <span class="kw">match </span>response {
                         <span class="prelude-val">Ok</span>(response) =&gt; {
-                            on_response(response, callbacks.values_mut());
+                            on_response(response, callbacks.values_mut(), <span class="kw-2">&amp;</span>api);
 
                             control_sender
                                 .send(Req::from_control(StreamControl::Ready))

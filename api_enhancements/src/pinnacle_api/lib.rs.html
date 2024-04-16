@@ -230,6 +230,14 @@
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -299,12 +307,7 @@
 //!     // `modules` is now available in the function body.
 //!     // You can deconstruct `ApiModules` to get all the config structs.
 //!     let ApiModules {
-//!         pinnacle,
-//!         process,
-//!         window,
-//!         input,
-//!         output,
-//!         tag,
+//!         ..
 //!     } = modules;
 //! }
 //! ```
@@ -312,7 +315,7 @@
 //! ## 5. Begin crafting your config!
 //! You can peruse the documentation for things to configure.
 
-</span><span class="kw">use </span>std::{sync::OnceLock, time::Duration};
+</span><span class="kw">use </span>std::{sync::Arc, time::Duration};
 
 <span class="kw">use </span>futures::{future::BoxFuture, Future, StreamExt};
 <span class="kw">use </span>input::Input;
@@ -347,18 +350,9 @@
 <span class="kw">pub use </span>tokio;
 <span class="kw">pub use </span>xkbcommon;
 
-<span class="kw">static </span>PINNACLE: OnceLock&lt;Pinnacle&gt; = OnceLock::new();
-<span class="kw">static </span>PROCESS: OnceLock&lt;Process&gt; = OnceLock::new();
-<span class="kw">static </span>WINDOW: OnceLock&lt;Window&gt; = OnceLock::new();
-<span class="kw">static </span>INPUT: OnceLock&lt;Input&gt; = OnceLock::new();
-<span class="kw">static </span>OUTPUT: OnceLock&lt;Output&gt; = OnceLock::new();
-<span class="kw">static </span>TAG: OnceLock&lt;Tag&gt; = OnceLock::new();
-<span class="kw">static </span>SIGNAL: OnceLock&lt;RwLock&lt;SignalState&gt;&gt; = OnceLock::new();
-<span class="kw">static </span>LAYOUT: OnceLock&lt;Layout&gt; = OnceLock::new();
-<span class="kw">static </span>RENDER: OnceLock&lt;Render&gt; = OnceLock::new();
-
 <span class="doccomment">/// A struct containing static references to all of the configuration structs.
-</span><span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="attr">#[non_exhaustive]
+#[derive(Clone)]
 </span><span class="kw">pub struct </span>ApiModules {
     <span class="doccomment">/// The [`Pinnacle`] struct
     </span><span class="kw">pub </span>pinnacle: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Pinnacle,
@@ -376,6 +370,23 @@
     </span><span class="kw">pub </span>layout: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Layout,
     <span class="doccomment">/// The [`Render`] struct
     </span><span class="kw">pub </span>render: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Render,
+    signal: Arc&lt;RwLock&lt;SignalState&gt;&gt;,
+}
+
+<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>ApiModules {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"ApiModules"</span>)
+            .field(<span class="string">"pinnacle"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.pinnacle)
+            .field(<span class="string">"process"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.process)
+            .field(<span class="string">"window"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.window)
+            .field(<span class="string">"input"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.input)
+            .field(<span class="string">"output"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.output)
+            .field(<span class="string">"tag"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.tag)
+            .field(<span class="string">"layout"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.layout)
+            .field(<span class="string">"render"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.render)
+            .field(<span class="string">"signal"</span>, <span class="kw-2">&amp;</span><span class="string">"..."</span>)
+            .finish()
+    }
 }
 
 <span class="doccomment">/// Connects to Pinnacle and builds the configuration structs.
@@ -396,19 +407,19 @@
 
     <span class="kw">let </span>(fut_sender, fut_recv) = unbounded_channel::&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
 
-    <span class="kw">let </span>pinnacle = PINNACLE.get_or_init(|| Pinnacle::new(channel.clone()));
-    <span class="kw">let </span>process = PROCESS.get_or_init(|| Process::new(channel.clone(), fut_sender.clone()));
-    <span class="kw">let </span>window = WINDOW.get_or_init(|| Window::new(channel.clone()));
-    <span class="kw">let </span>input = INPUT.get_or_init(|| Input::new(channel.clone(), fut_sender.clone()));
-    <span class="kw">let </span>tag = TAG.get_or_init(|| Tag::new(channel.clone()));
-    <span class="kw">let </span>output = OUTPUT.get_or_init(|| Output::new(channel.clone()));
-    <span class="kw">let </span>layout = LAYOUT.get_or_init(|| Layout::new(channel.clone()));
-    <span class="kw">let </span>render = RENDER.get_or_init(|| Render::new(channel.clone()));
-
-    <span class="kw">let _ </span>= SIGNAL.set(RwLock::new(SignalState::new(
+    <span class="kw">let </span>signal = Arc::new(RwLock::new(SignalState::new(
         channel.clone(),
         fut_sender.clone(),
     )));
+
+    <span class="kw">let </span>pinnacle = Box::leak(Box::new(Pinnacle::new(channel.clone())));
+    <span class="kw">let </span>process = Box::leak(Box::new(Process::new(channel.clone(), fut_sender.clone())));
+    <span class="kw">let </span>window = Box::leak(Box::new(Window::new(channel.clone())));
+    <span class="kw">let </span>input = Box::leak(Box::new(Input::new(channel.clone(), fut_sender.clone())));
+    <span class="kw">let </span>output = Box::leak(Box::new(Output::new(channel.clone())));
+    <span class="kw">let </span>tag = Box::leak(Box::new(Tag::new(channel.clone())));
+    <span class="kw">let </span>render = Box::leak(Box::new(Render::new(channel.clone())));
+    <span class="kw">let </span>layout = Box::leak(Box::new(Layout::new(channel.clone())));
 
     <span class="kw">let </span>modules = ApiModules {
         pinnacle,
@@ -419,7 +430,14 @@
         tag,
         layout,
         render,
+        signal: signal.clone(),
     };
+
+    window.finish_init(modules.clone());
+    output.finish_init(modules.clone());
+    tag.finish_init(modules.clone());
+    layout.finish_init(modules.clone());
+    signal.read().<span class="kw">await</span>.finish_init(modules.clone());
 
     <span class="prelude-val">Ok</span>((modules, fut_recv))
 }
@@ -431,15 +449,13 @@
 ///
 /// This function is inserted at the end of your config through the [`config`] macro.
 /// You should use the macro instead of this function directly.
-</span><span class="kw">pub async fn </span>listen(fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
+</span><span class="kw">pub async fn </span>listen(api: ApiModules, fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
     <span class="kw">let </span><span class="kw-2">mut </span>fut_recv = UnboundedReceiverStream::new(fut_recv);
-
-    <span class="kw">let </span>pinnacle = PINNACLE.get().unwrap();
 
     <span class="kw">let </span>keepalive = <span class="kw">async move </span>{
         <span class="kw">loop </span>{
             tokio::time::sleep(Duration::from_secs(<span class="number">60</span>)).<span class="kw">await</span>;
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = pinnacle.ping().<span class="kw">await </span>{
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = api.pinnacle.ping().<span class="kw">await </span>{
                 <span class="macro">eprintln!</span>(<span class="string">"Failed to ping compositor: {err}"</span>);
                 std::process::exit(<span class="number">1</span>);
             }

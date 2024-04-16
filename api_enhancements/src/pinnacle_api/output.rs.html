@@ -1053,6 +1053,67 @@
 <a href="#1051" id="1051">1051</a>
 <a href="#1052" id="1052">1052</a>
 <a href="#1053" id="1053">1053</a>
+<a href="#1054" id="1054">1054</a>
+<a href="#1055" id="1055">1055</a>
+<a href="#1056" id="1056">1056</a>
+<a href="#1057" id="1057">1057</a>
+<a href="#1058" id="1058">1058</a>
+<a href="#1059" id="1059">1059</a>
+<a href="#1060" id="1060">1060</a>
+<a href="#1061" id="1061">1061</a>
+<a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1064,7 +1125,10 @@
 //! This module provides [`Output`], which allows you to get [`OutputHandle`]s for different
 //! connected monitors and set them up.
 
-</span><span class="kw">use </span>std::{collections::HashSet, sync::Arc};
+</span><span class="kw">use </span>std::{
+    collections::{HashMap, HashSet},
+    sync::{Arc, OnceLock},
+};
 
 <span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::output::{
@@ -1079,9 +1143,9 @@
 <span class="kw">use crate</span>::{
     block_on_tokio,
     signal::{OutputSignal, SignalHandle},
-    tag::TagHandle,
+    tag::{Tag, TagHandle},
     util::Batch,
-    OUTPUT, SIGNAL, TAG,
+    ApiModules,
 };
 
 <span class="doccomment">/// A struct that allows you to get handles to connected outputs and set them up.
@@ -1090,19 +1154,26 @@
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Output {
     output_client: OutputServiceClient&lt;Channel&gt;,
+    api: OnceLock&lt;ApiModules&gt;,
 }
 
 <span class="kw">impl </span>Output {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             output_client: OutputServiceClient::new(channel.clone()),
+            api: OnceLock::new(),
         }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
+        <span class="self">self</span>.api.set(api).unwrap();
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; OutputHandle {
         OutputHandle {
             name: name.into(),
             output_client: <span class="self">self</span>.output_client.clone(),
+            api: <span class="self">self</span>.api.get().unwrap().clone(),
         }
     }
 
@@ -1202,7 +1273,7 @@
             for_all(<span class="kw-2">&amp;</span>output);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(SIGNAL.get().expect(<span class="string">"SIGNAL doesn't exist"</span>).write());
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(<span class="self">self</span>.api.get().unwrap().signal.write());
         signal_state.output_connect.add_callback(Box::new(for_all));
     }
 
@@ -1212,7 +1283,7 @@
     /// You can pass in an [`OutputSignal`] along with a callback and it will get run
     /// with the necessary arguments every time a signal of that type is received.
     </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: OutputSignal) -&gt; SignalHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(SIGNAL.get().expect(<span class="string">"SIGNAL doesn't exist"</span>).write());
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(<span class="self">self</span>.api.get().unwrap().signal.write());
 
         <span class="kw">match </span>signal {
             OutputSignal::Connect(f) =&gt; signal_state.output_connect.add_callback(f),
@@ -1235,24 +1306,32 @@
     /// ```
     </span><span class="kw">pub fn </span>setup(<span class="kw-2">&amp;</span><span class="self">self</span>, setups: <span class="kw">impl </span>IntoIterator&lt;Item = OutputSetup&gt;) {
         <span class="kw">let </span>setups = setups.into_iter().map(Arc::new).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="kw">let </span>setups_clone = setups.clone();
+        <span class="comment">// let setups_clone = setups.clone();
 
-        <span class="kw">let </span>apply_all_but_loc = <span class="kw">move </span>|output: <span class="kw-2">&amp;</span>OutputHandle| {
+        </span><span class="kw">let </span>tag_mod = <span class="self">self</span>.api.get().unwrap().tag.clone();
+        <span class="kw">let </span>apply_setups = <span class="kw">move </span>|output: <span class="kw-2">&amp;</span>OutputHandle| {
             <span class="kw">for </span>setup <span class="kw">in </span>setups.iter() {
                 <span class="kw">if </span>setup.output.matches(output) {
-                    setup.apply_all_but_loc(output);
+                    setup.apply(output, <span class="kw-2">&amp;</span>tag_mod);
                 }
             }
         };
 
         <span class="kw">let </span>outputs = <span class="self">self</span>.get_all();
         <span class="kw">for </span>output <span class="kw">in </span>outputs {
-            apply_all_but_loc(<span class="kw-2">&amp;</span>output);
+            apply_setups(<span class="kw-2">&amp;</span>output);
         }
 
+        <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|output| {
+            apply_setups(output);
+        })));
+    }
+
+    <span class="kw">pub fn </span>setup_locs(<span class="kw-2">&amp;</span><span class="self">self</span>, setup: OutputLocSetup) {
+        <span class="kw">let </span>api = <span class="self">self</span>.api.get().unwrap().clone();
         <span class="kw">let </span>layout_outputs = <span class="kw">move </span>|| {
             <span class="kw">let </span>setups = setups_clone.clone().into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-            <span class="kw">let </span>outputs = OUTPUT.get().unwrap().get_all();
+            <span class="kw">let </span>outputs = api.output.get_all();
 
             <span class="kw">let </span><span class="kw-2">mut </span>rightmost_output_and_x: <span class="prelude-ty">Option</span>&lt;(OutputHandle, i32)&gt; = <span class="prelude-val">None</span>;
 
@@ -1264,7 +1343,7 @@
             </span><span class="kw">for </span>output <span class="kw">in </span>outputs.iter() {
                 <span class="kw">for </span>setup <span class="kw">in </span>setups.iter() {
                     <span class="kw">if </span>setup.output.matches(output) {
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(OutputSetupLoc::Point(x, y)) = setup.loc {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(OutputLoc::Point(x, y)) = setup.loc {
                             output.set_location(x, y);
 
                             placed_outputs.insert(output.clone());
@@ -1318,7 +1397,7 @@
                 outputs.iter().find_map(|op| {
                     <span class="kw">if </span>!placed_outputs.contains(op) &amp;&amp; setup.output.matches(op) {
                         <span class="kw">match </span><span class="kw-2">&amp;</span>setup.loc {
-                            <span class="prelude-val">Some</span>(OutputSetupLoc::RelativeTo(matcher, alignment)) =&gt; {
+                            <span class="prelude-val">Some</span>(OutputLoc::RelativeTo(matcher, alignment)) =&gt; {
                                 <span class="kw">let </span>first_matched_op = outputs
                                     .iter()
                                     .find(|o| matcher.matches(o) &amp;&amp; placed_outputs.contains(o))<span class="question-mark">?</span>;
@@ -1387,8 +1466,6 @@
         <span class="kw">let </span>layout_outputs_clone2 = layout_outputs.clone();
 
         <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|output| {
-            <span class="macro">println!</span>(<span class="string">"GOT CONNECTION FOR OUTPUT {}"</span>, output.name());
-            apply_all_but_loc(output);
             layout_outputs_clone2();
         })));
 
@@ -1406,7 +1483,7 @@
 </span><span class="kw">pub enum </span>OutputMatcher {
     <span class="doccomment">/// Match outputs by name.
     </span>Name(String),
-    <span class="doccomment">/// Match outputs by a function returning a bool.
+    <span class="doccomment">/// Match outputs using a function that returns a bool.
     </span>Fn(Box&lt;<span class="kw">dyn </span>Fn(<span class="kw-2">&amp;</span>OutputHandle) -&gt; bool + Send + Sync&gt;),
 }
 
@@ -1417,6 +1494,27 @@
             OutputMatcher::Name(name) =&gt; output.name() == name,
             OutputMatcher::Fn(matcher) =&gt; matcher(output),
         }
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>OutputMatcher {
+    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Name(value.to_string())
+    }
+}
+
+<span class="kw">impl </span>From&lt;String&gt; <span class="kw">for </span>OutputMatcher {
+    <span class="kw">fn </span>from(value: String) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Name(value)
+    }
+}
+
+<span class="kw">impl</span>&lt;F&gt; From&lt;F&gt; <span class="kw">for </span>OutputMatcher
+<span class="kw">where
+    </span>F: <span class="kw">for</span>&lt;<span class="lifetime">'a</span>&gt; Fn(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>OutputHandle) -&gt; bool + Send + Sync + <span class="lifetime">'static</span>,
+{
+    <span class="kw">fn </span>from(value: F) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Fn(Box::new(value))
     }
 }
 
@@ -1432,15 +1530,9 @@
     }
 }
 
-<span class="kw">enum </span>OutputSetupLoc {
-    Point(i32, i32),
-    RelativeTo(OutputMatcher, Alignment),
-}
-
 <span class="doccomment">/// An output setup for use in [`Output::setup`].
 </span><span class="kw">pub struct </span>OutputSetup {
     output: OutputMatcher,
-    loc: <span class="prelude-ty">Option</span>&lt;OutputSetupLoc&gt;,
     mode: <span class="prelude-ty">Option</span>&lt;Mode&gt;,
     scale: <span class="prelude-ty">Option</span>&lt;f32&gt;,
     tag_names: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
@@ -1451,7 +1543,6 @@
     </span><span class="kw">pub fn </span>new(output_name: <span class="kw">impl </span>ToString) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             output: OutputMatcher::Name(output_name.to_string()),
-            loc: <span class="prelude-val">None</span>,
             mode: <span class="prelude-val">None</span>,
             scale: <span class="prelude-val">None</span>,
             tag_names: <span class="prelude-val">None</span>,
@@ -1464,27 +1555,10 @@
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             output: OutputMatcher::Fn(Box::new(matcher)),
-            loc: <span class="prelude-val">None</span>,
             mode: <span class="prelude-val">None</span>,
             scale: <span class="prelude-val">None</span>,
             tag_names: <span class="prelude-val">None</span>,
         }
-    }
-
-    <span class="doccomment">/// Makes this setup map outputs to the given location.
-    </span><span class="kw">pub fn </span>with_absolute_loc(<span class="self">self</span>, x: i32, y: i32) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            loc: <span class="prelude-val">Some</span>(OutputSetupLoc::Point(x, y)),
-            ..<span class="self">self
-        </span>}
-    }
-
-    <span class="doccomment">/// Makes this setup map outputs relative to the first output that `relative_to` matches.
-    </span><span class="kw">pub fn </span>with_relative_loc(<span class="self">self</span>, relative_to: OutputMatcher, alignment: Alignment) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            loc: <span class="prelude-val">Some</span>(OutputSetupLoc::RelativeTo(relative_to, alignment)),
-            ..<span class="self">self
-        </span>}
     }
 
     <span class="doccomment">/// Makes this setup apply the given [`Mode`] to its outputs.
@@ -1511,7 +1585,7 @@
         </span>}
     }
 
-    <span class="kw">fn </span>apply_all_but_loc(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) {
+    <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle, tag: <span class="kw-2">&amp;</span>Tag) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(mode) = <span class="kw-2">&amp;</span><span class="self">self</span>.mode {
             output.set_mode(
                 mode.pixel_width,
@@ -1523,11 +1597,60 @@
             output.set_scale(scale);
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(tag_names) = <span class="kw-2">&amp;</span><span class="self">self</span>.tag_names {
-            <span class="kw">let </span>tags = TAG.get().unwrap().add(output, tag_names);
+            <span class="kw">let </span>tags = tag.add(output, tag_names);
             <span class="kw">if let </span><span class="prelude-val">Some</span>(tag) = tags.first() {
                 tag.set_active(<span class="bool-val">true</span>);
             }
         }
+    }
+}
+
+<span class="kw">pub enum </span>OutputLoc {
+    Point(i32, i32),
+    RelativeTo(Vec&lt;(String, Alignment)&gt;),
+}
+
+<span class="kw">pub struct </span>OutputLocSetup {
+    update_locs_on: UpdateLocsOn,
+    setup: HashMap&lt;String, OutputLoc&gt;,
+}
+
+<span class="kw">impl </span>OutputLocSetup {
+    <span class="kw">pub fn </span>new(
+        update_locs_on: UpdateLocsOn,
+        setup: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, OutputLoc)&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            update_locs_on,
+            setup: setup
+                .into_iter()
+                .map(|(s, loc)| (s.to_string(), loc))
+                .collect(),
+        }
+    }
+}
+
+<span class="kw">impl </span>OutputLoc {
+    <span class="kw">pub fn </span>from_point(x: i32, y: i32) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Point(x, y)
+    }
+
+    <span class="kw">pub fn </span>from_relatives(relatives: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, Alignment)&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::RelativeTo(
+            relatives
+                .into_iter()
+                .map(|(name, align)| (name.to_string(), align))
+                .collect(),
+        )
+    }
+}
+
+<span class="macro">bitflags::bitflags! </span>{
+    <span class="attr">#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
+    </span><span class="kw">pub struct </span>UpdateLocsOn: u8 {
+        <span class="kw">const </span>CONNECT = <span class="number">1</span>;
+        <span class="kw">const </span>DISCONNECT = <span class="number">1 </span>&lt;&lt; <span class="number">1</span>;
+        <span class="kw">const </span>RESIZE = <span class="number">1 </span>&lt;&lt; <span class="number">2</span>;
     }
 }
 
@@ -1538,6 +1661,7 @@
 </span><span class="kw">pub struct </span>OutputHandle {
     <span class="kw">pub</span>(<span class="kw">crate</span>) name: String,
     output_client: OutputServiceClient&lt;Channel&gt;,
+    api: ApiModules,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>OutputHandle {
@@ -1830,8 +1954,6 @@
             </span>.unwrap()
             .into_inner();
 
-        <span class="kw">let </span>tag = TAG.get().expect(<span class="string">"TAG doesn't exist"</span>);
-
         OutputProperties {
             make: response.make,
             model: response.model,
@@ -1870,7 +1992,7 @@
             tags: response
                 .tag_ids
                 .into_iter()
-                .map(|id| tag.new_handle(id))
+                .map(|id| <span class="self">self</span>.api.tag.new_handle(id))
                 .collect(),
             scale: response.scale,
         }

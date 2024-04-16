@@ -675,6 +675,14 @@
 <a href="#673" id="673">673</a>
 <a href="#674" id="674">674</a>
 <a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -689,7 +697,9 @@
 //!
 //! This module also allows you to set window rules; see the [rules] module for more information.
 
-</span><span class="kw">use </span>futures::FutureExt;
+</span><span class="kw">use </span>std::sync::OnceLock;
+
+<span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>num_enum::TryFromPrimitive;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
     v0alpha1::SetOrToggle,
@@ -711,7 +721,7 @@
     signal::{SignalHandle, WindowSignal},
     tag::TagHandle,
     util::{Batch, Geometry},
-    SIGNAL, TAG,
+    ApiModules,
 };
 
 <span class="kw">use </span><span class="self">self</span>::rules::{WindowRule, WindowRuleCondition};
@@ -724,19 +734,26 @@
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Window {
     window_client: WindowServiceClient&lt;Channel&gt;,
+    api: OnceLock&lt;ApiModules&gt;,
 }
 
 <span class="kw">impl </span>Window {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             window_client: WindowServiceClient::new(channel.clone()),
+            api: OnceLock::new(),
         }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
+        <span class="self">self</span>.api.set(api).unwrap();
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u32) -&gt; WindowHandle {
         WindowHandle {
             id,
             window_client: <span class="self">self</span>.window_client.clone(),
+            api: <span class="self">self</span>.api.get().unwrap().clone(),
         }
     }
 
@@ -857,7 +874,7 @@
     /// You can pass in a [`WindowSignal`] along with a callback and it will get run
     /// with the necessary arguments every time a signal of that type is received.
     </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: WindowSignal) -&gt; SignalHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(SIGNAL.get().expect(<span class="string">"SIGNAL doesn't exist"</span>).write());
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(<span class="self">self</span>.api.get().unwrap().signal.write());
 
         <span class="kw">match </span>signal {
             WindowSignal::PointerEnter(f) =&gt; signal_state.window_pointer_enter.add_callback(f),
@@ -873,6 +890,7 @@
 </span><span class="kw">pub struct </span>WindowHandle {
     id: u32,
     window_client: WindowServiceClient&lt;Channel&gt;,
+    api: ApiModules,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>WindowHandle {
@@ -1249,8 +1267,6 @@
             height: geo.height() <span class="kw">as </span>u32,
         });
 
-        <span class="kw">let </span>tag = TAG.get().expect(<span class="string">"TAG doesn't exist"</span>);
-
         WindowProperties {
             geometry,
             class: response.class,
@@ -1261,7 +1277,7 @@
             tags: response
                 .tag_ids
                 .into_iter()
-                .map(|id| tag.new_handle(id))
+                .map(|id| <span class="self">self</span>.api.tag.new_handle(id))
                 .collect(),
         }
     }
