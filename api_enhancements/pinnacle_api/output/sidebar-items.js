@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Alignment","OutputLoc","OutputMatcher"],"struct":["Mode","Output","OutputHandle","OutputLocSetup","OutputProperties","OutputSetup","UpdateLocsOn"]};
+window.SIDEBAR_ITEMS = {"enum":["Alignment","OutputLoc","OutputMatcher"],"struct":["Mode","Output","OutputHandle","OutputProperties","OutputSetup","UpdateLocsOn"]};

@@ -1114,6 +1114,10 @@
 <a href="#1112" id="1112">1112</a>
 <a href="#1113" id="1113">1113</a>
 <a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1315,6 +1319,9 @@
                     setup.apply(output, <span class="kw-2">&amp;</span>tag_mod);
                 }
             }
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(tag) = output.tags().first() {
+                tag.set_active(<span class="bool-val">true</span>);
+            }
         };
 
         <span class="kw">let </span>outputs = <span class="self">self</span>.get_all();
@@ -1327,10 +1334,18 @@
         })));
     }
 
-    <span class="kw">pub fn </span>setup_locs(<span class="kw-2">&amp;</span><span class="self">self</span>, setup: OutputLocSetup) {
+    <span class="kw">pub fn </span>setup_locs(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        update_locs_on: UpdateLocsOn,
+        setup: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, OutputLoc)&gt;,
+    ) {
+        <span class="kw">let </span>setup: HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = setup
+            .into_iter()
+            .map(|(name, align)| (name.to_string(), align))
+            .collect();
+
         <span class="kw">let </span>api = <span class="self">self</span>.api.get().unwrap().clone();
         <span class="kw">let </span>layout_outputs = <span class="kw">move </span>|| {
-            <span class="kw">let </span>setups = setups_clone.clone().into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
             <span class="kw">let </span>outputs = api.output.get_all();
 
             <span class="kw">let </span><span class="kw-2">mut </span>rightmost_output_and_x: <span class="prelude-ty">Option</span>&lt;(OutputHandle, i32)&gt; = <span class="prelude-val">None</span>;
@@ -1341,23 +1356,19 @@
 
             <span class="comment">// Place outputs with OutputSetupLoc::Point
             </span><span class="kw">for </span>output <span class="kw">in </span>outputs.iter() {
-                <span class="kw">for </span>setup <span class="kw">in </span>setups.iter() {
-                    <span class="kw">if </span>setup.output.matches(output) {
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(OutputLoc::Point(x, y)) = setup.loc {
-                            output.set_location(x, y);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>OutputLoc::Point(x, y)) = setup.get(output.name()) {
+                    output.set_location(x, y);
 
-                            placed_outputs.insert(output.clone());
-                            <span class="kw">let </span>props = output.props();
-                            <span class="kw">let </span>x = props.x.unwrap();
-                            <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
-                            <span class="kw">if </span>rightmost_output_and_x.is_none()
-                                || rightmost_output_and_x
-                                    .as_ref()
-                                    .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
-                            {
-                                rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
-                            }
-                        }
+                    placed_outputs.insert(output.clone());
+                    <span class="kw">let </span>props = output.props();
+                    <span class="kw">let </span>x = props.x.unwrap();
+                    <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
+                    <span class="kw">if </span>rightmost_output_and_x.is_none()
+                        || rightmost_output_and_x
+                            .as_ref()
+                            .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
+                    {
+                        rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
                     }
                 }
             }
@@ -1368,48 +1379,48 @@
                 .filter(|op| !placed_outputs.contains(op))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
             {
-                <span class="kw">for </span>setup <span class="kw">in </span>setups.iter() {
-                    <span class="kw">if </span>setup.output.matches(output) &amp;&amp; setup.loc.is_none() {
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>((rm_op, <span class="kw">_</span>)) = rightmost_output_and_x.as_ref() {
-                            output.set_loc_adj_to(rm_op, Alignment::RightAlignTop);
-                        } <span class="kw">else </span>{
-                            output.set_location(<span class="number">0</span>, <span class="number">0</span>);
-                            <span class="macro">println!</span>(<span class="string">"SET LOC FOR {} TO (0, 0)"</span>, output.name());
-                        }
+                <span class="kw">if </span>setup.get(output.name()).is_none() {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>((rm_op, <span class="kw">_</span>)) = rightmost_output_and_x.as_ref() {
+                        output.set_loc_adj_to(rm_op, Alignment::RightAlignTop);
+                    } <span class="kw">else </span>{
+                        output.set_location(<span class="number">0</span>, <span class="number">0</span>);
+                    }
 
-                        placed_outputs.insert(output.clone());
-                        <span class="kw">let </span>props = output.props();
-                        <span class="kw">let </span>x = props.x.unwrap();
-                        <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
-                        <span class="kw">if </span>rightmost_output_and_x.is_none()
-                            || rightmost_output_and_x
-                                .as_ref()
-                                .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
-                        {
-                            rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
-                        }
+                    placed_outputs.insert(output.clone());
+                    <span class="kw">let </span>props = output.props();
+                    <span class="kw">let </span>x = props.x.unwrap();
+                    <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
+                    <span class="kw">if </span>rightmost_output_and_x.is_none()
+                        || rightmost_output_and_x
+                            .as_ref()
+                            .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
+                    {
+                        rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
                     }
                 }
             }
 
             <span class="comment">// Attempt to place relative outputs
-            </span><span class="kw">while let </span><span class="prelude-val">Some</span>((output, relative_to, alignment)) = setups.iter().find_map(|setup| {
-                outputs.iter().find_map(|op| {
-                    <span class="kw">if </span>!placed_outputs.contains(op) &amp;&amp; setup.output.matches(op) {
-                        <span class="kw">match </span><span class="kw-2">&amp;</span>setup.loc {
-                            <span class="prelude-val">Some</span>(OutputLoc::RelativeTo(matcher, alignment)) =&gt; {
-                                <span class="kw">let </span>first_matched_op = outputs
-                                    .iter()
-                                    .find(|o| matcher.matches(o) &amp;&amp; placed_outputs.contains(o))<span class="question-mark">?</span>;
-                                <span class="prelude-val">Some</span>((op, first_matched_op, alignment))
+            </span><span class="kw">while let </span><span class="prelude-val">Some</span>((output, relative_to, alignment)) =
+                setup.iter().find_map(|(setup_op_name, loc)| {
+                    outputs
+                        .iter()
+                        .find(|setup_op| {
+                            !placed_outputs.contains(setup_op) &amp;&amp; setup_op.name() == setup_op_name
+                        })
+                        .and_then(|setup_op| <span class="kw">match </span>loc {
+                            OutputLoc::RelativeTo(relative_tos) =&gt; {
+                                relative_tos.iter().find_map(|(rel_name, align)| {
+                                    placed_outputs.iter().find_map(|pl_op| {
+                                        (pl_op.name() == rel_name)
+                                            .then_some((setup_op, pl_op, align))
+                                    })
+                                })
                             }
                             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-                        }
-                    } <span class="kw">else </span>{
-                        <span class="prelude-val">None
-                    </span>}
+                        })
                 })
-            }) {
+            {
                 output.set_loc_adj_to(relative_to, <span class="kw-2">*</span>alignment);
 
                 placed_outputs.insert(output.clone());
@@ -1465,17 +1476,23 @@
         <span class="kw">let </span>layout_outputs_clone1 = layout_outputs.clone();
         <span class="kw">let </span>layout_outputs_clone2 = layout_outputs.clone();
 
-        <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|output| {
-            layout_outputs_clone2();
-        })));
+        <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::CONNECT) {
+            <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|<span class="kw">_</span>| {
+                layout_outputs_clone2();
+            })));
+        }
 
-        <span class="self">self</span>.connect_signal(OutputSignal::Disconnect(Box::new(<span class="kw">move </span>|<span class="kw">_</span>| {
-            layout_outputs_clone1();
-        })));
+        <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::DISCONNECT) {
+            <span class="self">self</span>.connect_signal(OutputSignal::Disconnect(Box::new(<span class="kw">move </span>|<span class="kw">_</span>| {
+                layout_outputs_clone1();
+            })));
+        }
 
-        <span class="self">self</span>.connect_signal(OutputSignal::Resize(Box::new(<span class="kw">move </span>|<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| {
-            layout_outputs();
-        })));
+        <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::RESIZE) {
+            <span class="self">self</span>.connect_signal(OutputSignal::Resize(Box::new(<span class="kw">move </span>|<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| {
+                layout_outputs();
+            })));
+        }
     }
 }
 
@@ -1597,45 +1614,36 @@
             output.set_scale(scale);
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(tag_names) = <span class="kw-2">&amp;</span><span class="self">self</span>.tag_names {
-            <span class="kw">let </span>tags = tag.add(output, tag_names);
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(tag) = tags.first() {
-                tag.set_active(<span class="bool-val">true</span>);
-            }
+            tag.add(output, tag_names);
         }
     }
 }
 
-<span class="kw">pub enum </span>OutputLoc {
-    Point(i32, i32),
-    RelativeTo(Vec&lt;(String, Alignment)&gt;),
-}
-
-<span class="kw">pub struct </span>OutputLocSetup {
-    update_locs_on: UpdateLocsOn,
-    setup: HashMap&lt;String, OutputLoc&gt;,
-}
-
-<span class="kw">impl </span>OutputLocSetup {
-    <span class="kw">pub fn </span>new(
-        update_locs_on: UpdateLocsOn,
-        setup: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, OutputLoc)&gt;,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            update_locs_on,
-            setup: setup
-                .into_iter()
-                .map(|(s, loc)| (s.to_string(), loc))
-                .collect(),
-        }
-    }
+<span class="doccomment">/// A location for an output.
+</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="kw">pub enum </span>OutputLoc {
+    <span class="doccomment">/// A specific point in the global space.
+    </span>Point(i32, i32),
+    <span class="doccomment">/// A location relative to another output.
+    ///
+    /// This holds a `Vec` of output names to alignments.
+    /// The output that is relative to will be chosen from the first
+    /// connected and placed output in this `Vec`.
+    </span>RelativeTo(Vec&lt;(String, Alignment)&gt;),
 }
 
 <span class="kw">impl </span>OutputLoc {
-    <span class="kw">pub fn </span>from_point(x: i32, y: i32) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Point(x, y)
+    <span class="doccomment">/// Creates an `OutputLoc` that will place outputs relative to
+    /// the output with the given name using the given alignment.
+    </span><span class="kw">pub fn </span>relative_to(name: <span class="kw">impl </span>ToString, alignment: Alignment) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::RelativeTo(<span class="macro">vec!</span>[(name.to_string(), alignment)])
     }
 
-    <span class="kw">pub fn </span>from_relatives(relatives: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, Alignment)&gt;) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates an `OutputLoc` from multiple (output_name, alignment) pairs
+    /// that serve as fallbacks.
+    </span><span class="kw">pub fn </span>relative_to_with_fallbacks(
+        relatives: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>ToString, Alignment)&gt;,
+    ) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::RelativeTo(
             relatives
                 .into_iter()
