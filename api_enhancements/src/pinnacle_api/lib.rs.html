@@ -230,8 +230,6 @@
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -407,12 +405,10 @@
     <span class="kw">let </span>layout = LAYOUT.get_or_init(|| Layout::new(channel.clone()));
     <span class="kw">let </span>render = RENDER.get_or_init(|| Render::new(channel.clone()));
 
-    SIGNAL
-        .set(RwLock::new(SignalState::new(
-            channel.clone(),
-            fut_sender.clone(),
-        )))
-        .map_err(|<span class="kw">_</span>| <span class="string">"failed to create SIGNAL"</span>)<span class="question-mark">?</span>;
+    <span class="kw">let _ </span>= SIGNAL.set(RwLock::new(SignalState::new(
+        channel.clone(),
+        fut_sender.clone(),
+    )));
 
     <span class="kw">let </span>modules = ApiModules {
         pinnacle,
