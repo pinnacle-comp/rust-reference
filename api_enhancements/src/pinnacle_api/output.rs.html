@@ -1140,8 +1140,6 @@
 <a href="#1138" id="1138">1138</a>
 <a href="#1139" id="1139">1139</a>
 <a href="#1140" id="1140">1140</a>
-<a href="#1141" id="1141">1141</a>
-<a href="#1142" id="1142">1142</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1513,9 +1511,7 @@
 
         <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::CONNECT) {
             <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|output| {
-                <span class="macro">println!</span>(<span class="string">"GOT CONNECT SIGNAL FOR {}"</span>, output.name());
                 layout_outputs_clone2();
-                <span class="macro">println!</span>(<span class="string">"FINISHED CONNECT SIGNAL FOR {}"</span>, output.name());
             })));
         }
 
