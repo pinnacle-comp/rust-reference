@@ -1173,6 +1173,9 @@
 <a href="#1171" id="1171">1171</a>
 <a href="#1172" id="1172">1172</a>
 <a href="#1173" id="1173">1173</a>
+<a href="#1174" id="1174">1174</a>
+<a href="#1175" id="1175">1175</a>
+<a href="#1176" id="1176">1176</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -2110,6 +2113,7 @@
                 .collect(),
             scale: response.scale,
             transform: response.transform.and_then(|tf| tf.try_into().ok()),
+            serial: response.serial,
         }
     }
 
@@ -2345,5 +2349,7 @@
     </span><span class="kw">pub </span>scale: <span class="prelude-ty">Option</span>&lt;f32&gt;,
     <span class="doccomment">/// This output's transform.
     </span><span class="kw">pub </span>transform: <span class="prelude-ty">Option</span>&lt;Transform&gt;,
+    <span class="doccomment">/// This output's EDID serial number.
+    </span><span class="kw">pub </span>serial: <span class="prelude-ty">Option</span>&lt;u32&gt;,
 }
 </code></pre></div></section></main></body></html>
