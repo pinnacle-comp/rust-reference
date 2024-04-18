@@ -432,6 +432,31 @@
 <a href="#430" id="430">430</a>
 <a href="#431" id="431">431</a>
 <a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
 //!
 //! Your config can connect to various compositor signals that allow you to, for example, do
@@ -461,7 +486,9 @@
 <span class="kw">use </span>tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 <span class="kw">use </span>tonic::{transport::Channel, Streaming};
 
-<span class="kw">use crate</span>::{block_on_tokio, output::OutputHandle, window::WindowHandle, ApiModules};
+<span class="kw">use crate</span>::{
+    block_on_tokio, output::OutputHandle, tag::TagHandle, window::WindowHandle, ApiModules,
+};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>Signal {
     <span class="kw">type </span>Callback;
@@ -663,6 +690,24 @@
             },
         }
     }
+    <span class="doccomment">/// Signals relating to tag events.
+    </span>TagSignal =&gt; {
+        <span class="doccomment">/// A tag was set to active or not active.
+        </span>TagActive = {
+            enum_name = Active,
+            callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>TagHandle, bool) + Send + <span class="lifetime">'static</span>&gt;,
+            client_request = tag_active,
+            on_response = |response, callbacks, api| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(tag_id) = response.tag_id {
+                    <span class="kw">let </span>handle = api.tag.new_handle(tag_id);
+
+                    <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
+                        callback(<span class="kw-2">&amp;</span>handle, response.active.unwrap());
+                    }
+                }
+            },
+        }
+    }
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type </span>SingleOutputFn = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>&gt;;
@@ -673,8 +718,11 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) output_disconnect: SignalData&lt;OutputDisconnect&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) output_resize: SignalData&lt;OutputResize&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) output_move: SignalData&lt;OutputMove&gt;,
+
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_enter: SignalData&lt;WindowPointerEnter&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_leave: SignalData&lt;WindowPointerLeave&gt;,
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) tag_active: SignalData&lt;TagActive&gt;,
 }
 
 <span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>SignalState {
@@ -696,6 +744,7 @@
             output_move: SignalData::new(client.clone(), fut_sender.clone()),
             window_pointer_enter: SignalData::new(client.clone(), fut_sender.clone()),
             window_pointer_leave: SignalData::new(client.clone(), fut_sender.clone()),
+            tag_active: SignalData::new(client.clone(), fut_sender.clone()),
         }
     }
 
@@ -706,6 +755,7 @@
         <span class="self">self</span>.output_move.api.set(api.clone()).unwrap();
         <span class="self">self</span>.window_pointer_enter.api.set(api.clone()).unwrap();
         <span class="self">self</span>.window_pointer_leave.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.tag_active.api.set(api.clone()).unwrap();
     }
 }
 

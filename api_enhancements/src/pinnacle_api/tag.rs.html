@@ -462,6 +462,26 @@
 <a href="#460" id="460">460</a>
 <a href="#461" id="461">461</a>
 <a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -508,7 +528,14 @@
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
-<span class="kw">use crate</span>::{block_on_tokio, output::OutputHandle, util::Batch, window::WindowHandle, ApiModules};
+<span class="kw">use crate</span>::{
+    block_on_tokio,
+    output::OutputHandle,
+    signal::{SignalHandle, TagSignal},
+    util::Batch,
+    window::WindowHandle,
+    ApiModules,
+};
 
 <span class="doccomment">/// A struct that allows you to add and remove tags and get [`TagHandle`]s.
 </span><span class="attr">#[derive(Clone, Debug)]
@@ -690,6 +717,19 @@
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.tag_client.clone();
 
         block_on_tokio(client.remove(RemoveRequest { tag_ids })).unwrap();
+    }
+
+    <span class="doccomment">/// Connect to a tag signal.
+    ///
+    /// The compositor will fire off signals that your config can listen for and act upon.
+    /// You can pass in a [`TagSignal`] along with a callback and it will get run
+    /// with the necessary arguments every time a signal of that type is received.
+    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: TagSignal) -&gt; SignalHandle {
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(<span class="self">self</span>.api.get().unwrap().signal.write());
+
+        <span class="kw">match </span>signal {
+            TagSignal::Active(f) =&gt; signal_state.tag_active.add_callback(f),
+        }
     }
 }
 
