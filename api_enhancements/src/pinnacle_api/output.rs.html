@@ -1716,7 +1716,7 @@
 </span><span class="kw">pub enum </span>OutputLoc {
     <span class="doccomment">/// A specific point in the global space of the form (x, y).
     </span>Point(i32, i32),
-    <span class="doccomment">/// A location relative to another output of the form (output_name, alignment).
+    <span class="doccomment">/// A location relative to another output with an [`Alignment`].
     </span>RelativeTo(OutputId, Alignment),
 }
 
