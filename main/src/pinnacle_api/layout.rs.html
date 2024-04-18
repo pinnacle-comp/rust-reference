@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/layout.rs`."><title>layout.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/layout.rs`."><title>layout.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../pinnacle_api/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -1117,6 +1117,17 @@
 <a href="#1115" id="1115">1115</a>
 <a href="#1116" id="1116">1116</a>
 <a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1127,7 +1138,7 @@
 
 </span><span class="kw">use </span>std::{
     collections::HashMap,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, OnceLock},
 };
 
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::layout::v0alpha1::{
@@ -1145,20 +1156,26 @@
     tag::TagHandle,
     util::{Axis, Geometry},
     window::WindowHandle,
-    OUTPUT, TAG, WINDOW,
+    ApiModules,
 };
 
 <span class="doccomment">/// A struct that allows you to manage layouts.
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>Layout {
+    api: OnceLock&lt;ApiModules&gt;,
     layout_client: LayoutServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Layout {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
+            api: OnceLock::new(),
             layout_client: LayoutServiceClient::new(channel.clone()),
         }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
+        <span class="self">self</span>.api.set(api).unwrap();
     }
 
     <span class="doccomment">/// Consume the given [`LayoutManager`] and set it as the global layout handler.
@@ -1180,7 +1197,10 @@
 
         <span class="kw">let </span>manager = Arc::new(Mutex::new(manager));
 
+        <span class="kw">let </span>api = <span class="self">self</span>.api.get().unwrap().clone();
+
         <span class="kw">let </span>requester = LayoutRequester {
+            api: api.clone(),
             sender: from_client_clone,
             manager: manager.clone(),
         };
@@ -1188,16 +1208,16 @@
         <span class="kw">let </span>thing = <span class="kw">async move </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = from_server.next().<span class="kw">await </span>{
                 <span class="kw">let </span>args = LayoutArgs {
-                    output: OUTPUT.get().unwrap().new_handle(response.output_name()),
+                    output: api.output.new_handle(response.output_name()),
                     windows: response
                         .window_ids
                         .into_iter()
-                        .map(|id| WINDOW.get().unwrap().new_handle(id))
+                        .map(|id| api.window.new_handle(id))
                         .collect(),
                     tags: response
                         .tag_ids
                         .into_iter()
-                        .map(|id| TAG.get().unwrap().new_handle(id))
+                        .map(|id| api.tag.new_handle(id))
                         .collect(),
                     output_width: response.output_width.unwrap_or_default(),
                     output_height: response.output_height.unwrap_or_default(),
@@ -1344,6 +1364,7 @@
 <span class="doccomment">/// A struct that can request layouts and provides access to a consumed [`LayoutManager`].
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>LayoutRequester&lt;T&gt; {
+    api: ApiModules,
     sender: UnboundedSender&lt;LayoutRequest&gt;,
     <span class="doccomment">/// The manager that was consumed, wrapped in an `Arc&lt;Mutex&gt;`.
     </span><span class="kw">pub </span>manager: Arc&lt;Mutex&lt;T&gt;&gt;,
@@ -1352,6 +1373,7 @@
 <span class="kw">impl</span>&lt;T&gt; Clone <span class="kw">for </span>LayoutRequester&lt;T&gt; {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
+            api: <span class="self">self</span>.api.clone(),
             sender: <span class="self">self</span>.sender.clone(),
             manager: <span class="self">self</span>.manager.clone(),
         }
@@ -1364,7 +1386,7 @@
     /// This uses the focused output for the request.
     /// If you want to layout a specific output, see [`LayoutRequester::request_layout_on_output`].
     </span><span class="kw">pub fn </span>request_layout(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span>output_name = OUTPUT.get().unwrap().get_focused().map(|op| op.name);
+        <span class="kw">let </span>output_name = <span class="self">self</span>.api.output.get_focused().map(|op| op.name);
         <span class="self">self</span>.sender
             .send(LayoutRequest {
                 body: <span class="prelude-val">Some</span>(Body::Layout(ExplicitLayout { output_name })),

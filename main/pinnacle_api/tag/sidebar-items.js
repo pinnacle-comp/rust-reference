@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Layout"],"struct":["Tag","TagHandle","TagProperties"]};
+window.SIDEBAR_ITEMS = {"struct":["Tag","TagHandle","TagProperties"]};

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/tag.rs`."><title>tag.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/tag.rs`."><title>tag.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../pinnacle_api/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -454,6 +454,34 @@
 <a href="#452" id="452">452</a>
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -485,8 +513,9 @@
 //!
 //! These [`TagHandle`]s allow you to manipulate individual tags and get their properties.
 
-</span><span class="kw">use </span>futures::FutureExt;
-<span class="kw">use </span>num_enum::TryFromPrimitive;
+</span><span class="kw">use </span>std::sync::OnceLock;
+
+<span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
     tag::{
         <span class="self">self</span>,
@@ -499,25 +528,39 @@
 };
 <span class="kw">use </span>tonic::transport::Channel;
 
-<span class="kw">use crate</span>::{block_on_tokio, output::OutputHandle, util::Batch, OUTPUT};
+<span class="kw">use crate</span>::{
+    block_on_tokio,
+    output::OutputHandle,
+    signal::{SignalHandle, TagSignal},
+    util::Batch,
+    window::WindowHandle,
+    ApiModules,
+};
 
 <span class="doccomment">/// A struct that allows you to add and remove tags and get [`TagHandle`]s.
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>Tag {
     tag_client: TagServiceClient&lt;Channel&gt;,
+    api: OnceLock&lt;ApiModules&gt;,
 }
 
 <span class="kw">impl </span>Tag {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             tag_client: TagServiceClient::new(channel.clone()),
+            api: OnceLock::new(),
         }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
+        <span class="self">self</span>.api.set(api).unwrap();
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u32) -&gt; TagHandle {
         TagHandle {
             id,
             tag_client: <span class="self">self</span>.tag_client.clone(),
+            api: <span class="self">self</span>.api.get().unwrap().clone(),
         }
     }
 
@@ -613,8 +656,7 @@
     <span class="doccomment">/// The async version of [`Tag::get`].
     </span><span class="kw">pub async fn </span>get_async(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
         <span class="kw">let </span>name = name.into();
-        <span class="kw">let </span>output_module = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
-        <span class="kw">let </span>focused_output = output_module.get_focused();
+        <span class="kw">let </span>focused_output = <span class="self">self</span>.api.get().unwrap().output.get_focused();
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = focused_output {
             <span class="self">self</span>.get_on_output_async(name, <span class="kw-2">&amp;</span>output).<span class="kw">await
@@ -676,6 +718,19 @@
 
         block_on_tokio(client.remove(RemoveRequest { tag_ids })).unwrap();
     }
+
+    <span class="doccomment">/// Connect to a tag signal.
+    ///
+    /// The compositor will fire off signals that your config can listen for and act upon.
+    /// You can pass in a [`TagSignal`] along with a callback and it will get run
+    /// with the necessary arguments every time a signal of that type is received.
+    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: TagSignal) -&gt; SignalHandle {
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(<span class="self">self</span>.api.get().unwrap().signal.write());
+
+        <span class="kw">match </span>signal {
+            TagSignal::Active(f) =&gt; signal_state.tag_active.add_callback(f),
+        }
+    }
 }
 
 <span class="doccomment">/// A handle to a tag.
@@ -685,6 +740,7 @@
 </span><span class="kw">pub struct </span>TagHandle {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: u32,
     tag_client: TagServiceClient&lt;Channel&gt;,
+    api: ApiModules,
 }
 
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>TagHandle {
@@ -699,26 +755,6 @@
     <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
         <span class="self">self</span>.id.hash(state);
     }
-}
-
-<span class="doccomment">/// Various static layouts.
-</span><span class="attr">#[repr(i32)]
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, TryFromPrimitive)]
-</span><span class="kw">pub enum </span>Layout {
-    <span class="doccomment">/// One master window on the left with all other windows stacked to the right
-    </span>MasterStack = <span class="number">1</span>,
-    <span class="doccomment">/// Windows split in half towards the bottom right corner
-    </span>Dwindle,
-    <span class="doccomment">/// Windows split in half in a spiral
-    </span>Spiral,
-    <span class="doccomment">/// One main corner window in the top left with a column of windows on the right and a row on the bottom
-    </span>CornerTopLeft,
-    <span class="doccomment">/// One main corner window in the top right with a column of windows on the left and a row on the bottom
-    </span>CornerTopRight,
-    <span class="doccomment">/// One main corner window in the bottom left with a column of windows on the right and a row on the top.
-    </span>CornerBottomLeft,
-    <span class="doccomment">/// One main corner window in the bottom right with a column of windows on the left and a row on the top.
-    </span>CornerBottomRight,
 }
 
 <span class="kw">impl </span>TagHandle {
@@ -852,12 +888,18 @@
             </span>.unwrap()
             .into_inner();
 
-        <span class="kw">let </span>output = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
+        <span class="kw">let </span>output = <span class="self">self</span>.api.output;
+        <span class="kw">let </span>window = <span class="self">self</span>.api.window;
 
         TagProperties {
             active: response.active,
             name: response.name,
             output: response.output_name.map(|name| output.new_handle(name)),
+            windows: response
+                .window_ids
+                .into_iter()
+                .map(|id| window.new_handle(id))
+                .collect(),
         }
     }
 
@@ -896,6 +938,18 @@
     </span><span class="kw">pub async fn </span>output_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
         <span class="self">self</span>.props_async().<span class="kw">await</span>.output
     }
+
+    <span class="doccomment">/// Get all windows with this tag.
+    ///
+    /// Shorthand for `self.props().windows`.
+    </span><span class="kw">pub fn </span>windows(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
+        <span class="self">self</span>.props().windows
+    }
+
+    <span class="doccomment">/// The async version of [`TagHandle::windows`].
+    </span><span class="kw">pub async fn </span>windows_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.windows
+    }
 }
 
 <span class="doccomment">/// Properties of a tag.
@@ -907,5 +961,7 @@
     </span><span class="kw">pub </span>name: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// The output the tag is on
     </span><span class="kw">pub </span>output: <span class="prelude-ty">Option</span>&lt;OutputHandle&gt;,
+    <span class="doccomment">/// The windows that have this tag
+    </span><span class="kw">pub </span>windows: Vec&lt;WindowHandle&gt;,
 }
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/signal.rs`."><title>signal.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/signal.rs`."><title>signal.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../pinnacle_api/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -357,6 +357,106 @@
 <a href="#355" id="355">355</a>
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
 //!
 //! Your config can connect to various compositor signals that allow you to, for example, do
@@ -365,11 +465,13 @@
 //! Some of the other modules have a `connect_signal` method that will allow you to pass in
 //! callbacks to run on each signal. Use them to connect to the signals defined here.
 
+</span><span class="attr">#![allow(clippy::type_complexity)]
+
 </span><span class="kw">use </span>std::{
     collections::{btree_map, BTreeMap},
     sync::{
         atomic::{AtomicU32, Ordering},
-        Arc,
+        Arc, OnceLock,
     },
 };
 
@@ -384,7 +486,9 @@
 <span class="kw">use </span>tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 <span class="kw">use </span>tonic::{transport::Channel, Streaming};
 
-<span class="kw">use crate</span>::{block_on_tokio, output::OutputHandle, window::WindowHandle, OUTPUT, WINDOW};
+<span class="kw">use crate</span>::{
+    block_on_tokio, output::OutputHandle, tag::TagHandle, window::WindowHandle, ApiModules,
+};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>Signal {
     <span class="kw">type </span>Callback;
@@ -456,6 +560,7 @@
                                 .into_inner()
                         },
                         <span class="macro-nonterminal">$on_resp</span>,
+                        <span class="self">self</span>.api.get().unwrap().clone(),
                     );
 
                     <span class="self">self</span>.callback_sender.replace(channels.callback_sender);
@@ -486,13 +591,63 @@
             enum_name = Connect,
             callback_type = SingleOutputFn,
             client_request = output_connect,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = response.output_name {
-                    <span class="kw">let </span>output = OUTPUT.get().expect(<span class="string">"OUTPUT doesn't exist"</span>);
-                    <span class="kw">let </span>handle = output.new_handle(output_name);
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
+                    }
+                }
+            },
+        }
+        <span class="doccomment">/// An output was connected.
+        ///
+        /// Callbacks receive the disconnected output.
+        </span>OutputDisconnect = {
+            enum_name = Disconnect,
+            callback_type = SingleOutputFn,
+            client_request = output_disconnect,
+            on_response = |response, callbacks, api| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = response.output_name {
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
+
+                    <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
+                        callback(<span class="kw-2">&amp;</span>handle);
+                    }
+                }
+            },
+        }
+        <span class="doccomment">/// An output's logical size changed.
+        ///
+        /// Callbacks receive the output and new width and height.
+        </span>OutputResize = {
+            enum_name = Resize,
+            callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle, u32, u32) + Send + <span class="lifetime">'static</span>&gt;,
+            client_request = output_resize,
+            on_response = |response, callbacks, api| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = <span class="kw-2">&amp;</span>response.output_name {
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
+
+                    <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
+                        callback(<span class="kw-2">&amp;</span>handle, response.logical_width(), response.logical_height())
+                    }
+                }
+            },
+        }
+        <span class="doccomment">/// An output's location in the global space changed.
+        ///
+        /// Callbacks receive the output and new x and y.
+        </span>OutputMove = {
+            enum_name = Move,
+            callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle, i32, i32) + Send + <span class="lifetime">'static</span>&gt;,
+            client_request = output_move,
+            on_response = |response, callbacks, api| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(output_name) = <span class="kw-2">&amp;</span>response.output_name {
+                    <span class="kw">let </span>handle = api.output.new_handle(output_name);
+
+                    <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
+                        callback(<span class="kw-2">&amp;</span>handle, response.x(), response.y())
                     }
                 }
             },
@@ -507,10 +662,9 @@
             enum_name = PointerEnter,
             callback_type = SingleWindowFn,
             client_request = window_pointer_enter,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(window_id) = response.window_id {
-                    <span class="kw">let </span>window = WINDOW.get().expect(<span class="string">"WINDOW doesn't exist"</span>);
-                    <span class="kw">let </span>handle = window.new_handle(window_id);
+                    <span class="kw">let </span>handle = api.window.new_handle(window_id);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
@@ -525,13 +679,30 @@
             enum_name = PointerLeave,
             callback_type = SingleWindowFn,
             client_request = window_pointer_leave,
-            on_response = |response, callbacks| {
+            on_response = |response, callbacks, api| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(window_id) = response.window_id {
-                    <span class="kw">let </span>window = WINDOW.get().expect(<span class="string">"WINDOW doesn't exist"</span>);
-                    <span class="kw">let </span>handle = window.new_handle(window_id);
+                    <span class="kw">let </span>handle = api.window.new_handle(window_id);
 
                     <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
                         callback(<span class="kw-2">&amp;</span>handle);
+                    }
+                }
+            },
+        }
+    }
+    <span class="doccomment">/// Signals relating to tag events.
+    </span>TagSignal =&gt; {
+        <span class="doccomment">/// A tag was set to active or not active.
+        </span>TagActive = {
+            enum_name = Active,
+            callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>TagHandle, bool) + Send + <span class="lifetime">'static</span>&gt;,
+            client_request = tag_active,
+            on_response = |response, callbacks, api| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(tag_id) = response.tag_id {
+                    <span class="kw">let </span>handle = api.tag.new_handle(tag_id);
+
+                    <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
+                        callback(<span class="kw-2">&amp;</span>handle, response.active.unwrap());
                     }
                 }
             },
@@ -544,8 +715,20 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SignalState {
     <span class="kw">pub</span>(<span class="kw">crate</span>) output_connect: SignalData&lt;OutputConnect&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) output_disconnect: SignalData&lt;OutputDisconnect&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) output_resize: SignalData&lt;OutputResize&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) output_move: SignalData&lt;OutputMove&gt;,
+
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_enter: SignalData&lt;WindowPointerEnter&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_leave: SignalData&lt;WindowPointerLeave&gt;,
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) tag_active: SignalData&lt;TagActive&gt;,
+}
+
+<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>SignalState {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"SignalState"</span>).finish()
+    }
 }
 
 <span class="kw">impl </span>SignalState {
@@ -556,9 +739,23 @@
         <span class="kw">let </span>client = SignalServiceClient::new(channel);
         <span class="self">Self </span>{
             output_connect: SignalData::new(client.clone(), fut_sender.clone()),
+            output_disconnect: SignalData::new(client.clone(), fut_sender.clone()),
+            output_resize: SignalData::new(client.clone(), fut_sender.clone()),
+            output_move: SignalData::new(client.clone(), fut_sender.clone()),
             window_pointer_enter: SignalData::new(client.clone(), fut_sender.clone()),
             window_pointer_leave: SignalData::new(client.clone(), fut_sender.clone()),
+            tag_active: SignalData::new(client.clone(), fut_sender.clone()),
         }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
+        <span class="self">self</span>.output_connect.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.output_disconnect.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.output_resize.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.output_move.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.window_pointer_enter.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.window_pointer_leave.api.set(api.clone()).unwrap();
+        <span class="self">self</span>.tag_active.api.set(api.clone()).unwrap();
     }
 }
 
@@ -567,6 +764,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SignalData&lt;S: Signal&gt; {
     client: SignalServiceClient&lt;Channel&gt;,
+    api: OnceLock&lt;ApiModules&gt;,
     fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
     callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;(SignalConnId, S::Callback)&gt;&gt;,
     remove_callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;SignalConnId&gt;&gt;,
@@ -582,6 +780,7 @@
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             client,
+            api: OnceLock::new(),
             fut_sender,
             callback_sender: Default::default(),
             remove_callback_sender: Default::default(),
@@ -603,13 +802,14 @@
     callback_count: Arc&lt;AtomicU32&gt;,
     to_in_stream: T,
     <span class="kw-2">mut </span>on_response: O,
+    api: ApiModules,
 ) -&gt; ConnectSignalChannels&lt;F&gt;
 <span class="kw">where
     </span>Req: SignalRequest + Send + <span class="lifetime">'static</span>,
     Resp: Send + <span class="lifetime">'static</span>,
     F: Send + <span class="lifetime">'static</span>,
     T: FnOnce(UnboundedReceiverStream&lt;Req&gt;) -&gt; Streaming&lt;Resp&gt;,
-    O: FnMut(Resp, btree_map::ValuesMut&lt;<span class="lifetime">'_</span>, SignalConnId, F&gt;) + Send + <span class="lifetime">'static</span>,
+    O: FnMut(Resp, btree_map::ValuesMut&lt;<span class="lifetime">'_</span>, SignalConnId, F&gt;, <span class="kw-2">&amp;</span>ApiModules) + Send + <span class="lifetime">'static</span>,
 {
     <span class="kw">let </span>(control_sender, recv) = unbounded_channel::&lt;Req&gt;();
     <span class="kw">let </span>out_stream = UnboundedReceiverStream::new(recv);
@@ -642,7 +842,7 @@
 
                     <span class="kw">match </span>response {
                         <span class="prelude-val">Ok</span>(response) =&gt; {
-                            on_response(response, callbacks.values_mut());
+                            on_response(response, callbacks.values_mut(), <span class="kw-2">&amp;</span>api);
 
                             control_sender
                                 .send(Req::from_control(StreamControl::Ready))
