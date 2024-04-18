@@ -1158,6 +1158,7 @@
 <a href="#1156" id="1156">1156</a>
 <a href="#1157" id="1157">1157</a>
 <a href="#1158" id="1158">1158</a>
+<a href="#1159" id="1159">1159</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1348,6 +1349,7 @@
     ///
     /// ```
     /// use pinnacle_api::output::OutputSetup;
+    /// use pinnacle_api::output::OutputId;
     ///
     /// output.setup([
     ///     // Give all outputs tags 1 through 5
@@ -1356,7 +1358,7 @@
     ///     OutputSetup::new_with_matcher(|op| op.preferred_mode().unwrap().pixel_width == 2160)
     ///         .with_scale(2.0),
     ///     // Additionally give eDP-1 tags 6 and 7
-    ///     OutputSetup::new("eDP-1").with_tags(["6", "7"]),
+    ///     OutputSetup::new(OutputId::name("eDP-1")).with_tags(["6", "7"]),
     /// ]);
     /// ```
     </span><span class="kw">pub fn </span>setup(<span class="kw-2">&amp;</span><span class="self">self</span>, setups: <span class="kw">impl </span>IntoIterator&lt;Item = OutputSetup&gt;) {
