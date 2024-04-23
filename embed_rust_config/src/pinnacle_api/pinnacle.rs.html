@@ -77,6 +77,12 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -119,23 +125,29 @@
     /// ```
     </span><span class="kw">pub fn </span>quit(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-        block_on_tokio(client.quit(QuitRequest {})).unwrap();
+        <span class="comment">// Ignore errors here, the config is meant to be killed
+        </span><span class="kw">let _ </span>= block_on_tokio(client.quit(QuitRequest {}));
     }
 
     <span class="doccomment">/// Reload the currently active config.
     </span><span class="kw">pub fn </span>reload_config(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-        block_on_tokio(client.reload_config(ReloadConfigRequest {})).unwrap();
+        <span class="comment">// Ignore errors here, the config is meant to be killed
+        </span><span class="kw">let _ </span>= block_on_tokio(client.reload_config(ReloadConfigRequest {}));
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>shutdown_watch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Streaming&lt;ShutdownWatchResponse&gt; {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>shutdown_watch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Streaming&lt;ShutdownWatchResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-        block_on_tokio(client.shutdown_watch(ShutdownWatchRequest {}))
-            .unwrap()
+        client
+            .shutdown_watch(ShutdownWatchRequest {})
+            .<span class="kw">await
+            </span>.unwrap()
             .into_inner()
     }
 
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>ping(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+    <span class="doccomment">/// TODO: eval if this is necessary
+    </span><span class="attr">#[allow(dead_code)]
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>ping(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
         <span class="kw">let </span><span class="kw-2">mut </span>payload = [<span class="number">0u8</span>; <span class="number">8</span>];
         rand::thread_rng().fill_bytes(<span class="kw-2">&amp;mut </span>payload);

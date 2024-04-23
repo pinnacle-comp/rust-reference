@@ -1128,6 +1128,13 @@
 <a href="#1126" id="1126">1126</a>
 <a href="#1127" id="1127">1127</a>
 <a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1141,6 +1148,7 @@
     sync::{Arc, Mutex, OnceLock},
 };
 
+<span class="kw">use </span>futures::{future::BoxFuture, FutureExt};
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::layout::v0alpha1::{
     layout_request::{Body, ExplicitLayout, Geometries},
     layout_service_client::LayoutServiceClient,
@@ -1164,13 +1172,18 @@
 </span><span class="kw">pub struct </span>Layout {
     api: OnceLock&lt;ApiModules&gt;,
     layout_client: LayoutServiceClient&lt;Channel&gt;,
+    fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
 }
 
 <span class="kw">impl </span>Layout {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
+        channel: Channel,
+        fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
+    ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             api: OnceLock::new(),
             layout_client: LayoutServiceClient::new(channel.clone()),
+            fut_sender,
         }
     }
 
@@ -1241,9 +1254,10 @@
                     })
                     .unwrap();
             }
-        };
+        }
+        .boxed();
 
-        tokio::spawn(thing);
+        <span class="self">self</span>.fut_sender.send(thing).unwrap();
         requester
     }
 }
