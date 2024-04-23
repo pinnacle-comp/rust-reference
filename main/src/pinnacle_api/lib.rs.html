@@ -238,6 +238,23 @@
 <a href="#236" id="236">236</a>
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -315,9 +332,9 @@
 //! ## 5. Begin crafting your config!
 //! You can peruse the documentation for things to configure.
 
-</span><span class="kw">use </span>std::{sync::Arc, time::Duration};
+</span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>futures::{future::BoxFuture, Future, StreamExt};
+<span class="kw">use </span>futures::{future::BoxFuture, Future, FutureExt, StreamExt};
 <span class="kw">use </span>input::Input;
 <span class="kw">use </span>layout::Layout;
 <span class="kw">use </span>output::Output;
@@ -419,7 +436,7 @@
     <span class="kw">let </span>output = Box::leak(Box::new(Output::new(channel.clone())));
     <span class="kw">let </span>tag = Box::leak(Box::new(Tag::new(channel.clone())));
     <span class="kw">let </span>render = Box::leak(Box::new(Render::new(channel.clone())));
-    <span class="kw">let </span>layout = Box::leak(Box::new(Layout::new(channel.clone())));
+    <span class="kw">let </span>layout = Box::leak(Box::new(Layout::new(channel.clone(), fut_sender.clone())));
 
     <span class="kw">let </span>modules = ApiModules {
         pinnacle,
@@ -451,21 +468,38 @@
 /// You should use the macro instead of this function directly.
 </span><span class="kw">pub async fn </span>listen(api: ApiModules, fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
     <span class="kw">let </span><span class="kw-2">mut </span>fut_recv = UnboundedReceiverStream::new(fut_recv);
+    <span class="kw">let </span><span class="kw-2">mut </span>set = futures::stream::FuturesUnordered::new();
 
-    <span class="kw">let </span>keepalive = <span class="kw">async move </span>{
-        <span class="kw">loop </span>{
-            tokio::time::sleep(Duration::from_secs(<span class="number">60</span>)).<span class="kw">await</span>;
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = api.pinnacle.ping().<span class="kw">await </span>{
-                <span class="macro">eprintln!</span>(<span class="string">"Failed to ping compositor: {err}"</span>);
-                std::process::exit(<span class="number">1</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>shutdown_stream = api.pinnacle.shutdown_watch().<span class="kw">await</span>;
+
+    <span class="kw">let </span><span class="kw-2">mut </span>shutdown_watcher = <span class="kw">async move </span>{
+        <span class="comment">// This will trigger either when the compositor sends the shutdown signal
+        // or when it exits (in which case the stream received an error)
+        </span>shutdown_stream.next().<span class="kw">await</span>;
+    }
+    .boxed();
+
+    <span class="kw">loop </span>{
+        <span class="macro">tokio::select! </span>{
+            fut = fut_recv.next() =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(fut) = fut {
+                    set.push(tokio::spawn(fut));
+                } <span class="kw">else </span>{
+                    <span class="kw">break</span>;
+                }
+            }
+            res = set.next() =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(join_err)) = res {
+                    <span class="macro">eprintln!</span>(<span class="string">"tokio task panicked: {join_err}"</span>);
+                    api.signal.write().<span class="kw">await</span>.shutdown();
+                    <span class="kw">break</span>;
+                }
+            }
+            <span class="kw">_ </span>= <span class="kw-2">&amp;mut </span>shutdown_watcher =&gt; {
+                api.signal.write().<span class="kw">await</span>.shutdown();
+                <span class="kw">break</span>;
             }
         }
-    };
-
-    tokio::spawn(keepalive);
-
-    <span class="kw">while let </span><span class="prelude-val">Some</span>(fut) = fut_recv.next().<span class="kw">await </span>{
-        tokio::spawn(fut);
     }
 }
 
