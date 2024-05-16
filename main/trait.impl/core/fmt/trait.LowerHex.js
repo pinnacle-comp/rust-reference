@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"pinnacle_api":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.77.2/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"pinnacle_api/output/struct.UpdateLocsOn.html\" title=\"struct pinnacle_api::output::UpdateLocsOn\">UpdateLocsOn</a>"]]
+"pinnacle_api":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.78.0/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"pinnacle_api/output/struct.UpdateLocsOn.html\" title=\"struct pinnacle_api::output::UpdateLocsOn\">UpdateLocsOn</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
