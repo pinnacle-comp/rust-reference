@@ -1443,6 +1443,74 @@
 <a href="#1441" id="1441">1441</a>
 <a href="#1442" id="1442">1442</a>
 <a href="#1443" id="1443">1443</a>
+<a href="#1444" id="1444">1444</a>
+<a href="#1445" id="1445">1445</a>
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
+<a href="#1460" id="1460">1460</a>
+<a href="#1461" id="1461">1461</a>
+<a href="#1462" id="1462">1462</a>
+<a href="#1463" id="1463">1463</a>
+<a href="#1464" id="1464">1464</a>
+<a href="#1465" id="1465">1465</a>
+<a href="#1466" id="1466">1466</a>
+<a href="#1467" id="1467">1467</a>
+<a href="#1468" id="1468">1468</a>
+<a href="#1469" id="1469">1469</a>
+<a href="#1470" id="1470">1470</a>
+<a href="#1471" id="1471">1471</a>
+<a href="#1472" id="1472">1472</a>
+<a href="#1473" id="1473">1473</a>
+<a href="#1474" id="1474">1474</a>
+<a href="#1475" id="1475">1475</a>
+<a href="#1476" id="1476">1476</a>
+<a href="#1477" id="1477">1477</a>
+<a href="#1478" id="1478">1478</a>
+<a href="#1479" id="1479">1479</a>
+<a href="#1480" id="1480">1480</a>
+<a href="#1481" id="1481">1481</a>
+<a href="#1482" id="1482">1482</a>
+<a href="#1483" id="1483">1483</a>
+<a href="#1484" id="1484">1484</a>
+<a href="#1485" id="1485">1485</a>
+<a href="#1486" id="1486">1486</a>
+<a href="#1487" id="1487">1487</a>
+<a href="#1488" id="1488">1488</a>
+<a href="#1489" id="1489">1489</a>
+<a href="#1490" id="1490">1490</a>
+<a href="#1491" id="1491">1491</a>
+<a href="#1492" id="1492">1492</a>
+<a href="#1493" id="1493">1493</a>
+<a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1505,7 +1573,7 @@
         }
     }
 
-    <span class="doccomment">/// Get a handle to all connected outputs.
+    <span class="doccomment">/// Get handles to all connected outputs.
     ///
     /// # Examples
     ///
@@ -1527,8 +1595,33 @@
             .into_inner()
             .output_names
             .into_iter()
-            .map(<span class="kw">move </span>|name| <span class="self">self</span>.new_handle(name))
+            .map(|name| <span class="self">self</span>.new_handle(name))
             .collect()
+    }
+
+    <span class="doccomment">/// Get handles to all outputs that are connected and enabled.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let enabled = output.get_all_enabled();
+    /// ```
+    </span><span class="kw">pub fn </span>get_all_enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
+        block_on_tokio(<span class="self">self</span>.get_all_enabled_async())
+    }
+
+    <span class="doccomment">/// The async version of [`Output::get_all_enabled`].
+    </span><span class="kw">pub async fn </span>get_all_enabled_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
+        <span class="kw">let </span>outputs = <span class="self">self</span>.get_all_async().<span class="kw">await</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>enabled_outputs = Vec::new();
+        <span class="kw">for </span>output <span class="kw">in </span>outputs {
+            <span class="kw">if </span>output.enabled_async().<span class="kw">await</span>.unwrap_or_default() {
+                enabled_outputs.push(output);
+            }
+        }
+
+        enabled_outputs
     }
 
     <span class="doccomment">/// Get a handle to the output with the given name.
@@ -1717,7 +1810,7 @@
 
         <span class="kw">let </span>api = <span class="self">self</span>.api.get().unwrap().clone();
         <span class="kw">let </span>layout_outputs = <span class="kw">move </span>|| {
-            <span class="kw">let </span>outputs = api.output.get_all();
+            <span class="kw">let </span>outputs = api.output.get_all_enabled();
 
             <span class="kw">let </span><span class="kw-2">mut </span>rightmost_output_and_x: <span class="prelude-ty">Option</span>&lt;(OutputHandle, i32)&gt; = <span class="prelude-val">None</span>;
 
@@ -2446,6 +2539,8 @@
                 .into_iter()
                 .map(|id| <span class="self">self</span>.api.window.new_handle(id))
                 .collect(),
+            enabled: response.enabled,
+            powered: response.powered,
         }
     }
 
@@ -2501,6 +2596,8 @@
 
     <span class="doccomment">/// Get this output's logical width in pixels.
     ///
+    /// If the output is disabled, this returns None.
+    ///
     /// Shorthand for `self.props().logical_width`.
     </span><span class="kw">pub fn </span>logical_width(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
         <span class="self">self</span>.props().logical_width
@@ -2512,6 +2609,8 @@
     }
 
     <span class="doccomment">/// Get this output's logical height in pixels.
+    ///
+    /// If the output is disabled, this returns None.
     ///
     /// Shorthand for `self.props().logical_height`.
     </span><span class="kw">pub fn </span>logical_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
@@ -2673,6 +2772,34 @@
             .collect()
     }
 
+    <span class="doccomment">/// Get whether this output is enabled.
+    ///
+    /// Disabled outputs act as if you unplugged them.
+    </span><span class="kw">pub fn </span>enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props().enabled
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::enabled`].
+    </span><span class="kw">pub async fn </span>enabled_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.enabled
+    }
+
+    <span class="doccomment">/// Get whether this output is powered.
+    ///
+    /// Unpowered outputs will be turned off but you can still interact with them.
+    ///
+    /// Outputs can be disabled but still powered; this just means
+    /// they will turn on when powered. Disabled and unpowered outputs
+    /// will not power on when enabled, but will still be interactable.
+    </span><span class="kw">pub fn </span>powered(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props().powered
+    }
+
+    <span class="doccomment">/// The async version of [`OutputHandle::powered`].
+    </span><span class="kw">pub async fn </span>powered_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="self">self</span>.props_async().<span class="kw">await</span>.powered
+    }
+
     <span class="doccomment">/// Get this output's unique name (the name of its connector).
     </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="self">self</span>.name.to_string()
@@ -2737,6 +2864,15 @@
     </span><span class="kw">pub </span>serial: <span class="prelude-ty">Option</span>&lt;u32&gt;,
     <span class="doccomment">/// This output's window keyboard focus stack.
     </span><span class="kw">pub </span>keyboard_focus_stack: Vec&lt;WindowHandle&gt;,
+    <span class="doccomment">/// Whether this output is enabled.
+    ///
+    /// Enabled outputs are mapped in the global space and usable.
+    /// Disabled outputs function as if you unplugged them.
+    </span><span class="kw">pub </span>enabled: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    <span class="doccomment">/// Whether this output is powered.
+    ///
+    /// Unpowered outputs will be off but you can still interact with them.
+    </span><span class="kw">pub </span>powered: <span class="prelude-ty">Option</span>&lt;bool&gt;,
 }
 
 <span class="doccomment">/// A custom modeline.
