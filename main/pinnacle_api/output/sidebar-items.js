@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Alignment","OutputId","OutputLoc","Transform"],"struct":["Mode","Output","OutputHandle","OutputProperties","OutputSetup","UpdateLocsOn"]};
+window.SIDEBAR_ITEMS = {"enum":["Alignment","OutputId","OutputLoc","Transform"],"struct":["Mode","Modeline","Output","OutputHandle","OutputProperties","OutputSetup","ParseModelineError","UpdateLocsOn"]};
