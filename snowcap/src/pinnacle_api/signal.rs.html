@@ -467,6 +467,13 @@
 <a href="#465" id="465">465</a>
 <a href="#466" id="466">466</a>
 <a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
 //!
 //! Your config can connect to various compositor signals that allow you to, for example, do
@@ -542,6 +549,8 @@
                     callback_sender
                         .send((<span class="self">self</span>.current_id, callback))
                         .expect(<span class="string">"failed to send callback"</span>);
+
+                    <span class="self">self</span>.callback_count.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
 
                     <span class="kw">let </span>handle = SignalHandle::new(<span class="self">self</span>.current_id, remove_callback_sender);
 
@@ -845,6 +854,10 @@
 
         control_sender
             .send(Req::from_control(StreamControl::Ready))
+            .map_err(|err| {
+                <span class="macro">println!</span>(<span class="string">"{err}"</span>);
+                err
+            })
             .expect(<span class="string">"send failed"</span>);
 
         <span class="kw">loop </span>{
@@ -876,8 +889,9 @@
                 callback = callback_recv_recv =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">Some</span>((id, callback)) = callback {
                         callbacks.insert(id, callback);
-                        callback_count.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
-                    }
+                        <span class="comment">// Added in `add_callback` in the macro above
+                        // callback_count.fetch_add(1, Ordering::SeqCst);
+                    </span>}
                 }
                 remove = remove_callback_recv_recv =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = remove {
