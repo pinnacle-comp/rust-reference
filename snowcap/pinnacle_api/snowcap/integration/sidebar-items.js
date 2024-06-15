@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Integration","QuitPrompt"]};
+window.SIDEBAR_ITEMS = {"struct":["Integration","KeybindOverlay","QuitPrompt"]};
