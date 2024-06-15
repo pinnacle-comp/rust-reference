@@ -313,6 +313,8 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -400,6 +402,7 @@
 <span class="kw">use </span>process::Process;
 <span class="kw">use </span>render::Render;
 <span class="kw">use </span>signal::SignalState;
+<span class="kw">use </span>snowcap::Snowcap;
 <span class="kw">use </span>tag::Tag;
 <span class="kw">use </span>tokio::{
     sync::{
@@ -413,9 +416,6 @@
 <span class="kw">use </span>tower::service_fn;
 <span class="kw">use </span>window::Window;
 
-<span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-</span><span class="kw">use </span>snowcap_api::layer::Layer;
-
 <span class="kw">pub mod </span>input;
 <span class="kw">pub mod </span>layout;
 <span class="kw">pub mod </span>output;
@@ -423,6 +423,8 @@
 <span class="kw">pub mod </span>process;
 <span class="kw">pub mod </span>render;
 <span class="kw">pub mod </span>signal;
+<span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+</span><span class="kw">pub mod </span>snowcap;
 <span class="kw">pub mod </span>tag;
 <span class="kw">pub mod </span>util;
 <span class="kw">pub mod </span>window;
@@ -457,7 +459,7 @@
 
     <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
     </span><span class="doccomment">/// The snowcap widget system.
-    </span><span class="kw">pub </span>snowcap: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Layer,
+    </span><span class="kw">pub </span>snowcap: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Snowcap,
 }
 
 <span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>ApiModules {
@@ -530,20 +532,21 @@
     };
 
     <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span><span class="kw">let </span>(snowcap, snowcap_recv) = snowcap_api::connect().<span class="kw">await</span>.unwrap();
-
-    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span><span class="kw">let </span>modules = ApiModules {
-        pinnacle,
-        process,
-        window,
-        input,
-        output,
-        tag,
-        layout,
-        render,
-        signal: signal.clone(),
-        snowcap: Box::leak(Box::new(snowcap)),
+    </span><span class="kw">let </span>(modules, snowcap_recv) = {
+        <span class="kw">let </span>(snowcap, snowcap_recv) = snowcap_api::connect().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>api_modules = ApiModules {
+            pinnacle,
+            process,
+            window,
+            input,
+            output,
+            tag,
+            layout,
+            render,
+            signal: signal.clone(),
+            snowcap: Box::leak(Box::new(Snowcap::new(snowcap))),
+        };
+        (api_modules, snowcap_recv)
     };
 
     window.finish_init(modules.clone());
@@ -551,6 +554,7 @@
     tag.finish_init(modules.clone());
     layout.finish_init(modules.clone());
     signal.read().<span class="kw">await</span>.finish_init(modules.clone());
+    modules.snowcap.finish_init(modules.clone());
 
     <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
     </span><span class="kw">let </span>receivers = Receivers {
