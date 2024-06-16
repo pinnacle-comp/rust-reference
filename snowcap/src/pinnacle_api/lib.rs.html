@@ -316,6 +316,7 @@
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -403,7 +404,8 @@
 <span class="kw">use </span>process::Process;
 <span class="kw">use </span>render::Render;
 <span class="kw">use </span>signal::SignalState;
-<span class="kw">use </span>snowcap::Snowcap;
+<span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+</span><span class="kw">use </span>snowcap::Snowcap;
 <span class="kw">use </span>tag::Tag;
 <span class="kw">use </span>tokio::{
     sync::{
