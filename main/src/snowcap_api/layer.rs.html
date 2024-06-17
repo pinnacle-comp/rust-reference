@@ -220,6 +220,10 @@
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Support for layer surface widgets using `wlr-layer-shell`.
 
 </span><span class="kw">use </span>std::num::NonZeroU32;
@@ -431,6 +435,10 @@
         <span class="self">self</span>.join_handle_sender
             .send(tokio::spawn(<span class="kw">async move </span>{
                 <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
+                    <span class="kw">if </span>!response.pressed() {
+                        <span class="kw">continue</span>;
+                    }
+
                     <span class="kw">let </span>key = Keysym::new(response.key());
                     <span class="kw">let </span>mods = Modifiers::from(response.modifiers.unwrap_or_default());
 

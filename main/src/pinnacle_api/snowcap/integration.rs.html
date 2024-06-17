@@ -318,6 +318,7 @@
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Pinnacle-specific integrations with Snowcap.
 //!
 //! This module includes builtin widgets like the exit prompt and keybind list.
@@ -486,22 +487,23 @@
 
         <span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>KeybindRepr {
             <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
-                <span class="kw">let </span>bind = <span class="self">self
-                    </span>.mods
-                    .iter()
-                    .map(|m| {
-                        <span class="comment">// TODO: strum name or something
-                        </span><span class="kw">match </span>m {
-                            Mod::Shift =&gt; <span class="string">"Shift"</span>,
-                            Mod::Ctrl =&gt; <span class="string">"Ctrl"</span>,
-                            Mod::Alt =&gt; <span class="string">"Alt"</span>,
-                            Mod::Super =&gt; <span class="string">"Super"</span>,
-                        }
-                        .to_string()
-                    })
-                    .chain([<span class="self">self</span>.name.clone()])
-                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-                    .join(<span class="string">" + "</span>);
+                <span class="kw">let </span><span class="kw-2">mut </span>parts = Vec::new();
+                <span class="kw">if </span><span class="self">self</span>.mods.contains(<span class="kw-2">&amp;</span>Mod::Super) {
+                    parts.push(<span class="string">"Super"</span>);
+                }
+                <span class="kw">if </span><span class="self">self</span>.mods.contains(<span class="kw-2">&amp;</span>Mod::Ctrl) {
+                    parts.push(<span class="string">"Ctrl"</span>);
+                }
+                <span class="kw">if </span><span class="self">self</span>.mods.contains(<span class="kw-2">&amp;</span>Mod::Alt) {
+                    parts.push(<span class="string">"Alt"</span>);
+                }
+                <span class="kw">if </span><span class="self">self</span>.mods.contains(<span class="kw-2">&amp;</span>Mod::Shift) {
+                    parts.push(<span class="string">"Shift"</span>);
+                }
+
+                parts.push(<span class="self">self</span>.name.as_str());
+
+                <span class="kw">let </span>bind = parts.join(<span class="string">" + "</span>);
                 <span class="macro">write!</span>(f, <span class="string">"{bind}"</span>)
             }
         }
