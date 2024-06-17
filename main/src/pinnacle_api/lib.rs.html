@@ -255,6 +255,63 @@
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -342,6 +399,8 @@
 <span class="kw">use </span>process::Process;
 <span class="kw">use </span>render::Render;
 <span class="kw">use </span>signal::SignalState;
+<span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+</span><span class="kw">use </span>snowcap::Snowcap;
 <span class="kw">use </span>tag::Tag;
 <span class="kw">use </span>tokio::sync::{
     mpsc::{unbounded_channel, UnboundedReceiver},
@@ -359,11 +418,15 @@
 <span class="kw">pub mod </span>process;
 <span class="kw">pub mod </span>render;
 <span class="kw">pub mod </span>signal;
+<span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+</span><span class="kw">pub mod </span>snowcap;
 <span class="kw">pub mod </span>tag;
 <span class="kw">pub mod </span>util;
 <span class="kw">pub mod </span>window;
 
 <span class="kw">pub use </span>pinnacle_api_macros::config;
+<span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+</span><span class="kw">pub use </span>snowcap_api;
 <span class="kw">pub use </span>tokio;
 <span class="kw">pub use </span>xkbcommon;
 
@@ -388,6 +451,10 @@
     <span class="doccomment">/// The [`Render`] struct
     </span><span class="kw">pub </span>render: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Render,
     signal: Arc&lt;RwLock&lt;SignalState&gt;&gt;,
+
+    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+    </span><span class="doccomment">/// The snowcap widget system.
+    </span><span class="kw">pub </span>snowcap: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Snowcap,
 }
 
 <span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>ApiModules {
@@ -402,16 +469,23 @@
             .field(<span class="string">"layout"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.layout)
             .field(<span class="string">"render"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.render)
             .field(<span class="string">"signal"</span>, <span class="kw-2">&amp;</span><span class="string">"..."</span>)
-            .finish()
+            <span class="comment">// TODO: snowcap
+            </span>.finish()
     }
+}
+
+<span class="doccomment">/// Api receivers.
+</span><span class="kw">pub struct </span>Receivers {
+    pinnacle: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
+    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+    </span>snowcap: UnboundedReceiver&lt;tokio::task::JoinHandle&lt;()&gt;&gt;,
 }
 
 <span class="doccomment">/// Connects to Pinnacle and builds the configuration structs.
 ///
 /// This function is inserted at the top of your config through the [`config`] macro.
 /// You should use that macro instead of this function directly.
-</span><span class="kw">pub async fn </span>connect(
-) -&gt; <span class="prelude-ty">Result</span>&lt;(ApiModules, UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+</span><span class="kw">pub async fn </span>connect() -&gt; <span class="prelude-ty">Result</span>&lt;(ApiModules, Receivers), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// port doesn't matter, we use a unix socket
     </span><span class="kw">let </span>channel = Endpoint::try_from(<span class="string">"http://[::]:50051"</span>)<span class="question-mark">?
         </span>.connect_with_connector(service_fn(|<span class="kw">_</span>: Uri| {
@@ -420,7 +494,8 @@
                     .expect(<span class="string">"PINNACLE_GRPC_SOCKET was not set; is Pinnacle running?"</span>),
             )
         }))
-        .<span class="kw">await</span><span class="question-mark">?</span>;
+        .<span class="kw">await
+        </span>.unwrap();
 
     <span class="kw">let </span>(fut_sender, fut_recv) = unbounded_channel::&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
 
@@ -438,7 +513,8 @@
     <span class="kw">let </span>render = Box::leak(Box::new(Render::new(channel.clone())));
     <span class="kw">let </span>layout = Box::leak(Box::new(Layout::new(channel.clone(), fut_sender.clone())));
 
-    <span class="kw">let </span>modules = ApiModules {
+    <span class="attr">#[cfg(not(feature = <span class="string">"snowcap"</span>))]
+    </span><span class="kw">let </span>modules = ApiModules {
         pinnacle,
         process,
         window,
@@ -450,13 +526,40 @@
         signal: signal.clone(),
     };
 
+    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+    </span><span class="kw">let </span>(modules, snowcap_recv) = {
+        <span class="kw">let </span>(snowcap, snowcap_recv) = snowcap_api::connect().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>api_modules = ApiModules {
+            pinnacle,
+            process,
+            window,
+            input,
+            output,
+            tag,
+            layout,
+            render,
+            signal: signal.clone(),
+            snowcap: Box::leak(Box::new(Snowcap::new(snowcap))),
+        };
+        (api_modules, snowcap_recv)
+    };
+
     window.finish_init(modules.clone());
     output.finish_init(modules.clone());
     tag.finish_init(modules.clone());
     layout.finish_init(modules.clone());
     signal.read().<span class="kw">await</span>.finish_init(modules.clone());
 
-    <span class="prelude-val">Ok</span>((modules, fut_recv))
+    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+    </span>modules.snowcap.finish_init(modules.clone());
+
+    <span class="kw">let </span>receivers = Receivers {
+        pinnacle: fut_recv,
+        <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+        </span>snowcap: snowcap_recv,
+    };
+
+    <span class="prelude-val">Ok</span>((modules, receivers))
 }
 
 <span class="doccomment">/// Listen to Pinnacle for incoming messages.
@@ -466,7 +569,15 @@
 ///
 /// This function is inserted at the end of your config through the [`config`] macro.
 /// You should use the macro instead of this function directly.
-</span><span class="kw">pub async fn </span>listen(api: ApiModules, fut_recv: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;) {
+</span><span class="kw">pub async fn </span>listen(api: ApiModules, receivers: Receivers) {
+    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+    </span><span class="kw">let </span>Receivers {
+        pinnacle: fut_recv,
+        snowcap: snowcap_recv,
+    } = receivers;
+    <span class="attr">#[cfg(not(feature = <span class="string">"snowcap"</span>))]
+    </span><span class="kw">let </span>Receivers { pinnacle: fut_recv } = receivers;
+
     <span class="kw">let </span><span class="kw-2">mut </span>fut_recv = UnboundedReceiverStream::new(fut_recv);
     <span class="kw">let </span><span class="kw-2">mut </span>set = futures::stream::FuturesUnordered::new();
 
@@ -478,6 +589,9 @@
         </span>shutdown_stream.next().<span class="kw">await</span>;
     }
     .boxed();
+
+    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+    </span>tokio::spawn(snowcap_api::listen(snowcap_recv));
 
     <span class="kw">loop </span>{
         <span class="macro">tokio::select!</span> {
