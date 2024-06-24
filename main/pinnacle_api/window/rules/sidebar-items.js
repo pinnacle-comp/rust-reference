@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["WindowRule","WindowRuleCondition"]};
+window.SIDEBAR_ITEMS = {"enum":["DecorationMode"],"struct":["WindowRule","WindowRuleCondition"]};
