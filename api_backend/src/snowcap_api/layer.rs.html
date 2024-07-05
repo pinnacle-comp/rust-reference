@@ -193,49 +193,18 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Support for layer surface widgets using `wlr-layer-shell`.
 
 </span><span class="kw">use </span>std::num::NonZeroU32;
 
 <span class="kw">use </span>snowcap_api_defs::snowcap::{
-    input::v0alpha1::{input_service_client::InputServiceClient, KeyboardKeyRequest},
+    input::v0alpha1::KeyboardKeyRequest,
     layer::{
         <span class="self">self</span>,
-        v0alpha1::{layer_service_client::LayerServiceClient, CloseRequest, NewLayerRequest},
+        v0alpha1::{CloseRequest, NewLayerRequest},
     },
 };
-<span class="kw">use </span>tokio::{sync::mpsc::UnboundedSender, task::JoinHandle};
 <span class="kw">use </span>tokio_stream::StreamExt;
-<span class="kw">use </span>tonic::transport::Channel;
 <span class="kw">use </span>xkbcommon::xkb::Keysym;
 
 <span class="kw">use crate</span>::{
@@ -245,12 +214,8 @@
 };
 
 <span class="doccomment">/// The Layer API.
-</span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>Layer {
-    client: LayerServiceClient&lt;Channel&gt;,
-    input_client: InputServiceClient&lt;Channel&gt;,
-    join_handle_sender: UnboundedSender&lt;JoinHandle&lt;()&gt;&gt;,
-}
+</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Layer;
 
 <span class="comment">// TODO: change to bitflag
 </span><span class="doccomment">/// An anchor for a layer surface.
@@ -348,14 +313,6 @@
 }
 
 <span class="kw">impl </span>Layer {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel, sender: UnboundedSender&lt;JoinHandle&lt;()&gt;&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            client: LayerServiceClient::new(channel.clone()),
-            input_client: InputServiceClient::new(channel),
-            join_handle_sender: sender,
-        }
-    }
-
     <span class="doccomment">/// Create a new widget.
     </span><span class="kw">pub fn </span>new_widget(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -367,9 +324,7 @@
         exclusive_zone: ExclusiveZone,
         layer: ZLayer,
     ) -&gt; LayerHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-
-        <span class="kw">let </span>response = block_on_tokio(client.new_layer(NewLayerRequest {
+        <span class="kw">let </span>response = block_on_tokio(<span class="kw">crate</span>::layer().new_layer(NewLayerRequest {
             widget_def: <span class="prelude-val">Some</span>(widget.into().into()),
             width: <span class="prelude-val">Some</span>(width),
             height: <span class="prelude-val">Some</span>(height),
@@ -387,29 +342,20 @@
             .layer_id
             .expect(<span class="string">"id should not be null"</span>);
 
-        LayerHandle {
-            id: id.into(),
-            client,
-            input_client: <span class="self">self</span>.input_client.clone(),
-            join_handle_sender: <span class="self">self</span>.join_handle_sender.clone(),
-        }
+        LayerHandle { id: id.into() }
     }
 }
 
 <span class="doccomment">/// A handle to a layer surface widget.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>LayerHandle {
     id: WidgetId,
-    client: LayerServiceClient&lt;Channel&gt;,
-    input_client: InputServiceClient&lt;Channel&gt;,
-    join_handle_sender: UnboundedSender&lt;JoinHandle&lt;()&gt;&gt;,
 }
 
 <span class="kw">impl </span>LayerHandle {
     <span class="doccomment">/// Close this layer widget.
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-        block_on_tokio(client.close(CloseRequest {
+        block_on_tokio(<span class="kw">crate</span>::layer().close(CloseRequest {
             layer_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id.into_inner()),
         }))
         .unwrap();
@@ -418,32 +364,28 @@
     <span class="doccomment">/// Do something on key press.
     </span><span class="kw">pub fn </span>on_key_press(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="kw-2">mut </span>on_press: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>LayerHandle, Keysym, Modifiers) + Send + <span class="lifetime">'static</span>,
+        <span class="kw-2">mut </span>on_press: <span class="kw">impl </span>FnMut(LayerHandle, Keysym, Modifiers) + Send + <span class="lifetime">'static</span>,
     ) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.input_client.clone();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(client.keyboard_key(KeyboardKeyRequest {
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(<span class="kw">crate</span>::input().keyboard_key(KeyboardKeyRequest {
             id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id.into_inner()),
         }))
         .unwrap()
         .into_inner();
 
-        <span class="kw">let </span>handle = <span class="self">self</span>.clone();
+        <span class="kw">let </span>handle = <span class="kw-2">*</span><span class="self">self</span>;
 
-        <span class="self">self</span>.join_handle_sender
-            .send(tokio::spawn(<span class="kw">async move </span>{
-                <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
-                    <span class="kw">if </span>!response.pressed() {
-                        <span class="kw">continue</span>;
-                    }
-
-                    <span class="kw">let </span>key = Keysym::new(response.key());
-                    <span class="kw">let </span>mods = Modifiers::from(response.modifiers.unwrap_or_default());
-
-                    on_press(<span class="kw-2">&amp;</span>handle, key, mods);
+        tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
+                <span class="kw">if </span>!response.pressed() {
+                    <span class="kw">continue</span>;
                 }
-            }))
-            .unwrap();
+
+                <span class="kw">let </span>key = Keysym::new(response.key());
+                <span class="kw">let </span>mods = Modifiers::from(response.modifiers.unwrap_or_default());
+
+                on_press(handle, key, mods);
+            }
+        });
     }
 }
 </code></pre></div></section></main></body></html>

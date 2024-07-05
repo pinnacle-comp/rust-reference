@@ -73,6 +73,20 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Snowcap: A very, *very* WIP widget system built for [Pinnacle](https://github.com/pinnacle-comp/pinnacle).
 //!
 //! [AwesomeWM](https://awesomewm.org/) has a widget system, and Pinnacle is heavily inspired by
@@ -91,18 +105,34 @@
 <span class="kw">pub mod </span>snowcap;
 <span class="kw">pub mod </span>widget;
 
+<span class="kw">use </span>snowcap_api_defs::snowcap::{
+    input::v0alpha1::input_service_client::InputServiceClient,
+    layer::v0alpha1::layer_service_client::LayerServiceClient,
+};
 <span class="kw">pub use </span>xkbcommon;
 
-<span class="kw">use </span>std::path::PathBuf;
+<span class="kw">use </span>std::{path::PathBuf, sync::OnceLock, time::Duration};
 
 <span class="kw">use </span>futures::Future;
 <span class="kw">use </span>layer::Layer;
-<span class="kw">use </span>tokio::{
-    sync::mpsc::{unbounded_channel, UnboundedReceiver},
-    task::JoinHandle,
-};
-<span class="kw">use </span>tonic::transport::{Endpoint, Uri};
+<span class="kw">use </span>tonic::transport::{Channel, Endpoint, Uri};
 <span class="kw">use </span>tower::service_fn;
+
+<span class="kw">static </span>LAYER: OnceLock&lt;LayerServiceClient&lt;Channel&gt;&gt; = OnceLock::new();
+<span class="kw">static </span>INPUT: OnceLock&lt;InputServiceClient&lt;Channel&gt;&gt; = OnceLock::new();
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>layer() -&gt; LayerServiceClient&lt;Channel&gt; {
+    LAYER
+        .get()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+        .clone()
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>input() -&gt; InputServiceClient&lt;Channel&gt; {
+    INPUT
+        .get()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+        .clone()
+}
 
 <span class="kw">fn </span>socket_dir() -&gt; PathBuf {
     xdg::BaseDirectories::with_prefix(<span class="string">"snowcap"</span>)
@@ -120,26 +150,24 @@
 /// Only one snowcap instance can be open per Wayland session.
 /// This function will search for a Snowcap socket at
 /// `$XDG_RUNTIME_DIR/$snowcap-grpc-$WAYLAND_DISPLAY.sock` and connect to it.
-</span><span class="kw">pub async fn </span>connect(
-) -&gt; <span class="prelude-ty">Result</span>&lt;(Layer, UnboundedReceiver&lt;JoinHandle&lt;()&gt;&gt;), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+</span><span class="kw">pub async fn </span>connect() -&gt; <span class="prelude-ty">Result</span>&lt;Layer, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="kw">let </span>channel = Endpoint::try_from(<span class="string">"http://[::]:50051"</span>)<span class="question-mark">?
         </span>.connect_with_connector(service_fn(|<span class="kw">_</span>: Uri| {
             tokio::net::UnixStream::connect(socket_dir().join(socket_name()))
         }))
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(fut_sender, fut_recv) = unbounded_channel::&lt;JoinHandle&lt;()&gt;&gt;();
+    <span class="kw">let _ </span>= LAYER.set(LayerServiceClient::new(channel.clone()));
+    <span class="kw">let _ </span>= INPUT.set(InputServiceClient::new(channel.clone()));
 
-    <span class="kw">let </span>layer = Layer::new(channel.clone(), fut_sender.clone());
-
-    <span class="prelude-val">Ok</span>((layer, fut_recv))
+    <span class="prelude-val">Ok</span>(Layer)
 }
 
 <span class="doccomment">/// Listen to Snowcap for events.
-</span><span class="kw">pub async fn </span>listen(<span class="kw-2">mut </span>recv: UnboundedReceiver&lt;JoinHandle&lt;()&gt;&gt;) {
+</span><span class="kw">pub async fn </span>listen() {
     <span class="kw">loop </span>{
-        recv.recv().<span class="kw">await</span>;
-    }
+        tokio::time::sleep(Duration::from_secs(u64::MAX)).<span class="kw">await
+    </span>}
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>block_on_tokio&lt;F: Future&gt;(future: F) -&gt; F::Output {
