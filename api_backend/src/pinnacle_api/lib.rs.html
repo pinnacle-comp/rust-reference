@@ -344,6 +344,17 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -391,7 +402,7 @@
 //! ```
 //!
 //! ## 3. Set up dependencies
-//! In your `Cargo.toml`, add a dependency to `pinnacle-api`:
+//! In your `Cargo.toml`, add `pinnacle-api` as a dependency:
 //!
 //! ```toml
 //! # Cargo.toml
@@ -402,21 +413,32 @@
 //!
 //! ## 4. Set up the main function
 //! In `main.rs`, change `fn main()` to `async fn main()` and annotate it with the
-//! [`pinnacle_api::config`][`crate::config`] macro. Create the API modules with
-//! [`ApiModules::new`]:
+//! [`pinnacle_api::config`][`crate::config`] macro:
+//!
+//! ```
+//! #[pinnacle_api::config]
+//! async fn main() {}
+//! ```
+//!
+//! ## 5. Begin crafting your config!
+//!
+//! You can create the API modules with [`ApiModules::new`]:
 //!
 //! ```
 //! use pinnacle_api::ApiModules;
 //!
-//! #[pinnacle_api::config]
-//! async fn main() {
-//!     let ApiModules {
-//!         ..
-//!     } = ApiModules::new();
-//! }
+//! let ApiModules {
+//!     ..
+//! } = ApiModules::new();
 //! ```
 //!
-//! ## 5. Begin crafting your config!
+//! Most modules are copy-able unit structs, so you can also use them directly:
+//!
+//! ```
+//! let _ = pinnacle_api::window::Window.get_all();
+//! pinnacle_api::pinnacle::Pinnacle.quit();
+//! ```
+//!
 //! You can peruse the documentation for things to configure.
 
 </span><span class="kw">use </span>futures::{Future, StreamExt};
