@@ -209,33 +209,19 @@
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
 <a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Support for layer surface widgets using `wlr-layer-shell`.
 
 </span><span class="kw">use </span>std::num::NonZeroU32;
 
 <span class="kw">use </span>snowcap_api_defs::snowcap::{
-    input::v0alpha1::{input_service_client::InputServiceClient, KeyboardKeyRequest},
+    input::v0alpha1::KeyboardKeyRequest,
     layer::{
         <span class="self">self</span>,
-        v0alpha1::{layer_service_client::LayerServiceClient, CloseRequest, NewLayerRequest},
+        v0alpha1::{CloseRequest, NewLayerRequest},
     },
 };
-<span class="kw">use </span>tokio::{sync::mpsc::UnboundedSender, task::JoinHandle};
 <span class="kw">use </span>tokio_stream::StreamExt;
-<span class="kw">use </span>tonic::transport::Channel;
+<span class="kw">use </span>tracing::error;
 <span class="kw">use </span>xkbcommon::xkb::Keysym;
 
 <span class="kw">use crate</span>::{
@@ -245,12 +231,8 @@
 };
 
 <span class="doccomment">/// The Layer API.
-</span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>Layer {
-    client: LayerServiceClient&lt;Channel&gt;,
-    input_client: InputServiceClient&lt;Channel&gt;,
-    join_handle_sender: UnboundedSender&lt;JoinHandle&lt;()&gt;&gt;,
-}
+</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Layer;
 
 <span class="comment">// TODO: change to bitflag
 </span><span class="doccomment">/// An anchor for a layer surface.
@@ -347,15 +329,18 @@
     }
 }
 
-<span class="kw">impl </span>Layer {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel, sender: UnboundedSender&lt;JoinHandle&lt;()&gt;&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            client: LayerServiceClient::new(channel.clone()),
-            input_client: InputServiceClient::new(channel),
-            join_handle_sender: sender,
-        }
-    }
+<span class="doccomment">/// The error type for [`Layer::new_widget`].
+</span><span class="attr">#[derive(thiserror::Error, Debug)]
+</span><span class="kw">pub enum </span>NewLayerError {
+    <span class="doccomment">/// Snowcap returned a gRPC error status.
+    </span><span class="attr">#[error(<span class="string">"gRPC error: `{0}`"</span>)]
+    </span>GrpcStatus(<span class="attr">#[from] </span>tonic::Status),
+    <span class="doccomment">/// Snowcap did not return a layer id as expected.
+    </span><span class="attr">#[error(<span class="string">"snowcap did not return a layer id"</span>)]
+    </span>NoLayerId,
+}
 
+<span class="kw">impl </span>Layer {
     <span class="doccomment">/// Create a new widget.
     </span><span class="kw">pub fn </span>new_widget(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -366,10 +351,8 @@
         keyboard_interactivity: KeyboardInteractivity,
         exclusive_zone: ExclusiveZone,
         layer: ZLayer,
-    ) -&gt; LayerHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-
-        <span class="kw">let </span>response = block_on_tokio(client.new_layer(NewLayerRequest {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;LayerHandle, NewLayerError&gt; {
+        <span class="kw">let </span>response = block_on_tokio(<span class="kw">crate</span>::layer().new_layer(NewLayerRequest {
             widget_def: <span class="prelude-val">Some</span>(widget.into().into()),
             width: <span class="prelude-val">Some</span>(width),
             height: <span class="prelude-val">Some</span>(height),
@@ -379,71 +362,62 @@
             ) <span class="kw">as </span>i32),
             exclusive_zone: <span class="prelude-val">Some</span>(exclusive_zone.into()),
             layer: <span class="prelude-val">Some</span>(layer::v0alpha1::Layer::from(layer) <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        }))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>id = response
             .into_inner()
             .layer_id
-            .expect(<span class="string">"id should not be null"</span>);
+            .ok_or(NewLayerError::NoLayerId)<span class="question-mark">?</span>;
 
-        LayerHandle {
-            id: id.into(),
-            client,
-            input_client: <span class="self">self</span>.input_client.clone(),
-            join_handle_sender: <span class="self">self</span>.join_handle_sender.clone(),
-        }
+        <span class="prelude-val">Ok</span>(LayerHandle { id: id.into() })
     }
 }
 
 <span class="doccomment">/// A handle to a layer surface widget.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>LayerHandle {
     id: WidgetId,
-    client: LayerServiceClient&lt;Channel&gt;,
-    input_client: InputServiceClient&lt;Channel&gt;,
-    join_handle_sender: UnboundedSender&lt;JoinHandle&lt;()&gt;&gt;,
 }
 
 <span class="kw">impl </span>LayerHandle {
     <span class="doccomment">/// Close this layer widget.
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.clone();
-        block_on_tokio(client.close(CloseRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(status) = block_on_tokio(<span class="kw">crate</span>::layer().close(CloseRequest {
             layer_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id.into_inner()),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to close {self:?}: {status}"</span>);
+        }
     }
 
     <span class="doccomment">/// Do something on key press.
     </span><span class="kw">pub fn </span>on_key_press(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="kw-2">mut </span>on_press: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>LayerHandle, Keysym, Modifiers) + Send + <span class="lifetime">'static</span>,
+        <span class="kw-2">mut </span>on_press: <span class="kw">impl </span>FnMut(LayerHandle, Keysym, Modifiers) + Send + <span class="lifetime">'static</span>,
     ) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.input_client.clone();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(client.keyboard_key(KeyboardKeyRequest {
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span>block_on_tokio(<span class="kw">crate</span>::input().keyboard_key(KeyboardKeyRequest {
             id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id.into_inner()),
-        }))
-        .unwrap()
-        .into_inner();
+        })) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream.into_inner(),
+            <span class="prelude-val">Err</span>(status) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to set `on_key_press` handler: {status}"</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
-        <span class="kw">let </span>handle = <span class="self">self</span>.clone();
+        <span class="kw">let </span>handle = <span class="kw-2">*</span><span class="self">self</span>;
 
-        <span class="self">self</span>.join_handle_sender
-            .send(tokio::spawn(<span class="kw">async move </span>{
-                <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
-                    <span class="kw">if </span>!response.pressed() {
-                        <span class="kw">continue</span>;
-                    }
-
-                    <span class="kw">let </span>key = Keysym::new(response.key());
-                    <span class="kw">let </span>mods = Modifiers::from(response.modifiers.unwrap_or_default());
-
-                    on_press(<span class="kw-2">&amp;</span>handle, key, mods);
+        tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
+                <span class="kw">if </span>!response.pressed() {
+                    <span class="kw">continue</span>;
                 }
-            }))
-            .unwrap();
+
+                <span class="kw">let </span>key = Keysym::new(response.key());
+                <span class="kw">let </span>mods = Modifiers::from(response.modifiers.unwrap_or_default());
+
+                on_press(handle, key, mods);
+            }
+        });
     }
 }
 </code></pre></div></section></main></body></html>

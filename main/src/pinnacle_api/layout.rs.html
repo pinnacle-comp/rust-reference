@@ -1116,23 +1116,6 @@
 <a href="#1116" id="1116">1116</a>
 <a href="#1117" id="1117">1117</a>
 <a href="#1118" id="1118">1118</a>
-<a href="#1119" id="1119">1119</a>
-<a href="#1120" id="1120">1120</a>
-<a href="#1121" id="1121">1121</a>
-<a href="#1122" id="1122">1122</a>
-<a href="#1123" id="1123">1123</a>
-<a href="#1124" id="1124">1124</a>
-<a href="#1125" id="1125">1125</a>
-<a href="#1126" id="1126">1126</a>
-<a href="#1127" id="1127">1127</a>
-<a href="#1128" id="1128">1128</a>
-<a href="#1129" id="1129">1129</a>
-<a href="#1130" id="1130">1130</a>
-<a href="#1131" id="1131">1131</a>
-<a href="#1132" id="1132">1132</a>
-<a href="#1133" id="1133">1133</a>
-<a href="#1134" id="1134">1134</a>
-<a href="#1135" id="1135">1135</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1143,52 +1126,30 @@
 
 </span><span class="kw">use </span>std::{
     collections::HashMap,
-    sync::{Arc, Mutex, OnceLock},
+    sync::{Arc, Mutex},
 };
 
-<span class="kw">use </span>futures::{future::BoxFuture, FutureExt};
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::layout::v0alpha1::{
     layout_request::{Body, ExplicitLayout, Geometries},
-    layout_service_client::LayoutServiceClient,
     LayoutRequest,
 };
 <span class="kw">use </span>tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
 <span class="kw">use </span>tokio_stream::StreamExt;
-<span class="kw">use </span>tonic::transport::Channel;
+<span class="kw">use </span>tracing::debug;
 
 <span class="kw">use crate</span>::{
-    block_on_tokio,
-    output::OutputHandle,
-    tag::TagHandle,
+    block_on_tokio, layout,
+    output::{Output, OutputHandle},
+    tag::{Tag, TagHandle},
     util::{Axis, Geometry},
-    window::WindowHandle,
-    ApiModules,
+    window::{Window, WindowHandle},
 };
 
 <span class="doccomment">/// A struct that allows you to manage layouts.
-</span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>Layout {
-    api: OnceLock&lt;ApiModules&gt;,
-    layout_client: LayoutServiceClient&lt;Channel&gt;,
-    fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
-}
+</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Layout;
 
 <span class="kw">impl </span>Layout {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        channel: Channel,
-        fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            api: OnceLock::new(),
-            layout_client: LayoutServiceClient::new(channel.clone()),
-            fut_sender,
-        }
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
-        <span class="self">self</span>.api.set(api).unwrap();
-    }
-
     <span class="doccomment">/// Consume the given [`LayoutManager`] and set it as the global layout handler.
     ///
     /// This returns a [`LayoutRequester`] that allows you to manually request layouts from
@@ -1200,7 +1161,7 @@
     {
         <span class="kw">let </span>(from_client, to_server) = unbounded_channel::&lt;LayoutRequest&gt;();
         <span class="kw">let </span>to_server_stream = tokio_stream::wrappers::UnboundedReceiverStream::new(to_server);
-        <span class="kw">let </span><span class="kw-2">mut </span>from_server = block_on_tokio(<span class="self">self</span>.layout_client.clone().layout(to_server_stream))
+        <span class="kw">let </span><span class="kw-2">mut </span>from_server = block_on_tokio(layout().clone().layout(to_server_stream))
             .expect(<span class="string">"TODO"</span>)
             .into_inner();
 
@@ -1208,33 +1169,30 @@
 
         <span class="kw">let </span>manager = Arc::new(Mutex::new(manager));
 
-        <span class="kw">let </span>api = <span class="self">self</span>.api.get().unwrap().clone();
-
         <span class="kw">let </span>requester = LayoutRequester {
-            api: api.clone(),
             sender: from_client_clone,
             manager: manager.clone(),
         };
 
-        <span class="kw">let </span>thing = <span class="kw">async move </span>{
+        <span class="kw">let </span>fut = <span class="kw">async move </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = from_server.next().<span class="kw">await </span>{
                 <span class="kw">let </span>args = LayoutArgs {
-                    output: api.output.new_handle(response.output_name()),
+                    output: Output.new_handle(response.output_name()),
                     windows: response
                         .window_ids
                         .into_iter()
-                        .map(|id| api.window.new_handle(id))
+                        .map(|id| Window.new_handle(id))
                         .collect(),
                     tags: response
                         .tag_ids
                         .into_iter()
-                        .map(|id| api.tag.new_handle(id))
+                        .map(|id| Tag.new_handle(id))
                         .collect(),
                     output_width: response.output_width.unwrap_or_default(),
                     output_height: response.output_height.unwrap_or_default(),
                 };
                 <span class="kw">let </span>geos = manager.lock().unwrap().active_layout(<span class="kw-2">&amp;</span>args).layout(<span class="kw-2">&amp;</span>args);
-                from_client
+                <span class="kw">if </span>from_client
                     .send(LayoutRequest {
                         body: <span class="prelude-val">Some</span>(Body::Geometries(Geometries {
                             request_id: response.request_id,
@@ -1250,12 +1208,14 @@
                                 .collect(),
                         })),
                     })
-                    .unwrap();
+                    .is_err()
+                {
+                    <span class="macro">debug!</span>(<span class="string">"Failed to send layout geometries: channel closed"</span>);
+                }
             }
-        }
-        .boxed();
+        };
 
-        <span class="self">self</span>.fut_sender.send(thing).unwrap();
+        tokio::spawn(fut);
         requester
     }
 }
@@ -1376,7 +1336,6 @@
 <span class="doccomment">/// A struct that can request layouts and provides access to a consumed [`LayoutManager`].
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>LayoutRequester&lt;T&gt; {
-    api: ApiModules,
     sender: UnboundedSender&lt;LayoutRequest&gt;,
     <span class="doccomment">/// The manager that was consumed, wrapped in an `Arc&lt;Mutex&gt;`.
     </span><span class="kw">pub </span>manager: Arc&lt;Mutex&lt;T&gt;&gt;,
@@ -1385,7 +1344,6 @@
 <span class="kw">impl</span>&lt;T&gt; Clone <span class="kw">for </span>LayoutRequester&lt;T&gt; {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            api: <span class="self">self</span>.api.clone(),
             sender: <span class="self">self</span>.sender.clone(),
             manager: <span class="self">self</span>.manager.clone(),
         }
@@ -1398,23 +1356,31 @@
     /// This uses the focused output for the request.
     /// If you want to layout a specific output, see [`LayoutRequester::request_layout_on_output`].
     </span><span class="kw">pub fn </span>request_layout(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span>output_name = <span class="self">self</span>.api.output.get_focused().map(|op| op.name);
-        <span class="self">self</span>.sender
+        <span class="kw">let </span>output_name = Output.get_focused().map(|op| op.name);
+        <span class="kw">if </span><span class="self">self
+            </span>.sender
             .send(LayoutRequest {
                 body: <span class="prelude-val">Some</span>(Body::Layout(ExplicitLayout { output_name })),
             })
-            .unwrap();
+            .is_err()
+        {
+            <span class="macro">debug!</span>(<span class="string">"Failed to request layout: channel closed"</span>);
+        }
     }
 
     <span class="doccomment">/// Request a layout from the compositor for the given output.
     </span><span class="kw">pub fn </span>request_layout_on_output(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) {
-        <span class="self">self</span>.sender
+        <span class="kw">if </span><span class="self">self
+            </span>.sender
             .send(LayoutRequest {
                 body: <span class="prelude-val">Some</span>(Body::Layout(ExplicitLayout {
                     output_name: <span class="prelude-val">Some</span>(output.name.clone()),
                 })),
             })
-            .unwrap();
+            .is_err()
+        {
+            <span class="macro">debug!</span>(<span class="string">"Failed to request layout on output: channel closed"</span>);
+        }
     }
 }
 

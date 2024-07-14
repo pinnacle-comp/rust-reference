@@ -310,6 +310,51 @@
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -357,7 +402,7 @@
 //! ```
 //!
 //! ## 3. Set up dependencies
-//! In your `Cargo.toml`, add a dependency to `pinnacle-api`:
+//! In your `Cargo.toml`, add `pinnacle-api` as a dependency:
 //!
 //! ```toml
 //! # Cargo.toml
@@ -368,45 +413,60 @@
 //!
 //! ## 4. Set up the main function
 //! In `main.rs`, change `fn main()` to `async fn main()` and annotate it with the
-//! [`pinnacle_api::config`][`crate::config`] macro. Pass in the identifier you want to bind the
-//! config modules to:
+//! [`pinnacle_api::config`][`crate::config`] macro:
+//!
+//! ```
+//! #[pinnacle_api::config]
+//! async fn main() {}
+//! ```
+//!
+//! ## 5. Begin crafting your config!
+//!
+//! You can create the API modules with [`ApiModules::new`]:
 //!
 //! ```
 //! use pinnacle_api::ApiModules;
 //!
-//! #[pinnacle_api::config(modules)]
-//! async fn main() {
-//!     // `modules` is now available in the function body.
-//!     // You can deconstruct `ApiModules` to get all the config structs.
-//!     let ApiModules {
-//!         ..
-//!     } = modules;
-//! }
+//! let ApiModules {
+//!     ..
+//! } = ApiModules::new();
 //! ```
 //!
-//! ## 5. Begin crafting your config!
+//! Most modules are copy-able unit structs, so you can also use them directly:
+//!
+//! ```
+//! let _ = pinnacle_api::window::Window.get_all();
+//! pinnacle_api::pinnacle::Pinnacle.quit();
+//! ```
+//!
 //! You can peruse the documentation for things to configure.
 
-</span><span class="kw">use </span>std::sync::Arc;
-
-<span class="kw">use </span>futures::{future::BoxFuture, Future, FutureExt, StreamExt};
+</span><span class="kw">use </span>futures::{Future, StreamExt};
 <span class="kw">use </span>input::Input;
 <span class="kw">use </span>layout::Layout;
 <span class="kw">use </span>output::Output;
 <span class="kw">use </span>pinnacle::Pinnacle;
+<span class="kw">use </span>pinnacle_api_defs::pinnacle::{
+    input::v0alpha1::input_service_client::InputServiceClient,
+    layout::v0alpha1::layout_service_client::LayoutServiceClient,
+    output::v0alpha1::output_service_client::OutputServiceClient,
+    process::v0alpha1::process_service_client::ProcessServiceClient,
+    render::v0alpha1::render_service_client::RenderServiceClient,
+    signal::v0alpha1::signal_service_client::SignalServiceClient,
+    tag::v0alpha1::tag_service_client::TagServiceClient,
+    v0alpha1::pinnacle_service_client::PinnacleServiceClient,
+    window::v0alpha1::window_service_client::WindowServiceClient,
+};
 <span class="kw">use </span>process::Process;
 <span class="kw">use </span>render::Render;
 <span class="kw">use </span>signal::SignalState;
 <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
 </span><span class="kw">use </span>snowcap::Snowcap;
 <span class="kw">use </span>tag::Tag;
-<span class="kw">use </span>tokio::sync::{
-    mpsc::{unbounded_channel, UnboundedReceiver},
-    RwLock,
-};
-<span class="kw">use </span>tokio_stream::wrappers::UnboundedReceiverStream;
-<span class="kw">use </span>tonic::transport::{Endpoint, Uri};
+<span class="kw">use </span>tokio::sync::{MappedMutexGuard, Mutex, MutexGuard, RwLock};
+<span class="kw">use </span>tonic::transport::{Channel, Endpoint, Uri};
 <span class="kw">use </span>tower::service_fn;
+<span class="kw">use </span>tracing::info;
 <span class="kw">use </span>window::Window;
 
 <span class="kw">pub mod </span>input;
@@ -428,9 +488,81 @@
 <span class="kw">pub use </span>tokio;
 <span class="kw">pub use </span>xkbcommon;
 
-<span class="doccomment">/// A struct containing static references to all of the configuration structs.
+<span class="comment">// These are all `RwLock&lt;Option&gt;` instead of `OnceLock` purely for the fact that
+// tonic doesn't like it when you use clients across tokio runtimes, and these are static
+// meaning they would get reused, so this allows us to recreate the client on a
+// different runtime when testing.
+</span><span class="kw">static </span>PINNACLE: RwLock&lt;<span class="prelude-ty">Option</span>&lt;PinnacleServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>PROCESS: RwLock&lt;<span class="prelude-ty">Option</span>&lt;ProcessServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>WINDOW: RwLock&lt;<span class="prelude-ty">Option</span>&lt;WindowServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>INPUT: RwLock&lt;<span class="prelude-ty">Option</span>&lt;InputServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>OUTPUT: RwLock&lt;<span class="prelude-ty">Option</span>&lt;OutputServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>TAG: RwLock&lt;<span class="prelude-ty">Option</span>&lt;TagServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>LAYOUT: RwLock&lt;<span class="prelude-ty">Option</span>&lt;LayoutServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>RENDER: RwLock&lt;<span class="prelude-ty">Option</span>&lt;RenderServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>SIGNAL: RwLock&lt;<span class="prelude-ty">Option</span>&lt;SignalServiceClient&lt;Channel&gt;&gt;&gt; = RwLock::const_new(<span class="prelude-val">None</span>);
+
+<span class="kw">static </span>SIGNAL_MODULE: Mutex&lt;<span class="prelude-ty">Option</span>&lt;SignalState&gt;&gt; = Mutex::const_new(<span class="prelude-val">None</span>);
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>pinnacle() -&gt; PinnacleServiceClient&lt;Channel&gt; {
+    block_on_tokio(PINNACLE.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>process() -&gt; ProcessServiceClient&lt;Channel&gt; {
+    block_on_tokio(PROCESS.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>window() -&gt; WindowServiceClient&lt;Channel&gt; {
+    block_on_tokio(WINDOW.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>input() -&gt; InputServiceClient&lt;Channel&gt; {
+    block_on_tokio(INPUT.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>output() -&gt; OutputServiceClient&lt;Channel&gt; {
+    block_on_tokio(OUTPUT.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>tag() -&gt; TagServiceClient&lt;Channel&gt; {
+    block_on_tokio(TAG.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>layout() -&gt; LayoutServiceClient&lt;Channel&gt; {
+    block_on_tokio(LAYOUT.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>render() -&gt; RenderServiceClient&lt;Channel&gt; {
+    block_on_tokio(RENDER.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>signal() -&gt; SignalServiceClient&lt;Channel&gt; {
+    block_on_tokio(SIGNAL.read())
+        .clone()
+        .expect(<span class="string">"grpc connection was not initialized"</span>)
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>signal_module() -&gt; MappedMutexGuard&lt;<span class="lifetime">'static</span>, SignalState&gt; {
+    MutexGuard::map(block_on_tokio(SIGNAL_MODULE.lock()), |state| {
+        state.as_mut().expect(<span class="string">"grpc connection was not initialized"</span>)
+    })
+}
+
+<span class="doccomment">/// A struct containing all of the config module structs.
+///
+/// Everything in here is a static reference because even though the modules are
+/// copy-able unit structs, you still have to put `move` when using them in closures,
+/// so this is just a minor quality-of-life thing.
 </span><span class="attr">#[non_exhaustive]
-#[derive(Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>ApiModules {
     <span class="doccomment">/// The [`Pinnacle`] struct
     </span><span class="kw">pub </span>pinnacle: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Pinnacle,
@@ -448,42 +580,44 @@
     </span><span class="kw">pub </span>layout: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Layout,
     <span class="doccomment">/// The [`Render`] struct
     </span><span class="kw">pub </span>render: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Render,
-    signal: Arc&lt;RwLock&lt;SignalState&gt;&gt;,
 
     <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
     </span><span class="doccomment">/// The snowcap widget system.
     </span><span class="kw">pub </span>snowcap: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Snowcap,
 }
 
-<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>ApiModules {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">"ApiModules"</span>)
-            .field(<span class="string">"pinnacle"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.pinnacle)
-            .field(<span class="string">"process"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.process)
-            .field(<span class="string">"window"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.window)
-            .field(<span class="string">"input"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.input)
-            .field(<span class="string">"output"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.output)
-            .field(<span class="string">"tag"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.tag)
-            .field(<span class="string">"layout"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.layout)
-            .field(<span class="string">"render"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.render)
-            .field(<span class="string">"signal"</span>, <span class="kw-2">&amp;</span><span class="string">"..."</span>)
-            <span class="comment">// TODO: snowcap
-            </span>.finish()
+<span class="kw">impl </span>Default <span class="kw">for </span>ApiModules {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new()
     }
 }
 
-<span class="doccomment">/// Api receivers.
-</span><span class="kw">pub struct </span>Receivers {
-    pinnacle: UnboundedReceiver&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
-    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span>snowcap: UnboundedReceiver&lt;tokio::task::JoinHandle&lt;()&gt;&gt;,
+<span class="kw">impl </span>ApiModules {
+    <span class="doccomment">/// Creates all the API modules.
+    </span><span class="kw">pub const fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            pinnacle: <span class="kw-2">&amp;</span>Pinnacle,
+            process: <span class="kw-2">&amp;</span>Process,
+            window: <span class="kw-2">&amp;</span>Window,
+            input: <span class="kw-2">&amp;</span>Input,
+            output: <span class="kw-2">&amp;</span>Output,
+            tag: <span class="kw-2">&amp;</span>Tag,
+            layout: <span class="kw-2">&amp;</span>Layout,
+            render: <span class="kw-2">&amp;</span>Render,
+            <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
+            </span>snowcap: {
+                <span class="kw">const </span>SNOWCAP: Snowcap = Snowcap::new();
+                <span class="kw-2">&amp;</span>SNOWCAP
+            },
+        }
+    }
 }
 
 <span class="doccomment">/// Connects to Pinnacle and builds the configuration structs.
 ///
 /// This function is inserted at the top of your config through the [`config`] macro.
 /// You should use that macro instead of this function directly.
-</span><span class="kw">pub async fn </span>connect() -&gt; <span class="prelude-ty">Result</span>&lt;(ApiModules, Receivers), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+</span><span class="kw">pub async fn </span>connect() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// port doesn't matter, we use a unix socket
     </span><span class="kw">let </span>channel = Endpoint::try_from(<span class="string">"http://[::]:50051"</span>)<span class="question-mark">?
         </span>.connect_with_connector(service_fn(|<span class="kw">_</span>: Uri| {
@@ -495,69 +629,51 @@
         .<span class="kw">await
         </span>.unwrap();
 
-    <span class="kw">let </span>(fut_sender, fut_recv) = unbounded_channel::&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+    <span class="kw">let </span>socket_path = std::env::var(<span class="string">"PINNACLE_GRPC_SOCKET"</span>).unwrap();
+    <span class="macro">info!</span>(<span class="string">"Connected to {socket_path}"</span>);
 
-    <span class="kw">let </span>signal = Arc::new(RwLock::new(SignalState::new(
-        channel.clone(),
-        fut_sender.clone(),
-    )));
+    PINNACLE
+        .write()
+        .<span class="kw">await
+        </span>.replace(PinnacleServiceClient::new(channel.clone()));
+    PROCESS
+        .write()
+        .<span class="kw">await
+        </span>.replace(ProcessServiceClient::new(channel.clone()));
+    WINDOW
+        .write()
+        .<span class="kw">await
+        </span>.replace(WindowServiceClient::new(channel.clone()));
+    INPUT
+        .write()
+        .<span class="kw">await
+        </span>.replace(InputServiceClient::new(channel.clone()));
+    OUTPUT
+        .write()
+        .<span class="kw">await
+        </span>.replace(OutputServiceClient::new(channel.clone()));
+    TAG.write()
+        .<span class="kw">await
+        </span>.replace(TagServiceClient::new(channel.clone()));
+    RENDER
+        .write()
+        .<span class="kw">await
+        </span>.replace(RenderServiceClient::new(channel.clone()));
+    LAYOUT
+        .write()
+        .<span class="kw">await
+        </span>.replace(LayoutServiceClient::new(channel.clone()));
+    SIGNAL
+        .write()
+        .<span class="kw">await
+        </span>.replace(SignalServiceClient::new(channel.clone()));
 
-    <span class="kw">let </span>pinnacle = Box::leak(Box::new(Pinnacle::new(channel.clone())));
-    <span class="kw">let </span>process = Box::leak(Box::new(Process::new(channel.clone(), fut_sender.clone())));
-    <span class="kw">let </span>window = Box::leak(Box::new(Window::new(channel.clone())));
-    <span class="kw">let </span>input = Box::leak(Box::new(Input::new(channel.clone(), fut_sender.clone())));
-    <span class="kw">let </span>output = Box::leak(Box::new(Output::new(channel.clone())));
-    <span class="kw">let </span>tag = Box::leak(Box::new(Tag::new(channel.clone())));
-    <span class="kw">let </span>render = Box::leak(Box::new(Render::new(channel.clone())));
-    <span class="kw">let </span>layout = Box::leak(Box::new(Layout::new(channel.clone(), fut_sender.clone())));
-
-    <span class="attr">#[cfg(not(feature = <span class="string">"snowcap"</span>))]
-    </span><span class="kw">let </span>modules = ApiModules {
-        pinnacle,
-        process,
-        window,
-        input,
-        output,
-        tag,
-        layout,
-        render,
-        signal: signal.clone(),
-    };
-
-    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span><span class="kw">let </span>(modules, snowcap_recv) = {
-        <span class="kw">let </span>(snowcap, snowcap_recv) = snowcap_api::connect().<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>api_modules = ApiModules {
-            pinnacle,
-            process,
-            window,
-            input,
-            output,
-            tag,
-            layout,
-            render,
-            signal: signal.clone(),
-            snowcap: Box::leak(Box::new(Snowcap::new(snowcap))),
-        };
-        (api_modules, snowcap_recv)
-    };
-
-    window.finish_init(modules.clone());
-    output.finish_init(modules.clone());
-    tag.finish_init(modules.clone());
-    layout.finish_init(modules.clone());
-    signal.read().<span class="kw">await</span>.finish_init(modules.clone());
+    SIGNAL_MODULE.lock().<span class="kw">await</span>.replace(SignalState::new());
 
     <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span>modules.snowcap.finish_init(modules.clone());
+    </span>snowcap_api::connect().<span class="kw">await</span>.unwrap();
 
-    <span class="kw">let </span>receivers = Receivers {
-        pinnacle: fut_recv,
-        <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-        </span>snowcap: snowcap_recv,
-    };
-
-    <span class="prelude-val">Ok</span>((modules, receivers))
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Listen to Pinnacle for incoming messages.
@@ -567,52 +683,26 @@
 ///
 /// This function is inserted at the end of your config through the [`config`] macro.
 /// You should use the macro instead of this function directly.
-</span><span class="kw">pub async fn </span>listen(api: ApiModules, receivers: Receivers) {
-    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span><span class="kw">let </span>Receivers {
-        pinnacle: fut_recv,
-        snowcap: snowcap_recv,
-    } = receivers;
-    <span class="attr">#[cfg(not(feature = <span class="string">"snowcap"</span>))]
-    </span><span class="kw">let </span>Receivers { pinnacle: fut_recv } = receivers;
+</span><span class="kw">pub async fn </span>listen() {
+    <span class="kw">let </span><span class="kw-2">mut </span>shutdown_stream = Pinnacle.shutdown_watch().<span class="kw">await</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>fut_recv = UnboundedReceiverStream::new(fut_recv);
-    <span class="kw">let </span><span class="kw-2">mut </span>set = futures::stream::FuturesUnordered::new();
+    <span class="comment">// This will trigger either when the compositor sends the shutdown signal
+    // or when it exits (in which case the stream received an error)
+    </span>shutdown_stream.next().<span class="kw">await</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>shutdown_stream = api.pinnacle.shutdown_watch().<span class="kw">await</span>;
+    signal_module().shutdown();
+}
 
-    <span class="kw">let </span><span class="kw-2">mut </span>shutdown_watcher = <span class="kw">async move </span>{
-        <span class="comment">// This will trigger either when the compositor sends the shutdown signal
-        // or when it exits (in which case the stream received an error)
-        </span>shutdown_stream.next().<span class="kw">await</span>;
-    }
-    .boxed();
-
-    <span class="attr">#[cfg(feature = <span class="string">"snowcap"</span>)]
-    </span>tokio::spawn(snowcap_api::listen(snowcap_recv));
-
-    <span class="kw">loop </span>{
-        <span class="macro">tokio::select!</span> {
-            fut = fut_recv.next() =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(fut) = fut {
-                    set.push(tokio::spawn(fut));
-                } <span class="kw">else </span>{
-                    <span class="kw">break</span>;
-                }
-            }
-            res = set.next() =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(join_err)) = res {
-                    <span class="macro">eprintln!</span>(<span class="string">"tokio task panicked: {join_err}"</span>);
-                    api.signal.write().<span class="kw">await</span>.shutdown();
-                    <span class="kw">break</span>;
-                }
-            }
-            <span class="kw">_ </span>= <span class="kw-2">&amp;mut </span>shutdown_watcher =&gt; {
-                api.signal.write().<span class="kw">await</span>.shutdown();
-                <span class="kw">break</span>;
-            }
-        }
-    }
+<span class="doccomment">/// Sets the default `tracing_subscriber` to output logs.
+///
+/// This subscriber does not include the time or ansi escape codes.
+/// If you would like to disable this in [`crate::config`], pass in
+/// `internal_tracing = false`.
+</span><span class="kw">pub fn </span>set_default_tracing_subscriber() {
+    tracing_subscriber::fmt()
+        .without_time()
+        .with_ansi(<span class="bool-val">false</span>)
+        .init();
 }
 
 <span class="doccomment">/// Block on a future using the current Tokio runtime.

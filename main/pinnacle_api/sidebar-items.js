@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"attr":["config"],"fn":["connect","listen"],"macro":["batch_boxed","batch_boxed_async"],"mod":["input","layout","output","pinnacle","process","render","signal","snowcap","tag","util","window"],"struct":["ApiModules","Receivers"]};
+window.SIDEBAR_ITEMS = {"attr":["config"],"fn":["connect","listen","set_default_tracing_subscriber"],"macro":["batch_boxed","batch_boxed_async"],"mod":["input","layout","output","pinnacle","process","render","signal","snowcap","tag","util","window"],"struct":["ApiModules"]};

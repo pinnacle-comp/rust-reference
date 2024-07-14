@@ -298,32 +298,11 @@
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Pinnacle-specific integrations with Snowcap.
 //!
 //! This module includes builtin widgets like the exit prompt and keybind list.
 
-</span><span class="kw">use </span>std::sync::OnceLock;
-
-<span class="kw">use </span>indexmap::IndexMap;
+</span><span class="kw">use </span>indexmap::IndexMap;
 <span class="kw">use </span>snowcap_api::{
     layer::{ExclusiveZone, KeyboardInteractivity, ZLayer},
     widget::{
@@ -334,32 +313,20 @@
 <span class="kw">use </span>xkbcommon::xkb::Keysym;
 
 <span class="kw">use crate</span>::{
-    input::{KeybindDescription, Mod},
-    ApiModules,
+    input::{Input, KeybindDescription, Mod},
+    pinnacle::Pinnacle,
 };
 
 <span class="doccomment">/// Builtin widgets for Pinnacle.
-</span><span class="kw">pub struct </span>Integration {
-    api: OnceLock&lt;ApiModules&gt;,
-}
+</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Integration;
 
 <span class="kw">impl </span>Integration {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            api: OnceLock::new(),
-        }
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
-        <span class="self">self</span>.api.set(api).unwrap();
-    }
-
     <span class="doccomment">/// Create the default quit prompt.
     ///
     /// Some of its characteristics can be changed by setting its fields.
     </span><span class="kw">pub fn </span>quit_prompt(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; QuitPrompt {
         QuitPrompt {
-            api: <span class="self">self</span>.api.get().cloned().unwrap(),
             border_radius: <span class="number">12.0</span>,
             border_thickness: <span class="number">6.0</span>,
             background_color: [<span class="number">0.15</span>, <span class="number">0.03</span>, <span class="number">0.1</span>, <span class="number">0.65</span>].into(),
@@ -375,7 +342,6 @@
     /// Some of its characteristics can be changed by setting its fields.
     </span><span class="kw">pub fn </span>keybind_overlay(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; KeybindOverlay {
         KeybindOverlay {
-            api: <span class="self">self</span>.api.get().cloned().unwrap(),
             border_radius: <span class="number">12.0</span>,
             border_thickness: <span class="number">6.0</span>,
             background_color: [<span class="number">0.15</span>, <span class="number">0.15</span>, <span class="number">0.225</span>, <span class="number">0.8</span>].into(),
@@ -391,7 +357,6 @@
 ///
 /// When opened, pressing ENTER will quit the compositor.
 </span><span class="kw">pub struct </span>QuitPrompt {
-    api: ApiModules,
     <span class="doccomment">/// The radius of the prompt's corners.
     </span><span class="kw">pub </span>border_radius: f32,
     <span class="doccomment">/// The thickness of the prompt border.
@@ -431,9 +396,7 @@
         .border_color(<span class="self">self</span>.border_color)
         .background_color(<span class="self">self</span>.background_color);
 
-        <span class="self">self</span>.api
-            .snowcap
-            .layer
+        snowcap_api::layer::Layer
             .new_widget(
                 widget,
                 <span class="self">self</span>.width,
@@ -443,9 +406,10 @@
                 ExclusiveZone::Respect,
                 ZLayer::Overlay,
             )
+            .unwrap()
             .on_key_press(|handle, key, _mods| {
                 <span class="kw">if </span>key == Keysym::Return {
-                    <span class="self">self</span>.api.pinnacle.quit();
+                    Pinnacle.quit();
                 } <span class="kw">else </span>{
                     handle.close();
                 }
@@ -455,7 +419,6 @@
 
 <span class="doccomment">/// A keybind overlay.
 </span><span class="kw">pub struct </span>KeybindOverlay {
-    api: ApiModules,
     <span class="doccomment">/// The radius of the prompt's corners.
     </span><span class="kw">pub </span>border_radius: f32,
     <span class="doccomment">/// The thickness of the prompt border.
@@ -475,7 +438,7 @@
 <span class="kw">impl </span>KeybindOverlay {
     <span class="doccomment">/// Show this keybind overlay.
     </span><span class="kw">pub fn </span>show(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span>descriptions = <span class="self">self</span>.api.input.keybind_descriptions();
+        <span class="kw">let </span>descriptions = Input.keybind_descriptions();
 
         <span class="attr">#[derive(PartialEq, Eq, Hash)]
         </span><span class="kw">struct </span>KeybindRepr {
@@ -619,9 +582,7 @@
         .border_color(<span class="self">self</span>.border_color)
         .background_color(<span class="self">self</span>.background_color);
 
-        <span class="self">self</span>.api
-            .snowcap
-            .layer
+        snowcap_api::layer::Layer
             .new_widget(
                 widget,
                 <span class="self">self</span>.width,
@@ -631,6 +592,7 @@
                 ExclusiveZone::Respect,
                 ZLayer::Top,
             )
+            .unwrap()
             .on_key_press(|handle, _key, _mods| {
                 handle.close();
             });

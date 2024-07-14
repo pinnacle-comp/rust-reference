@@ -758,39 +758,6 @@
 <a href="#758" id="758">758</a>
 <a href="#759" id="759">759</a>
 <a href="#760" id="760">760</a>
-<a href="#761" id="761">761</a>
-<a href="#762" id="762">762</a>
-<a href="#763" id="763">763</a>
-<a href="#764" id="764">764</a>
-<a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a>
-<a href="#768" id="768">768</a>
-<a href="#769" id="769">769</a>
-<a href="#770" id="770">770</a>
-<a href="#771" id="771">771</a>
-<a href="#772" id="772">772</a>
-<a href="#773" id="773">773</a>
-<a href="#774" id="774">774</a>
-<a href="#775" id="775">775</a>
-<a href="#776" id="776">776</a>
-<a href="#777" id="777">777</a>
-<a href="#778" id="778">778</a>
-<a href="#779" id="779">779</a>
-<a href="#780" id="780">780</a>
-<a href="#781" id="781">781</a>
-<a href="#782" id="782">782</a>
-<a href="#783" id="783">783</a>
-<a href="#784" id="784">784</a>
-<a href="#785" id="785">785</a>
-<a href="#786" id="786">786</a>
-<a href="#787" id="787">787</a>
-<a href="#788" id="788">788</a>
-<a href="#789" id="789">789</a>
-<a href="#790" id="790">790</a>
-<a href="#791" id="791">791</a>
-<a href="#792" id="792">792</a>
-<a href="#793" id="793">793</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -805,31 +772,28 @@
 //!
 //! This module also allows you to set window rules; see the [rules] module for more information.
 
-</span><span class="kw">use </span>std::sync::OnceLock;
-
-<span class="kw">use </span>futures::FutureExt;
+</span><span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>num_enum::TryFromPrimitive;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
     v0alpha1::SetOrToggle,
     window::{
         <span class="self">self</span>,
         v0alpha1::{
-            window_service_client::WindowServiceClient, AddWindowRuleRequest, CloseRequest,
-            GetRequest, MoveGrabRequest, MoveToTagRequest, RaiseRequest, ResizeGrabRequest,
-            SetFloatingRequest, SetFocusedRequest, SetFullscreenRequest, SetMaximizedRequest,
-            SetTagRequest,
+            AddWindowRuleRequest, CloseRequest, GetRequest, MoveGrabRequest, MoveToTagRequest,
+            RaiseRequest, ResizeGrabRequest, SetFloatingRequest, SetFocusedRequest,
+            SetFullscreenRequest, SetMaximizedRequest, SetTagRequest,
         },
     },
 };
-<span class="kw">use </span>tonic::transport::Channel;
+<span class="kw">use </span>tracing::{error, instrument};
 
 <span class="kw">use crate</span>::{
     block_on_tokio,
     input::MouseButton,
     signal::{SignalHandle, WindowSignal},
-    tag::TagHandle,
+    signal_module,
+    tag::{Tag, TagHandle},
     util::{Batch, Geometry},
-    ApiModules,
 };
 
 <span class="kw">use </span><span class="self">self</span>::rules::{WindowRule, WindowRuleCondition};
@@ -839,30 +803,12 @@
 <span class="doccomment">/// A struct containing methods that get [`WindowHandle`]s and move windows with the mouse.
 ///
 /// See [`WindowHandle`] for more information.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Window {
-    window_client: WindowServiceClient&lt;Channel&gt;,
-    api: OnceLock&lt;ApiModules&gt;,
-}
+</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Window;
 
 <span class="kw">impl </span>Window {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            window_client: WindowServiceClient::new(channel.clone()),
-            api: OnceLock::new(),
-        }
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
-        <span class="self">self</span>.api.set(api).unwrap();
-    }
-
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u32) -&gt; WindowHandle {
-        WindowHandle {
-            id,
-            window_client: <span class="self">self</span>.window_client.clone(),
-            api: <span class="self">self</span>.api.get().unwrap().clone(),
-        }
+        WindowHandle { id }
     }
 
     <span class="doccomment">/// Start moving the window with the mouse.
@@ -883,11 +829,10 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>begin_move(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(status) = block_on_tokio(client.move_grab(MoveGrabRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().move_grab(MoveGrabRequest {
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
         })) {
-            <span class="macro">eprintln!</span>(<span class="string">"ERROR: {status}"</span>);
+            <span class="macro">error!</span>(<span class="string">"Failed to begin window move: {err}"</span>);
         }
     }
 
@@ -909,11 +854,11 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>begin_resize(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.resize_grab(ResizeGrabRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().resize_grab(ResizeGrabRequest {
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to begin window resize: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Get all windows.
@@ -929,13 +874,12 @@
 
     <span class="doccomment">/// The async version of [`Window::get_all`].
     </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        client
+        <span class="kw">crate</span>::window()
             .get(GetRequest {})
             .<span class="kw">await
-            </span>.unwrap()
-            .into_inner()
-            .window_ids
+            </span>.map(|resp| resp.into_inner().window_ids)
+            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to get windows: {err}"</span>))
+            .unwrap_or_default()
             .into_iter()
             .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
@@ -967,13 +911,12 @@
     ///
     /// See the [`rules`] module for more information.
     </span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">&amp;</span><span class="self">self</span>, cond: WindowRuleCondition, rule: WindowRule) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-
-        block_on_tokio(client.add_window_rule(AddWindowRuleRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().add_window_rule(AddWindowRuleRequest {
             cond: <span class="prelude-val">Some</span>(cond.<span class="number">0</span>),
             rule: <span class="prelude-val">Some</span>(rule.<span class="number">0</span>),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to add window rule: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Connect to a window signal.
@@ -982,7 +925,7 @@
     /// You can pass in a [`WindowSignal`] along with a callback and it will get run
     /// with the necessary arguments every time a signal of that type is received.
     </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: WindowSignal) -&gt; SignalHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = block_on_tokio(<span class="self">self</span>.api.get().unwrap().signal.write());
+        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = signal_module();
 
         <span class="kw">match </span>signal {
             WindowSignal::PointerEnter(f) =&gt; signal_state.window_pointer_enter.add_callback(f),
@@ -994,25 +937,9 @@
 <span class="doccomment">/// A handle to a window.
 ///
 /// This allows you to manipulate the window and get its properties.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>WindowHandle {
     id: u32,
-    window_client: WindowServiceClient&lt;Channel&gt;,
-    api: ApiModules,
-}
-
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>WindowHandle {
-    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        <span class="self">self</span>.id == other.id
-    }
-}
-
-<span class="kw">impl </span>Eq <span class="kw">for </span>WindowHandle {}
-
-<span class="kw">impl </span>std::hash::Hash <span class="kw">for </span>WindowHandle {
-    <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
-        <span class="self">self</span>.id.hash(state);
-    }
 }
 
 <span class="doccomment">/// Whether a window is fullscreen, maximized, or neither.
@@ -1078,12 +1005,13 @@
     /// // Close the focused window
     /// window.get_focused()?.close()
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>window_client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(window_client.close(CloseRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().close(CloseRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this window to fullscreen or not.
@@ -1096,16 +1024,17 @@
     /// // Set the focused window to fullscreen.
     /// window.get_focused()?.set_fullscreen(true);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_fullscreen(SetFullscreenRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window between fullscreen and not.
@@ -1118,13 +1047,14 @@
     /// // Toggle the focused window to and from fullscreen.
     /// window.get_focused()?.toggle_fullscreen();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_fullscreen(SetFullscreenRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this window to maximized or not.
@@ -1137,16 +1067,17 @@
     /// // Set the focused window to maximized.
     /// window.get_focused()?.set_maximized(true);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_maximized(SetMaximizedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window between maximized and not.
@@ -1159,13 +1090,14 @@
     /// // Toggle the focused window to and from maximized.
     /// window.get_focused()?.toggle_maximized();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_maximized(SetMaximizedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this window to floating or not.
@@ -1181,16 +1113,17 @@
     /// // Set the focused window to floating.
     /// window.get_focused()?.set_floating(true);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_floating(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_floating(SetFloatingRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window to and from floating.
@@ -1206,13 +1139,14 @@
     /// // Toggle the focused window to and from floating.
     /// window.get_focused()?.toggle_floating();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_floating(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_floating(SetFloatingRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Focus or unfocus this window.
@@ -1223,16 +1157,17 @@
     /// // Unfocus the focused window
     /// window.get_focused()?.set_focused(false);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_focused(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_focused(SetFocusedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window to and from focused.
@@ -1245,13 +1180,14 @@
     /// // be a focused window.
     /// window.get_focused()?.toggle_focused();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-        block_on_tokio(client.set_focused(SetFocusedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Move this window to the given `tag`.
@@ -1265,14 +1201,14 @@
     /// // Move the focused window to tag "Code" on the focused output
     /// window.get_focused()?.move_to_tag(&amp;tag.get("Code", None)?);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>move_to_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-
-        block_on_tokio(client.move_to_tag(MoveToTagRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().move_to_tag(MoveToTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             tag_id: <span class="prelude-val">Some</span>(tag.id),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set or unset a tag on this window.
@@ -1286,18 +1222,18 @@
     /// focused.set_tag(&amp;tg, true); // `focused` now has tag "Potato"
     /// focused.set_tag(&amp;tg, false); // `focused` no longer has tag "Potato"
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle, set: bool) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-
-        block_on_tokio(client.set_tag(SetTagRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             tag_id: <span class="prelude-val">Some</span>(tag.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle a tag on this window.
@@ -1313,15 +1249,15 @@
     /// focused.toggle_tag(&amp;tg); // `focused` now has tag "Potato"
     /// focused.toggle_tag(&amp;tg); // `focused` no longer has tag "Potato"
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-
-        block_on_tokio(client.set_tag(SetTagRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             tag_id: <span class="prelude-val">Some</span>(tag.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Raise this window.
@@ -1333,13 +1269,13 @@
     /// ```
     /// window.get_focused()?.raise();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>raise(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-
-        block_on_tokio(client.raise(RaiseRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().raise(RaiseRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Get all properties of this window.
@@ -1365,9 +1301,7 @@
 
     <span class="doccomment">/// The async version of [`props`][Self::props].
     </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowProperties {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.window_client.clone();
-
-        <span class="kw">let </span>response = <span class="kw">match </span>client
+        <span class="kw">let </span>response = <span class="kw">match </span><span class="kw">crate</span>::window()
             .get_properties(window::v0alpha1::GetPropertiesRequest {
                 window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             })
@@ -1413,7 +1347,7 @@
             tags: response
                 .tag_ids
                 .into_iter()
-                .map(|id| <span class="self">self</span>.api.tag.new_handle(id))
+                .map(|id| Tag.new_handle(id))
                 .collect(),
             state,
         }

@@ -162,28 +162,6 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -193,22 +171,16 @@
 //! This module provides [`Process`], which allows you to spawn processes and set environment
 //! variables.
 
-</span><span class="kw">use </span>futures::{future::BoxFuture, FutureExt, StreamExt};
-<span class="kw">use </span>pinnacle_api_defs::pinnacle::process::v0alpha1::{
-    process_service_client::ProcessServiceClient, SetEnvRequest, SpawnRequest,
-};
-<span class="kw">use </span>tokio::sync::mpsc::UnboundedSender;
-<span class="kw">use </span>tonic::transport::Channel;
+</span><span class="kw">use </span>pinnacle_api_defs::pinnacle::process::v0alpha1::{SetEnvRequest, SpawnRequest};
+<span class="kw">use </span>tokio_stream::StreamExt;
+<span class="kw">use </span>tracing::error;
 
-<span class="kw">use </span><span class="kw">crate</span>::block_on_tokio;
+<span class="kw">use crate</span>::{block_on_tokio, process};
 
 <span class="doccomment">/// A struct containing methods to spawn processes with optional callbacks and set environment
 /// variables.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Process {
-    channel: Channel,
-    fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
-}
+</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Process;
 
 <span class="doccomment">/// Optional callbacks to be run when a spawned process prints to stdout or stderr or exits.
 </span><span class="attr">#[derive(Default)]
@@ -223,20 +195,6 @@
 }
 
 <span class="kw">impl </span>Process {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        channel: Channel,
-        fut_sender: UnboundedSender&lt;BoxFuture&lt;<span class="lifetime">'static</span>, ()&gt;&gt;,
-    ) -&gt; Process {
-        <span class="self">Self </span>{
-            channel,
-            fut_sender,
-        }
-    }
-
-    <span class="kw">fn </span>create_process_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ProcessServiceClient&lt;Channel&gt; {
-        ProcessServiceClient::new(<span class="self">self</span>.channel.clone())
-    }
-
     <span class="doccomment">/// Spawn a process.
     ///
     /// Note that windows spawned *before* tags are added will not be displayed.
@@ -309,8 +267,6 @@
         once: bool,
         callbacks: <span class="prelude-ty">Option</span>&lt;SpawnCallbacks&gt;,
     ) {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_process_client();
-
         <span class="kw">let </span>args = args.into_iter().map(Into::into).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
         <span class="kw">let </span>request = SpawnRequest {
@@ -319,34 +275,35 @@
             has_callback: <span class="prelude-val">Some</span>(callbacks.is_some()),
         };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(client.spawn(request)).unwrap().into_inner();
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span>block_on_tokio(process().spawn(request)) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream.into_inner(),
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to spawn process: {err}"</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
-        <span class="self">self</span>.fut_sender
-            .send(
-                <span class="kw">async move </span>{
-                    <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>callbacks) = callbacks <span class="kw">else </span>{ <span class="kw">return </span>};
-                    <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(line) = response.stdout {
-                            <span class="kw">if let </span><span class="prelude-val">Some</span>(stdout) = callbacks.stdout.as_mut() {
-                                stdout(line);
-                            }
-                        }
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(line) = response.stderr {
-                            <span class="kw">if let </span><span class="prelude-val">Some</span>(stderr) = callbacks.stderr.as_mut() {
-                                stderr(line);
-                            }
-                        }
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(exit_msg) = response.exit_message {
-                            <span class="kw">if let </span><span class="prelude-val">Some</span>(exit) = callbacks.exit.as_mut() {
-                                exit(response.exit_code, exit_msg);
-                            }
-                        }
-                        tokio::task::yield_now().<span class="kw">await</span>;
+        tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>callbacks) = callbacks <span class="kw">else </span>{ <span class="kw">return </span>};
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = stream.next().<span class="kw">await </span>{
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(line) = response.stdout {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(stdout) = callbacks.stdout.as_mut() {
+                        stdout(line);
                     }
                 }
-                .boxed(),
-            )
-            .unwrap();
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(line) = response.stderr {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(stderr) = callbacks.stderr.as_mut() {
+                        stderr(line);
+                    }
+                }
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(exit_msg) = response.exit_message {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(exit) = callbacks.exit.as_mut() {
+                        exit(response.exit_code, exit_msg);
+                    }
+                }
+                tokio::task::yield_now().<span class="kw">await</span>;
+            }
+        });
     }
 
     <span class="doccomment">/// Set an environment variable for the compositor.
@@ -361,13 +318,12 @@
         <span class="kw">let </span>key = key.into();
         <span class="kw">let </span>value = value.into();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.create_process_client();
-
-        block_on_tokio(client.set_env(SetEnvRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(process().set_env(SetEnvRequest {
             key: <span class="prelude-val">Some</span>(key),
             value: <span class="prelude-val">Some</span>(value),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set env: {err}"</span>);
+        }
     }
 }
 </code></pre></div></section></main></body></html>

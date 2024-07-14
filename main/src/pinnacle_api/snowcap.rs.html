@@ -28,17 +28,18 @@
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The Snowcap widget system.
 //! // TODO: these docs
 
 </span><span class="kw">use </span>integration::Integration;
 <span class="kw">use </span>snowcap_api::layer::Layer;
 
-<span class="kw">use </span><span class="kw">crate</span>::ApiModules;
-
 <span class="kw">pub mod </span>integration;
 
 <span class="doccomment">/// Snowcap modules and Pinnacle integration.
+</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>Snowcap {
     <span class="doccomment">/// Create layer surface widgets.
     </span><span class="kw">pub </span>layer: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Layer,
@@ -46,16 +47,19 @@
     </span><span class="kw">pub </span>integration: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>Integration,
 }
 
-<span class="kw">impl </span>Snowcap {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(layer: Layer) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            layer: Box::leak(Box::new(layer)),
-            integration: Box::leak(Box::new(Integration::new())),
-        }
+<span class="kw">impl </span>Default <span class="kw">for </span>Snowcap {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new()
     }
+}
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>finish_init(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiModules) {
-        <span class="self">self</span>.integration.finish_init(api);
+<span class="kw">impl </span>Snowcap {
+    <span class="doccomment">/// Creates a new Snowcap struct.
+    </span><span class="kw">pub const fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            layer: <span class="kw-2">&amp;</span>Layer,
+            integration: <span class="kw-2">&amp;</span>Integration,
+        }
     }
 }
 </code></pre></div></section></main></body></html>
