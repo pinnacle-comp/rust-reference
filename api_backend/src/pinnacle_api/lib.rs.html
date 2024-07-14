@@ -328,6 +328,22 @@
 <a href="#328" id="328">328</a>
 <a href="#329" id="329">329</a>
 <a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -428,6 +444,7 @@
 <span class="kw">use </span>tokio::sync::{MappedMutexGuard, Mutex, MutexGuard, RwLock};
 <span class="kw">use </span>tonic::transport::{Channel, Endpoint, Uri};
 <span class="kw">use </span>tower::service_fn;
+<span class="kw">use </span>tracing::info;
 <span class="kw">use </span>window::Window;
 
 <span class="kw">pub mod </span>input;
@@ -590,6 +607,9 @@
         .<span class="kw">await
         </span>.unwrap();
 
+    <span class="kw">let </span>socket_path = std::env::var(<span class="string">"PINNACLE_GRPC_SOCKET"</span>).unwrap();
+    <span class="macro">info!</span>(<span class="string">"Connected to {socket_path}"</span>);
+
     PINNACLE
         .write()
         .<span class="kw">await
@@ -649,6 +669,18 @@
     </span>shutdown_stream.next().<span class="kw">await</span>;
 
     signal_module().shutdown();
+}
+
+<span class="doccomment">/// Sets the default `tracing_subscriber` to output logs.
+///
+/// This subscriber does not include the time or ansi escape codes.
+/// If you would like to disable this in [`crate::config`], pass in
+/// `internal_tracing = false`.
+</span><span class="kw">pub fn </span>set_default_tracing_subscriber() {
+    tracing_subscriber::fmt()
+        .without_time()
+        .with_ansi(<span class="bool-val">false</span>)
+        .init();
 }
 
 <span class="doccomment">/// Block on a future using the current Tokio runtime.

@@ -55,11 +55,15 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Rendering management.
 
 </span><span class="kw">use </span>pinnacle_api_defs::pinnacle::render::v0alpha1::{
     SetDownscaleFilterRequest, SetUpscaleFilterRequest,
 };
+<span class="kw">use </span>tracing::error;
 
 <span class="kw">use crate</span>::{block_on_tokio, render};
 
@@ -90,10 +94,11 @@
     /// render.set_upscale_filter(ScalingFilter::NearestNeighbor);
     /// ```
     </span><span class="kw">pub fn </span>set_upscale_filter(<span class="kw-2">&amp;</span><span class="self">self</span>, filter: ScalingFilter) {
-        block_on_tokio(render().set_upscale_filter(SetUpscaleFilterRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(render().set_upscale_filter(SetUpscaleFilterRequest {
             filter: <span class="prelude-val">Some</span>(filter <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set upscale filter: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set the downscaling filter that will be used for rendering.
@@ -106,10 +111,11 @@
     /// render.set_downscale_filter(ScalingFilter::NearestNeighbor);
     /// ```
     </span><span class="kw">pub fn </span>set_downscale_filter(<span class="kw-2">&amp;</span><span class="self">self</span>, filter: ScalingFilter) {
-        block_on_tokio(render().set_downscale_filter(SetDownscaleFilterRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(render().set_downscale_filter(SetDownscaleFilterRequest {
             filter: <span class="prelude-val">Some</span>(filter <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set downscale filter: {err}"</span>);
+        }
     }
 }
 </code></pre></div></section></main></body></html>

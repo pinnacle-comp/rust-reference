@@ -1104,6 +1104,18 @@
 <a href="#1104" id="1104">1104</a>
 <a href="#1105" id="1105">1105</a>
 <a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1123,6 +1135,7 @@
 };
 <span class="kw">use </span>tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
 <span class="kw">use </span>tokio_stream::StreamExt;
+<span class="kw">use </span>tracing::debug;
 
 <span class="kw">use crate</span>::{
     block_on_tokio, layout,
@@ -1179,7 +1192,7 @@
                     output_height: response.output_height.unwrap_or_default(),
                 };
                 <span class="kw">let </span>geos = manager.lock().unwrap().active_layout(<span class="kw-2">&amp;</span>args).layout(<span class="kw-2">&amp;</span>args);
-                from_client
+                <span class="kw">if </span>from_client
                     .send(LayoutRequest {
                         body: <span class="prelude-val">Some</span>(Body::Geometries(Geometries {
                             request_id: response.request_id,
@@ -1195,7 +1208,10 @@
                                 .collect(),
                         })),
                     })
-                    .unwrap();
+                    .is_err()
+                {
+                    <span class="macro">debug!</span>(<span class="string">"Failed to send layout geometries: channel closed"</span>);
+                }
             }
         };
 
@@ -1341,22 +1357,30 @@
     /// If you want to layout a specific output, see [`LayoutRequester::request_layout_on_output`].
     </span><span class="kw">pub fn </span>request_layout(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">let </span>output_name = Output.get_focused().map(|op| op.name);
-        <span class="self">self</span>.sender
+        <span class="kw">if </span><span class="self">self
+            </span>.sender
             .send(LayoutRequest {
                 body: <span class="prelude-val">Some</span>(Body::Layout(ExplicitLayout { output_name })),
             })
-            .unwrap();
+            .is_err()
+        {
+            <span class="macro">debug!</span>(<span class="string">"Failed to request layout: channel closed"</span>);
+        }
     }
 
     <span class="doccomment">/// Request a layout from the compositor for the given output.
     </span><span class="kw">pub fn </span>request_layout_on_output(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) {
-        <span class="self">self</span>.sender
+        <span class="kw">if </span><span class="self">self
+            </span>.sender
             .send(LayoutRequest {
                 body: <span class="prelude-val">Some</span>(Body::Layout(ExplicitLayout {
                     output_name: <span class="prelude-val">Some</span>(output.name.clone()),
                 })),
             })
-            .unwrap();
+            .is_err()
+        {
+            <span class="macro">debug!</span>(<span class="string">"Failed to request layout on output: channel closed"</span>);
+        }
     }
 }
 

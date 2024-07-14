@@ -156,6 +156,12 @@
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -167,6 +173,7 @@
 
 </span><span class="kw">use </span>pinnacle_api_defs::pinnacle::process::v0alpha1::{SetEnvRequest, SpawnRequest};
 <span class="kw">use </span>tokio_stream::StreamExt;
+<span class="kw">use </span>tracing::error;
 
 <span class="kw">use crate</span>::{block_on_tokio, process};
 
@@ -268,9 +275,13 @@
             has_callback: <span class="prelude-val">Some</span>(callbacks.is_some()),
         };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(process().spawn(request))
-            .unwrap()
-            .into_inner();
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span>block_on_tokio(process().spawn(request)) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream.into_inner(),
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to spawn process: {err}"</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
         tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>callbacks) = callbacks <span class="kw">else </span>{ <span class="kw">return </span>};
@@ -307,11 +318,12 @@
         <span class="kw">let </span>key = key.into();
         <span class="kw">let </span>value = value.into();
 
-        block_on_tokio(process().set_env(SetEnvRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(process().set_env(SetEnvRequest {
             key: <span class="prelude-val">Some</span>(key),
             value: <span class="prelude-val">Some</span>(value),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set env: {err}"</span>);
+        }
     }
 }
 </code></pre></div></section></main></body></html>

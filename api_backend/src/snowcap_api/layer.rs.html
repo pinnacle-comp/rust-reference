@@ -193,6 +193,22 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Support for layer surface widgets using `wlr-layer-shell`.
 
 </span><span class="kw">use </span>std::num::NonZeroU32;
@@ -205,6 +221,7 @@
     },
 };
 <span class="kw">use </span>tokio_stream::StreamExt;
+<span class="kw">use </span>tracing::error;
 <span class="kw">use </span>xkbcommon::xkb::Keysym;
 
 <span class="kw">use crate</span>::{
@@ -312,6 +329,17 @@
     }
 }
 
+<span class="doccomment">/// The error type for [`Layer::new_widget`].
+</span><span class="attr">#[derive(thiserror::Error, Debug)]
+</span><span class="kw">pub enum </span>NewLayerError {
+    <span class="doccomment">/// Snowcap returned a gRPC error status.
+    </span><span class="attr">#[error(<span class="string">"gRPC error: `{0}`"</span>)]
+    </span>GrpcStatus(<span class="attr">#[from] </span>tonic::Status),
+    <span class="doccomment">/// Snowcap did not return a layer id as expected.
+    </span><span class="attr">#[error(<span class="string">"snowcap did not return a layer id"</span>)]
+    </span>NoLayerId,
+}
+
 <span class="kw">impl </span>Layer {
     <span class="doccomment">/// Create a new widget.
     </span><span class="kw">pub fn </span>new_widget(
@@ -323,7 +351,7 @@
         keyboard_interactivity: KeyboardInteractivity,
         exclusive_zone: ExclusiveZone,
         layer: ZLayer,
-    ) -&gt; LayerHandle {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;LayerHandle, NewLayerError&gt; {
         <span class="kw">let </span>response = block_on_tokio(<span class="kw">crate</span>::layer().new_layer(NewLayerRequest {
             widget_def: <span class="prelude-val">Some</span>(widget.into().into()),
             width: <span class="prelude-val">Some</span>(width),
@@ -334,15 +362,14 @@
             ) <span class="kw">as </span>i32),
             exclusive_zone: <span class="prelude-val">Some</span>(exclusive_zone.into()),
             layer: <span class="prelude-val">Some</span>(layer::v0alpha1::Layer::from(layer) <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        }))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>id = response
             .into_inner()
             .layer_id
-            .expect(<span class="string">"id should not be null"</span>);
+            .ok_or(NewLayerError::NoLayerId)<span class="question-mark">?</span>;
 
-        LayerHandle { id: id.into() }
+        <span class="prelude-val">Ok</span>(LayerHandle { id: id.into() })
     }
 }
 
@@ -355,10 +382,11 @@
 <span class="kw">impl </span>LayerHandle {
     <span class="doccomment">/// Close this layer widget.
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::layer().close(CloseRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(status) = block_on_tokio(<span class="kw">crate</span>::layer().close(CloseRequest {
             layer_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id.into_inner()),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to close {self:?}: {status}"</span>);
+        }
     }
 
     <span class="doccomment">/// Do something on key press.
@@ -366,11 +394,15 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="kw-2">mut </span>on_press: <span class="kw">impl </span>FnMut(LayerHandle, Keysym, Modifiers) + Send + <span class="lifetime">'static</span>,
     ) {
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(<span class="kw">crate</span>::input().keyboard_key(KeyboardKeyRequest {
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span>block_on_tokio(<span class="kw">crate</span>::input().keyboard_key(KeyboardKeyRequest {
             id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id.into_inner()),
-        }))
-        .unwrap()
-        .into_inner();
+        })) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream.into_inner(),
+            <span class="prelude-val">Err</span>(status) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to set `on_key_press` handler: {status}"</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
         <span class="kw">let </span>handle = <span class="kw-2">*</span><span class="self">self</span>;
 

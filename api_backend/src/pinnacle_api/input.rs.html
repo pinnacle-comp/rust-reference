@@ -437,6 +437,25 @@
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -457,6 +476,7 @@
     },
 };
 <span class="kw">use </span>tokio_stream::StreamExt;
+<span class="kw">use </span>tracing::error;
 <span class="kw">use </span>xkbcommon::xkb::Keysym;
 
 <span class="kw">use </span><span class="kw">crate</span>::block_on_tokio;
@@ -608,16 +628,20 @@
 
         <span class="kw">let </span>keybind_info: <span class="prelude-ty">Option</span>&lt;KeybindInfo&gt; = keybind_info.into();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(<span class="kw">crate</span>::input().set_keybind(SetKeybindRequest {
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span>block_on_tokio(<span class="kw">crate</span>::input().set_keybind(SetKeybindRequest {
             modifiers,
             key: <span class="prelude-val">Some</span>(input::v0alpha1::set_keybind_request::Key::RawCode(
                 key.into_keysym().raw(),
             )),
             group: keybind_info.clone().and_then(|info| info.group),
             description: keybind_info.clone().and_then(|info| info.description),
-        }))
-        .unwrap()
-        .into_inner();
+        })) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream.into_inner(),
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to set keybind: {err}"</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
         tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(_response)) = stream.next().<span class="kw">await </span>{
@@ -657,13 +681,17 @@
         <span class="kw-2">mut </span>action: <span class="kw">impl </span>FnMut() + <span class="lifetime">'static </span>+ Send,
     ) {
         <span class="kw">let </span>modifiers = mods.into_iter().map(|modif| modif <span class="kw">as </span>i32).collect();
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = block_on_tokio(<span class="kw">crate</span>::input().set_mousebind(SetMousebindRequest {
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span>block_on_tokio(<span class="kw">crate</span>::input().set_mousebind(SetMousebindRequest {
             modifiers,
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
             edge: <span class="prelude-val">Some</span>(edge <span class="kw">as </span>i32),
-        }))
-        .unwrap()
-        .into_inner();
+        })) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream.into_inner(),
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to set keybind: {err}"</span>);
+                <span class="kw">return</span>;
+            }
+        };
 
         tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(_response)) = stream.next().<span class="kw">await </span>{
@@ -675,12 +703,17 @@
 
     <span class="doccomment">/// Get all keybinds and their information.
     </span><span class="kw">pub fn </span>keybind_descriptions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = KeybindDescription&gt; {
-        <span class="kw">let </span>descriptions =
-            block_on_tokio(<span class="kw">crate</span>::input().keybind_descriptions(KeybindDescriptionsRequest {}))
-                .unwrap();
-        <span class="kw">let </span>descriptions = descriptions.into_inner();
+        <span class="kw">let </span>descriptions = <span class="kw">match </span>block_on_tokio(
+            <span class="kw">crate</span>::input().keybind_descriptions(KeybindDescriptionsRequest {}),
+        ) {
+            <span class="prelude-val">Ok</span>(descs) =&gt; descs.into_inner().descriptions,
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"Failed to get keybind descriptions: {err}"</span>);
+                Vec::new()
+            }
+        };
 
-        descriptions.descriptions.into_iter().map(|desc| {
+        descriptions.into_iter().map(|desc| {
             <span class="kw">let </span>mods = desc.modifiers().flat_map(|m| <span class="kw">match </span>m {
                 input::v0alpha1::Modifier::Unspecified =&gt; <span class="prelude-val">None</span>,
                 input::v0alpha1::Modifier::Shift =&gt; <span class="prelude-val">Some</span>(Mod::Shift),
@@ -716,14 +749,15 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>set_xkb_config(<span class="kw-2">&amp;</span><span class="self">self</span>, xkb_config: XkbConfig) {
-        block_on_tokio(<span class="kw">crate</span>::input().set_xkb_config(SetXkbConfigRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::input().set_xkb_config(SetXkbConfigRequest {
             rules: xkb_config.rules.map(String::from),
             variant: xkb_config.variant.map(String::from),
             layout: xkb_config.layout.map(String::from),
             model: xkb_config.model.map(String::from),
             options: xkb_config.options.map(String::from),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set xkb config: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set the keyboard's repeat rate.
@@ -741,11 +775,12 @@
     /// input.set_repeat_rate(25, 500);
     /// ```
     </span><span class="kw">pub fn </span>set_repeat_rate(<span class="kw-2">&amp;</span><span class="self">self</span>, rate: i32, delay: i32) {
-        block_on_tokio(<span class="kw">crate</span>::input().set_repeat_rate(SetRepeatRateRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::input().set_repeat_rate(SetRepeatRateRequest {
             rate: <span class="prelude-val">Some</span>(rate),
             delay: <span class="prelude-val">Some</span>(delay),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set repeat rate: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set a libinput setting.
@@ -796,12 +831,13 @@
             LibinputSetting::Tap(enable) =&gt; Setting::Tap(enable),
         };
 
-        block_on_tokio(
-            <span class="kw">crate</span>::input().set_libinput_setting(SetLibinputSettingRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::input().set_libinput_setting(
+            SetLibinputSettingRequest {
                 setting: <span class="prelude-val">Some</span>(setting),
-            }),
-        )
-        .unwrap();
+            },
+        )) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set libinput setting: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set the xcursor theme.
@@ -815,11 +851,12 @@
     /// input.set_xcursor_theme("Adwaita");
     /// ```
     </span><span class="kw">pub fn </span>set_xcursor_theme(<span class="kw-2">&amp;</span><span class="self">self</span>, theme: <span class="kw">impl </span>ToString) {
-        block_on_tokio(<span class="kw">crate</span>::input().set_xcursor(SetXcursorRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::input().set_xcursor(SetXcursorRequest {
             theme: <span class="prelude-val">Some</span>(theme.to_string()),
             size: <span class="prelude-val">None</span>,
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set xcursor theme: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set the xcursor size.
@@ -833,11 +870,12 @@
     /// input.set_xcursor_size(64);
     /// ```
     </span><span class="kw">pub fn </span>set_xcursor_size(<span class="kw-2">&amp;</span><span class="self">self</span>, size: u32) {
-        block_on_tokio(<span class="kw">crate</span>::input().set_xcursor(SetXcursorRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::input().set_xcursor(SetXcursorRequest {
             theme: <span class="prelude-val">None</span>,
             size: <span class="prelude-val">Some</span>(size),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to set xcursor size: {err}"</span>);
+        }
     }
 }
 

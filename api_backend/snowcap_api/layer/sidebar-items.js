@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Anchor","ExclusiveZone","KeyboardInteractivity","ZLayer"],"struct":["Layer","LayerHandle"]};
+window.SIDEBAR_ITEMS = {"enum":["Anchor","ExclusiveZone","KeyboardInteractivity","NewLayerError","ZLayer"],"struct":["Layer","LayerHandle"]};

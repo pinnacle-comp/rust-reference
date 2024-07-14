@@ -743,6 +743,21 @@
 <a href="#743" id="743">743</a>
 <a href="#744" id="744">744</a>
 <a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -770,6 +785,7 @@
         },
     },
 };
+<span class="kw">use </span>tracing::{error, instrument};
 
 <span class="kw">use crate</span>::{
     block_on_tokio,
@@ -813,10 +829,10 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>begin_move(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(status) = block_on_tokio(<span class="kw">crate</span>::window().move_grab(MoveGrabRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().move_grab(MoveGrabRequest {
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
         })) {
-            <span class="macro">eprintln!</span>(<span class="string">"ERROR: {status}"</span>);
+            <span class="macro">error!</span>(<span class="string">"Failed to begin window move: {err}"</span>);
         }
     }
 
@@ -838,10 +854,11 @@
     /// });
     /// ```
     </span><span class="kw">pub fn </span>begin_resize(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        block_on_tokio(<span class="kw">crate</span>::window().resize_grab(ResizeGrabRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().resize_grab(ResizeGrabRequest {
             button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to begin window resize: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Get all windows.
@@ -860,9 +877,9 @@
         <span class="kw">crate</span>::window()
             .get(GetRequest {})
             .<span class="kw">await
-            </span>.unwrap()
-            .into_inner()
-            .window_ids
+            </span>.map(|resp| resp.into_inner().window_ids)
+            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to get windows: {err}"</span>))
+            .unwrap_or_default()
             .into_iter()
             .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
@@ -894,11 +911,12 @@
     ///
     /// See the [`rules`] module for more information.
     </span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">&amp;</span><span class="self">self</span>, cond: WindowRuleCondition, rule: WindowRule) {
-        block_on_tokio(<span class="kw">crate</span>::window().add_window_rule(AddWindowRuleRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().add_window_rule(AddWindowRuleRequest {
             cond: <span class="prelude-val">Some</span>(cond.<span class="number">0</span>),
             rule: <span class="prelude-val">Some</span>(rule.<span class="number">0</span>),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"Failed to add window rule: {err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Connect to a window signal.
@@ -919,23 +937,9 @@
 <span class="doccomment">/// A handle to a window.
 ///
 /// This allows you to manipulate the window and get its properties.
-</span><span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>WindowHandle {
     id: u32,
-}
-
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>WindowHandle {
-    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        <span class="self">self</span>.id == other.id
-    }
-}
-
-<span class="kw">impl </span>Eq <span class="kw">for </span>WindowHandle {}
-
-<span class="kw">impl </span>std::hash::Hash <span class="kw">for </span>WindowHandle {
-    <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
-        <span class="self">self</span>.id.hash(state);
-    }
 }
 
 <span class="doccomment">/// Whether a window is fullscreen, maximized, or neither.
@@ -1001,11 +1005,13 @@
     /// // Close the focused window
     /// window.get_focused()?.close()
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::window().close(CloseRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().close(CloseRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this window to fullscreen or not.
@@ -1018,15 +1024,17 @@
     /// // Set the focused window to fullscreen.
     /// window.get_focused()?.set_fullscreen(true);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window between fullscreen and not.
@@ -1039,12 +1047,14 @@
     /// // Toggle the focused window to and from fullscreen.
     /// window.get_focused()?.toggle_fullscreen();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this window to maximized or not.
@@ -1057,15 +1067,17 @@
     /// // Set the focused window to maximized.
     /// window.get_focused()?.set_maximized(true);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window between maximized and not.
@@ -1078,12 +1090,14 @@
     /// // Toggle the focused window to and from maximized.
     /// window.get_focused()?.toggle_maximized();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this window to floating or not.
@@ -1099,15 +1113,17 @@
     /// // Set the focused window to floating.
     /// window.get_focused()?.set_floating(true);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_floating(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window to and from floating.
@@ -1123,12 +1139,14 @@
     /// // Toggle the focused window to and from floating.
     /// window.get_focused()?.toggle_floating();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_floating(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Focus or unfocus this window.
@@ -1139,15 +1157,17 @@
     /// // Unfocus the focused window
     /// window.get_focused()?.set_focused(false);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_focused(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle this window to and from focused.
@@ -1160,12 +1180,14 @@
     /// // be a focused window.
     /// window.get_focused()?.toggle_focused();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Move this window to the given `tag`.
@@ -1179,12 +1201,14 @@
     /// // Move the focused window to tag "Code" on the focused output
     /// window.get_focused()?.move_to_tag(&amp;tag.get("Code", None)?);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>move_to_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        block_on_tokio(<span class="kw">crate</span>::window().move_to_tag(MoveToTagRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().move_to_tag(MoveToTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             tag_id: <span class="prelude-val">Some</span>(tag.id),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set or unset a tag on this window.
@@ -1198,16 +1222,18 @@
     /// focused.set_tag(&amp;tg, true); // `focused` now has tag "Potato"
     /// focused.set_tag(&amp;tg, false); // `focused` no longer has tag "Potato"
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle, set: bool) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             tag_id: <span class="prelude-val">Some</span>(tag.id),
             set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
                 <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
                 <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
             } <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Toggle a tag on this window.
@@ -1223,13 +1249,15 @@
     /// focused.toggle_tag(&amp;tg); // `focused` now has tag "Potato"
     /// focused.toggle_tag(&amp;tg); // `focused` no longer has tag "Potato"
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
             tag_id: <span class="prelude-val">Some</span>(tag.id),
             set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Raise this window.
@@ -1241,11 +1269,13 @@
     /// ```
     /// window.get_focused()?.raise();
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>raise(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        block_on_tokio(<span class="kw">crate</span>::window().raise(RaiseRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().raise(RaiseRequest {
             window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Get all properties of this window.

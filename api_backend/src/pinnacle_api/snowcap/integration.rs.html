@@ -296,6 +296,8 @@
 <a href="#296" id="296">296</a>
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Pinnacle-specific integrations with Snowcap.
 //!
 //! This module includes builtin widgets like the exit prompt and keybind list.
@@ -404,6 +406,7 @@
                 ExclusiveZone::Respect,
                 ZLayer::Overlay,
             )
+            .unwrap()
             .on_key_press(|handle, key, _mods| {
                 <span class="kw">if </span>key == Keysym::Return {
                     Pinnacle.quit();
@@ -589,6 +592,7 @@
                 ExclusiveZone::Respect,
                 ZLayer::Top,
             )
+            .unwrap()
             .on_key_press(|handle, _key, _mods| {
                 handle.close();
             });

@@ -1503,6 +1503,20 @@
 <a href="#1503" id="1503">1503</a>
 <a href="#1504" id="1504">1504</a>
 <a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1524,6 +1538,7 @@
         SetModelineRequest, SetPoweredRequest, SetScaleRequest, SetTransformRequest,
     },
 };
+<span class="kw">use </span>tracing::{error, instrument};
 
 <span class="kw">use crate</span>::{
     block_on_tokio,
@@ -1561,9 +1576,9 @@
         <span class="kw">crate</span>::output()
             .get(output::v0alpha1::GetRequest {})
             .<span class="kw">await
-            </span>.unwrap()
-            .into_inner()
-            .output_names
+            </span>.map(|resp| resp.into_inner().output_names)
+            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to get outputs: {err}"</span>))
+            .unwrap_or_default()
             .into_iter()
             .map(|name| <span class="self">self</span>.new_handle(name))
             .collect()
@@ -1656,7 +1671,7 @@
     /// // Add tags 1-3 to all outputs and set tag "1" to active
     /// output.connect_for_all(|op| {
     ///     let tags = tag.add(&amp;op, ["1", "2", "3"]);
-    ///     tags.next().unwrap().set_active(true);
+    ///     tags.first()?.set_active(true);
     /// });
     /// ```
     </span><span class="kw">pub fn </span>connect_for_all(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>for_all: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>) {
@@ -1705,7 +1720,7 @@
     ///     // Give all outputs tags 1 through 5
     ///     OutputSetup::new_with_matcher(|_| true).with_tags(["1", "2", "3", "4", "5"]),
     ///     // Give outputs with a preferred mode of 4K a scale of 2.0
-    ///     OutputSetup::new_with_matcher(|op| op.preferred_mode().unwrap().pixel_width == 2160)
+    ///     OutputSetup::new_with_matcher(|op| op.preferred_mode()?.pixel_width == 2160)
     ///         .with_scale(2.0),
     ///     // Additionally give eDP-1 tags 6 and 7
     ///     OutputSetup::new(OutputId::name("eDP-1")).with_tags(["6", "7"]),
@@ -1794,8 +1809,11 @@
 
                     placed_outputs.push(output.clone());
                     <span class="kw">let </span>props = output.props();
-                    <span class="kw">let </span>x = props.x.unwrap();
-                    <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
+                    <span class="kw">let </span>x = props.x.expect(<span class="string">"output should have x-coord"</span>);
+                    <span class="kw">let </span>width = props
+                        .logical_width
+                        .expect(<span class="string">"output should have logical width"</span>)
+                        <span class="kw">as </span>i32;
                     <span class="kw">if </span>rightmost_output_and_x.is_none()
                         || rightmost_output_and_x
                             .as_ref()
@@ -1833,8 +1851,10 @@
 
                 placed_outputs.push(output.clone());
                 <span class="kw">let </span>props = output.props();
-                <span class="kw">let </span>x = props.x.unwrap();
-                <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
+                <span class="kw">let </span>x = props.x.expect(<span class="string">"output should have x-coord"</span>);
+                <span class="kw">let </span>width = props
+                    .logical_width
+                    .expect(<span class="string">"output should have logical width"</span>) <span class="kw">as </span>i32;
                 <span class="kw">if </span>rightmost_output_and_x.is_none()
                     || rightmost_output_and_x
                         .as_ref()
@@ -1858,8 +1878,10 @@
 
                 placed_outputs.push(output.clone());
                 <span class="kw">let </span>props = output.props();
-                <span class="kw">let </span>x = props.x.unwrap();
-                <span class="kw">let </span>width = props.logical_width.unwrap() <span class="kw">as </span>i32;
+                <span class="kw">let </span>x = props.x.expect(<span class="string">"output should have x-coord"</span>);
+                <span class="kw">let </span>width = props
+                    .logical_width
+                    .expect(<span class="string">"output should have logical width"</span>) <span class="kw">as </span>i32;
                 <span class="kw">if </span>rightmost_output_and_x.is_none()
                     || rightmost_output_and_x
                         .as_ref()
@@ -2095,23 +2117,9 @@
 <span class="doccomment">/// A handle to an output.
 ///
 /// This allows you to manipulate outputs and get their properties.
-</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>OutputHandle {
     <span class="kw">pub</span>(<span class="kw">crate</span>) name: String,
-}
-
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>OutputHandle {
-    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        <span class="self">self</span>.name == other.name
-    }
-}
-
-<span class="kw">impl </span>Eq <span class="kw">for </span>OutputHandle {}
-
-<span class="kw">impl </span>std::hash::Hash <span class="kw">for </span>OutputHandle {
-    <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
-        <span class="self">self</span>.name.hash(state);
-    }
 }
 
 <span class="doccomment">/// The alignment to use for [`OutputHandle::set_loc_adj_to`].
@@ -2201,13 +2209,15 @@
     /// //    └─────┴───────┘
     /// //          ^x=1920
     /// ```
+    </span><span class="attr">#[instrument(skip(x, y))]
     </span><span class="kw">pub fn </span>set_location(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;i32&gt;&gt;, y: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;i32&gt;&gt;) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_location(SetLocationRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_location(SetLocationRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             x: x.into(),
             y: y.into(),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this output adjacent to another one.
@@ -2327,19 +2337,21 @@
     /// ```
     /// output.get_focused()?.set_mode(2560, 1440, 144000);
     /// ```
+    </span><span class="attr">#[instrument(skip(refresh_rate_millihertz))]
     </span><span class="kw">pub fn </span>set_mode(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pixel_width: u32,
         pixel_height: u32,
         refresh_rate_millihertz: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt;,
     ) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_mode(SetModeRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_mode(SetModeRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             pixel_width: <span class="prelude-val">Some</span>(pixel_width),
             pixel_height: <span class="prelude-val">Some</span>(pixel_height),
             refresh_rate_millihz: refresh_rate_millihertz.into(),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set a custom modeline for this output.
@@ -2354,8 +2366,9 @@
     /// ```
     /// output.set_modeline("173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync".parse()?);
     /// ```
+    </span><span class="attr">#[instrument(skip(modeline))]
     </span><span class="kw">pub fn </span>set_modeline(<span class="kw-2">&amp;</span><span class="self">self</span>, modeline: Modeline) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_modeline(SetModelineRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_modeline(SetModelineRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             clock: <span class="prelude-val">Some</span>(modeline.clock),
             hdisplay: <span class="prelude-val">Some</span>(modeline.hdisplay),
@@ -2368,8 +2381,9 @@
             vtotal: <span class="prelude-val">Some</span>(modeline.vtotal),
             hsync_pos: <span class="prelude-val">Some</span>(modeline.hsync),
             vsync_pos: <span class="prelude-val">Some</span>(modeline.vsync),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Set this output's scaling factor.
@@ -2379,12 +2393,14 @@
     /// ```
     /// output.get_focused()?.set_scale(1.5);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, scale: f32) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_scale(SetScaleRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_scale(SetScaleRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             absolute_or_relative: <span class="prelude-val">Some</span>(AbsoluteOrRelative::Absolute(scale)),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Increase this output's scaling factor by `increase_by`.
@@ -2394,12 +2410,14 @@
     /// ```
     /// output.get_focused()?.increase_scale(0.25);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>increase_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, increase_by: f32) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_scale(SetScaleRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_scale(SetScaleRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             absolute_or_relative: <span class="prelude-val">Some</span>(AbsoluteOrRelative::Relative(increase_by)),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Decrease this output's scaling factor by `decrease_by`.
@@ -2425,12 +2443,14 @@
     /// // Rotate 90 degrees counter-clockwise
     /// output.set_transform(Transform::_90);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_transform(<span class="kw-2">&amp;</span><span class="self">self</span>, transform: Transform) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_transform(SetTransformRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_transform(SetTransformRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             transform: <span class="prelude-val">Some</span>(transform <span class="kw">as </span>i32),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Power on or off this output.
@@ -2444,12 +2464,14 @@
     /// // Power off `output`
     /// output.set_powered(false);
     /// ```
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_powered(<span class="kw-2">&amp;</span><span class="self">self</span>, powered: bool) {
-        block_on_tokio(<span class="kw">crate</span>::output().set_powered(SetPoweredRequest {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_powered(SetPoweredRequest {
             output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             powered: <span class="prelude-val">Some</span>(powered),
-        }))
-        .unwrap();
+        })) {
+            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+        }
     }
 
     <span class="doccomment">/// Get all properties of this output.
@@ -2468,14 +2490,20 @@
     }
 
     <span class="doccomment">/// The async version of [`OutputHandle::props`].
+    </span><span class="attr">#[instrument]
     </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputProperties {
-        <span class="kw">let </span>response = <span class="kw">crate</span>::output()
+        <span class="kw">let </span>response = <span class="kw">match </span><span class="kw">crate</span>::output()
             .get_properties(output::v0alpha1::GetPropertiesRequest {
                 output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
             })
             .<span class="kw">await
-            </span>.unwrap()
-            .into_inner();
+        </span>{
+            <span class="prelude-val">Ok</span>(resp) =&gt; resp.into_inner(),
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">"{err}"</span>);
+                <span class="kw">return </span>OutputProperties::default();
+            }
+        };
 
         OutputProperties {
             make: response.make,
