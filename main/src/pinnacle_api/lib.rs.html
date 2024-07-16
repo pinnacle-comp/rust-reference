@@ -355,6 +355,7 @@
 <a href="#355" id="355">355</a>
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -442,6 +443,7 @@
 //! You can peruse the documentation for things to configure.
 
 </span><span class="kw">use </span>futures::{Future, StreamExt};
+<span class="kw">use </span>hyper_util::rt::TokioIo;
 <span class="kw">use </span>input::Input;
 <span class="kw">use </span>layout::Layout;
 <span class="kw">use </span>output::Output;
@@ -620,11 +622,11 @@
 </span><span class="kw">pub async fn </span>connect() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// port doesn't matter, we use a unix socket
     </span><span class="kw">let </span>channel = Endpoint::try_from(<span class="string">"http://[::]:50051"</span>)<span class="question-mark">?
-        </span>.connect_with_connector(service_fn(|<span class="kw">_</span>: Uri| {
-            tokio::net::UnixStream::connect(
-                std::env::var(<span class="string">"PINNACLE_GRPC_SOCKET"</span>)
-                    .expect(<span class="string">"PINNACLE_GRPC_SOCKET was not set; is Pinnacle running?"</span>),
-            )
+        </span>.connect_with_connector(service_fn(|<span class="kw">_</span>: Uri| <span class="kw">async </span>{
+            <span class="kw">let </span>path = std::env::var(<span class="string">"PINNACLE_GRPC_SOCKET"</span>)
+                .expect(<span class="string">"PINNACLE_GRPC_SOCKET was not set; is Pinnacle running?"</span>);
+
+            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, std::io::Error&gt;(TokioIo::new(tokio::net::UnixStream::connect(path).<span class="kw">await</span><span class="question-mark">?</span>))
         }))
         .<span class="kw">await
         </span>.unwrap();
