@@ -1509,15 +1509,7 @@
 <a href="#1508" id="1508">1508</a>
 <a href="#1509" id="1509">1509</a>
 <a href="#1510" id="1510">1510</a>
-<a href="#1511" id="1511">1511</a>
-<a href="#1512" id="1512">1512</a>
-<a href="#1513" id="1513">1513</a>
-<a href="#1514" id="1514">1514</a>
-<a href="#1515" id="1515">1515</a>
-<a href="#1516" id="1516">1516</a>
-<a href="#1517" id="1517">1517</a>
-<a href="#1518" id="1518">1518</a>
-<a href="#1519" id="1519">1519</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#1511" id="1511">1511</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -1528,7 +1520,7 @@
 //! This module provides [`Output`], which allows you to get [`OutputHandle`]s for different
 //! connected monitors and set them up.
 
-</span><span class="kw">use </span>std::{num::NonZeroU32, str::FromStr};
+</span><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::output::{
@@ -2074,13 +2066,6 @@
 </span><span class="kw">pub enum </span>OutputId {
     <span class="doccomment">/// Identify using the output's name.
     </span>Name(String),
-    <span class="doccomment">/// Identify using the output's EDID serial number.
-    ///
-    /// Note: some displays (like laptop screens) don't have a serial number, in which case this won't match it.
-    /// Additionally the Rust API assumes monitor serial numbers are unique.
-    /// If you're unlucky enough to have two monitors with the same serial number,
-    /// use [`OutputId::Name`] instead.
-    </span>Serial(NonZeroU32),
 }
 
 <span class="kw">impl </span>OutputId {
@@ -2096,7 +2081,6 @@
     </span><span class="kw">pub fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; bool {
         <span class="kw">match </span><span class="self">self </span>{
             OutputId::Name(name) =&gt; <span class="kw-2">*</span>name == output.name(),
-            OutputId::Serial(serial) =&gt; <span class="prelude-val">Some</span>(serial.get()) == output.serial(),
         }
     }
 }
@@ -2547,7 +2531,7 @@
                 .collect(),
             scale: response.scale,
             transform: response.transform.and_then(|tf| tf.try_into().ok()),
-            serial: response.serial,
+            serial: response.serial_str,
             keyboard_focus_stack: response
                 .keyboard_focus_stack_window_ids
                 .into_iter()
@@ -2746,15 +2730,15 @@
         <span class="self">self</span>.props_async().<span class="kw">await</span>.transform
     }
 
-    <span class="doccomment">/// Get this output's EDID serial number.
+    <span class="doccomment">/// Get this output's EDID serial.
     ///
     /// Shorthand for `self.props().serial`
-    </span><span class="kw">pub fn </span>serial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+    </span><span class="kw">pub fn </span>serial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="self">self</span>.props().serial
     }
 
     <span class="doccomment">/// The async version of [`OutputHandle::serial`].
-    </span><span class="kw">pub async fn </span>serial_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+    </span><span class="kw">pub async fn </span>serial_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="self">self</span>.props_async().<span class="kw">await</span>.serial
     }
 
@@ -2874,8 +2858,8 @@
     </span><span class="kw">pub </span>scale: <span class="prelude-ty">Option</span>&lt;f32&gt;,
     <span class="doccomment">/// This output's transform.
     </span><span class="kw">pub </span>transform: <span class="prelude-ty">Option</span>&lt;Transform&gt;,
-    <span class="doccomment">/// This output's EDID serial number.
-    </span><span class="kw">pub </span>serial: <span class="prelude-ty">Option</span>&lt;u32&gt;,
+    <span class="doccomment">/// This output's EDID serial.
+    </span><span class="kw">pub </span>serial: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// This output's window keyboard focus stack.
     </span><span class="kw">pub </span>keyboard_focus_stack: Vec&lt;WindowHandle&gt;,
     <span class="doccomment">/// Whether this output is enabled.
