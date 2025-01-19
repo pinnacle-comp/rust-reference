@@ -765,11 +765,20 @@
 <a href="#764" id="764">764</a>
 <a href="#765" id="765">765</a>
 <a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="doccomment">//! Input management.
+//!
+//! This module provides ways to manage bindings, input devices, and other input settings.
 
 </span><span class="kw">use </span>num_enum::{FromPrimitive, IntoPrimitive};
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::input::{
@@ -1303,12 +1312,12 @@
 ///
 /// # Examples
 ///
-/// ```
-/// use pinnacle_api::input::XkbConfig;
-///
+/// ```no_run
+/// # use pinnacle_api::input;
+/// # use pinnacle_api::input::XkbConfig;
 /// input::set_xkb_config(XkbConfig::new()
-///     .layout("us,fr,ge")
-///     .options("ctrl:swapcaps,caps:shift"));
+///     .with_layout("us,fr,ge")
+///     .with_options("ctrl:swapcaps,caps:shift"));
 /// ```
 </span><span class="kw">pub fn </span>set_xkb_config(xkb_config: XkbConfig) {
     Client::input()
@@ -1366,7 +1375,8 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::input;
 /// // Set keyboard to repeat after holding down for half a second,
 /// // and repeat once every 25ms (40 times a second)
 /// input::set_repeat_rate(25, 500);
@@ -1388,7 +1398,8 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::input;
 /// input::set_xcursor_theme("Adwaita");
 /// ```
 </span><span class="kw">pub fn </span>set_xcursor_theme(theme: <span class="kw">impl </span>ToString) {
@@ -1408,7 +1419,8 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::input;
 /// input::set_xcursor_size(64);
 /// ```
 </span><span class="kw">pub fn </span>set_xcursor_size(size: u32) {
@@ -1520,7 +1532,9 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::input;
+/// # use pinnacle_api::signal::InputSignal;
 /// input::connect_signal(InputSignal::DeviceAdded(Box::new(|device| {
 ///     println!("New device: {}", device.name());
 /// })));

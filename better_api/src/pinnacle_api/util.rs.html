@@ -214,7 +214,13 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -264,8 +270,11 @@
 ///
 /// # Examples
 ///
-/// ```
-/// let props: Vec&lt;String&gt; = batch(window::get_all().map(|window| window.app_id_async()));
+/// ```no_run
+/// # use pinnacle_api::util::batch;
+/// # use pinnacle_api::window;
+/// let windows = window::get_all().collect::&lt;Vec&lt;_&gt;&gt;();
+/// let props: Vec&lt;String&gt; = batch(windows.iter().map(|window| window.app_id_async()));
 /// ```
 ///
 </span><span class="kw">pub fn </span>batch&lt;T&gt;(requests: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>Future&lt;Output = T&gt;&gt;) -&gt; Vec&lt;T&gt; {
@@ -285,36 +294,39 @@
 /// The [`batch`] function only accepts a collection of the same concrete future e.g.
 /// from a single async function or method.
 ///
-/// To support different futures (that still return the same value), this macro will place provided
+/// To support different futures (that still return the same type), this macro will place provided
 /// futures in a `Pin&lt;Box&lt;_&gt;&gt;` to erase their type and pass them along to `batch`.
 ///
 /// # Examples
-/// ```
-/// use pinnacle_api::util::batch_boxed;
 ///
-/// let mut windows = window.get_all();
+/// ```no_run
+/// # use pinnacle_api::util::batch_boxed;
+/// # use pinnacle_api::window;
+/// # || {
+/// let mut windows = window::get_all();
 /// let first = windows.next()?;
 /// let last = windows.last()?;
 ///
 /// let classes: Vec&lt;String&gt; = batch_boxed![
 ///     async {
-///         let class = first.class_async().await;
-///         class.unwrap_or("no class".to_string())
+///         let class = first.app_id_async().await;
+///         class
 ///     },
 ///     async {
-///         let mut class = last.class_async().await.unwrap_or("alalala");
+///         let mut class = last.app_id_async().await;
 ///         class += "hello";
 ///         class
 ///     },
 /// ];
+/// # Some(())
+/// # };
 /// ```
 </span><span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> batch_boxed {
-    [ <span class="macro-nonterminal">$first</span>:expr, $(<span class="macro-nonterminal">$request</span>:expr),* ] =&gt; {
+    [ $(<span class="macro-nonterminal">$request</span>:expr),* $(,)<span class="question-mark">? </span>] =&gt; {
         <span class="macro-nonterminal">$crate::util::batch</span>([
-            ::std::boxed::Box::pin(<span class="macro-nonterminal">$first</span>) <span class="kw">as </span>::std::pin::Pin&lt;::std::boxed::Box&lt;<span class="kw">dyn </span>std::future::Future&lt;Output = <span class="kw">_</span>&gt;&gt;&gt;,
             $(
-                ::std::boxed::Box::pin(<span class="macro-nonterminal">$request</span>),
+                ::std::boxed::Box::pin(<span class="macro-nonterminal">$request</span>) <span class="kw">as </span>::std::pin::Pin&lt;::std::boxed::Box&lt;<span class="kw">dyn </span>std::future::Future&lt;Output = <span class="kw">_</span>&gt;&gt;&gt;,
             )*
         ])
     };

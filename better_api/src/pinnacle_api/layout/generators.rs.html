@@ -603,7 +603,12 @@
 <a href="#602" id="602">602</a>
 <a href="#603" id="603">603</a>
 <a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a></pre></div><pre class="rust"><code><span class="doccomment">//! Various builtin generators.
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a></pre></div><pre class="rust"><code><span class="doccomment">//! Various builtin generators.
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
@@ -1150,10 +1155,15 @@
     /// # Examples
     ///
     /// ```
-    /// let cycling_layout_manager = CyclingLayoutManager::new([
-    ///     Box::&lt;MasterStackLayout&gt;::default() as Box&lt;dyn LayoutGenerator + Send&gt;,
-    ///     Box::&lt;DwindleLayout&gt;::default() as _,
-    ///     Box::&lt;CornerLayout&gt;::default() as _,
+    /// # use pinnacle_api::layout::generators::Cycle;
+    /// # use pinnacle_api::layout::generators::MasterStack;
+    /// # use pinnacle_api::layout::generators::Dwindle;
+    /// # use pinnacle_api::layout::generators::Corner;
+    /// # use pinnacle_api::layout::LayoutGenerator;
+    /// let cycler = Cycle::new([
+    ///     Box::&lt;MasterStack&gt;::default() as Box&lt;dyn LayoutGenerator + Send&gt;,
+    ///     Box::&lt;Dwindle&gt;::default() as _,
+    ///     Box::&lt;Corner&gt;::default() as _,
     /// ]);
     /// ```
     </span><span class="kw">pub fn </span>new(layouts: <span class="kw">impl </span>IntoIterator&lt;Item = T&gt;) -&gt; <span class="self">Self </span>{

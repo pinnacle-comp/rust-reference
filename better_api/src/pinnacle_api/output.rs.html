@@ -1082,7 +1082,27 @@
 <a href="#1081" id="1081">1081</a>
 <a href="#1082" id="1082">1082</a>
 <a href="#1083" id="1083">1083</a>
-<a href="#1084" id="1084">1084</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -1122,7 +1142,8 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::output;
 /// for output in output::get_all() {
 ///     println!("{} {} {}", output.make(), output.model(), output.serial());
 /// }
@@ -1149,7 +1170,8 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::output;
 /// for output in output::get_all_enabled() {
 ///     println!("{} {} {}", output.make(), output.model(), output.serial());
 /// }
@@ -1168,12 +1190,6 @@
 <span class="doccomment">/// Gets a handle to the output with the given name.
 ///
 /// By "name", we mean the name of the connector the output is connected to.
-///
-/// # Examples
-///
-/// ```
-/// let op = output.get_by_name("eDP-1")?;
-/// ```
 </span><span class="kw">pub fn </span>get_by_name(name: <span class="kw">impl </span>ToString) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
     get_by_name_async(name).block_on_tokio()
 }
@@ -1186,12 +1202,6 @@
 <span class="doccomment">/// Gets a handle to the currently focused output.
 ///
 /// This is currently implemented as the one that has had the most recent pointer movement.
-///
-/// # Examples
-///
-/// ```
-/// let op = output.get_focused()?;
-/// ```
 </span><span class="kw">pub fn </span>get_focused() -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
     get_focused_async().block_on_tokio()
 }
@@ -1215,10 +1225,12 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::output;
+/// # use pinnacle_api::tag;
 /// // Add tags 1-3 to all outputs and set tag "1" to active
 /// output::for_each_output(|op| {
-///     let tags = tag::add(op, ["1", "2", "3"]);
+///     let mut tags = tag::add(op, ["1", "2", "3"]);
 ///     tags.next().unwrap().set_active(true);
 /// });
 /// ```
@@ -1236,7 +1248,9 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
+/// # use pinnacle_api::output;
+/// # use pinnacle_api::signal::OutputSignal;
 /// output::connect_signal(OutputSignal::Connect(Box::new(|output| {
 ///     println!("New output: {}", output.name());
 /// })));
@@ -1360,7 +1374,8 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::output;
     /// // Assume two monitors in order, "DP-1" and "HDMI-1", with the following dimensions:
     /// //  - "DP-1":   ┌─────┐
     /// //              │     │1920x1080
@@ -1369,10 +1384,11 @@
     /// //              │ 2560x │
     /// //              │ 1440  │
     /// //              └───────┘
-    ///
+    /// # || {
     /// output::get_by_name("DP-1")?.set_loc(0, 0);
     /// output::get_by_name("HDMI-1")?.set_loc(1920, -360);
-    ///
+    /// # Some(())
+    /// # };
     /// // Results in:
     /// //   x=0    ┌───────┐y=-360
     /// // y=0┌─────┤       │
@@ -1404,7 +1420,9 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # use pinnacle_api::output::Alignment;
     /// // Assume two monitors in order, "DP-1" and "HDMI-1", with the following dimensions:
     /// //  - "DP-1":   ┌─────┐
     /// //              │     │1920x1080
@@ -1413,9 +1431,12 @@
     /// //              │ 2560x │
     /// //              │ 1440  │
     /// //              └───────┘
-    ///
-    /// output::get_by_name("DP-1")?.set_loc_adj_to(output::get_by_name("HDMI-1")?, Alignment::BottomAlignRight);
-    ///
+    /// # || {
+    /// let dp_1 = output::get_by_name("DP-1")?;
+    /// let hdmi_1 = output::get_by_name("HDMI-1")?;
+    /// dp_1.set_loc_adj_to(&amp;hdmi_1, Alignment::BottomAlignRight);
+    /// # Some(())
+    /// # };
     /// // Results in:
     /// // ┌───────┐
     /// // │       │
@@ -1510,8 +1531,13 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// // Sets the focused output to 2560x1440 at 144Hz
     /// output::get_focused()?.set_mode(2560, 1440, 144000);
+    /// # Some(())
+    /// # };
     /// ```
     </span><span class="kw">pub fn </span>set_mode(<span class="kw-2">&amp;</span><span class="self">self</span>, width: u32, height: u32, refresh_rate_mhz: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt;) {
         Client::output()
@@ -1533,8 +1559,13 @@
     ///
     /// # Examples
     ///
-    /// ```
-    /// output::set_modeline("173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync".parse()?);
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// let output = output::get_focused()?;
+    /// output.set_modeline("173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync".parse().unwrap());
+    /// # Some(())
+    /// # };
     /// ```
     </span><span class="kw">pub fn </span>set_modeline(<span class="kw-2">&amp;</span><span class="self">self</span>, modeline: Modeline) {
         Client::output()
@@ -1562,9 +1593,13 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
     /// output::get_focused()?.change_scale(0.25);
     /// output::get_focused()?.change_scale(-0.25);
+    /// # Some(())
+    /// # };
     /// ```
     </span><span class="kw">pub fn </span>change_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, change_by: f32) {
         Client::output()
@@ -1581,9 +1616,14 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # use pinnacle_api::output::Transform;
     /// // Rotate 90 degrees counter-clockwise
+    /// # || {
     /// output::get_focused()?.set_transform(Transform::_90);
+    /// # Some(())
+    /// # };
     /// ```
     </span><span class="kw">pub fn </span>set_transform(<span class="kw-2">&amp;</span><span class="self">self</span>, transform: Transform) {
         Client::output()
