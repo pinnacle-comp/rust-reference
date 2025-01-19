@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CornerLocation","MasterSide"],"struct":["CornerLayout","DwindleLayout","Line","MasterStackLayout","SpiralLayout"]};
+window.SIDEBAR_ITEMS = {"enum":["CornerLocation","MasterSide"],"struct":["CornerLayout","DwindleLayout","FairLayout","Line","MasterStackLayout","SpiralLayout"]};
