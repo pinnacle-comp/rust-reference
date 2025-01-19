@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CornerLocation","MasterSide"],"struct":["CornerLayout","DwindleLayout","Line","MasterStackLayout","SpiralLayout"]};

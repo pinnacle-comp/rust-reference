@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Backend"],"fn":["backend","quit","reload_config"]};
