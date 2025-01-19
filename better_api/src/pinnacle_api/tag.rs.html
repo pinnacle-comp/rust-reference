@@ -365,7 +365,14 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -389,12 +396,6 @@
 //! the ability to tag windows with multiple tags allows you to have one window show up on multiple
 //! different "workspaces". As you can see, this system is much more powerful than workspaces
 //! alone.
-//!
-//! # Configuration
-//! `tag` contains the [`Tag`] struct, which allows you to add new tags
-//! and get handles to already defined ones.
-//!
-//! These [`TagHandle`]s allow you to manipulate individual tags and get their properties.
 
 </span><span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
@@ -419,7 +420,8 @@
 /// This will add tags with the given names to `output` and return [`TagHandle`]s to all of
 /// them.
 ///
-/// # Example
+/// # Examples
+///
 /// ```no_run
 /// // Add tags 1-5 to the focused output
 /// if let Some(op) = output::get_focused() {
@@ -449,6 +451,7 @@
 <span class="doccomment">/// Gets handles to all tags across all outputs.
 ///
 /// # Examples
+///
 /// ```no_run
 /// for tag in tag::get_all() {
 ///     println!("{}", tag.name());
@@ -475,7 +478,8 @@
 /// To get the first tag with the given `name` on a specific output, see
 /// [`get_on_output`].
 ///
-/// # Example
+/// # Examples
+///
 /// ```no_run
 /// let tag = tag::get("2")?;
 /// ```
@@ -495,7 +499,8 @@
 ///
 /// For a simpler way to get a tag on the focused output, see [`get`].
 ///
-/// # Example
+/// # Examples
+///
 /// ```no_run
 /// let output = output::get_by_name("eDP-1")?;
 /// let tag = tag::get_on_output("2", &amp;output)?;
@@ -516,7 +521,8 @@
 
 <span class="doccomment">/// Removes the given tags from their outputs.
 ///
-/// # Example
+/// # Examples
+///
 /// ```no_run
 /// let tags = tag::add(output::get_by_name("DP-1")?, ["1", "2", "Buckle", "Shoe"]);
 ///
@@ -531,11 +537,15 @@
         .unwrap();
 }
 
-<span class="doccomment">/// Connects to a tag signal.
+<span class="doccomment">/// Connects to a [`TagSignal`].
 ///
-/// The compositor will fire off signals that your config can listen for and act upon.
-/// You can pass in a [`TagSignal`] along with a callback and it will get run
-/// with the necessary arguments every time a signal of that type is received.
+/// # Examples
+///
+/// ```
+/// tag::connect_signal(TagSignal::Active(Box::new(|tag, active| {
+///     println!("Tag is active = {active}");
+/// })));
+/// ```
 </span><span class="kw">pub fn </span>connect_signal(signal: TagSignal) -&gt; SignalHandle {
     <span class="kw">let </span><span class="kw-2">mut </span>signal_state = Client::signal_state();
 
@@ -557,7 +567,8 @@
     ///
     /// This emulates what a traditional workspace is.
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```no_run
     /// // Assume the focused output has the following inactive tags and windows:
     /// // "1": Alacritty
@@ -582,7 +593,8 @@
     /// While inactive, windows with this tag will not be displayed unless they have other active
     /// tags.
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```
     /// // Assume the focused output has the following inactive tags and windows:
     /// // "1": Alacritty
@@ -615,7 +627,8 @@
     /// While inactive, windows with this tag will not be displayed unless they have other active
     /// tags.
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```no_run
     /// // Assume the focused output has the following inactive tags and windows:
     /// // "1": Alacritty
@@ -640,7 +653,8 @@
 
     <span class="doccomment">/// Removes this tag from its output.
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```
     /// let tags =
     ///     tag::add(output.get_by_name("DP-1")?, ["1", "2", "Buckle", "Shoe"]).collect::&lt;Vec&lt;_&gt;&gt;;
@@ -727,7 +741,7 @@
         )
     }
 
-    <span class="doccomment">/// Get this tag's raw compositor id.
+    <span class="doccomment">/// Gets this tag's raw compositor id.
     </span><span class="kw">pub fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="self">self</span>.id
     }

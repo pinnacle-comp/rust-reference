@@ -757,7 +757,15 @@
 <a href="#756" id="756">756</a>
 <a href="#757" id="757">757</a>
 <a href="#758" id="758">758</a>
-<a href="#759" id="759">759</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -1057,9 +1065,9 @@
                 mods: mods.into_iter().map(|m| m.into()).collect(),
                 ignore_mods: ignore_mods.into_iter().map(|m| m.into()).collect(),
                 layer_name: layer.name.clone(),
-                group: <span class="prelude-val">None</span>,       <span class="comment">// TODO:
-                </span>description: <span class="prelude-val">None</span>, <span class="comment">// TODO:
-                </span>bind: <span class="prelude-val">Some</span>(input::v1::bind::Bind::Key(input::v1::Keybind {
+                group: <span class="prelude-val">None</span>,
+                description: <span class="prelude-val">None</span>,
+                bind: <span class="prelude-val">Some</span>(input::v1::bind::Bind::Key(input::v1::Keybind {
                     key_code: <span class="prelude-val">Some</span>(key.to_keysym().raw()),
                     xkb_name: <span class="prelude-val">None</span>,
                 })),
@@ -1169,9 +1177,9 @@
                 mods: mods.into_iter().map(|m| m.into()).collect(),
                 ignore_mods: ignore_mods.into_iter().map(|m| m.into()).collect(),
                 layer_name: layer.name.clone(),
-                group: <span class="prelude-val">None</span>,       <span class="comment">// TODO:
-                </span>description: <span class="prelude-val">None</span>, <span class="comment">// TODO:
-                </span>bind: <span class="prelude-val">Some</span>(input::v1::bind::Bind::Mouse(input::v1::Mousebind {
+                group: <span class="prelude-val">None</span>,
+                description: <span class="prelude-val">None</span>,
+                bind: <span class="prelude-val">Some</span>(input::v1::bind::Bind::Mouse(input::v1::Mousebind {
                     button: button.into(),
                 })),
             }),
@@ -1509,6 +1517,14 @@
 }
 
 <span class="doccomment">/// Connects to an [`InputSignal`].
+///
+/// # Examples
+///
+/// ```
+/// input::connect_signal(InputSignal::DeviceAdded(Box::new(|device| {
+///     println!("New device: {}", device.name());
+/// })));
+/// ```
 </span><span class="kw">pub fn </span>connect_signal(signal: InputSignal) -&gt; SignalHandle {
     <span class="kw">let </span><span class="kw-2">mut </span>signal_state = Client::signal_state();
 

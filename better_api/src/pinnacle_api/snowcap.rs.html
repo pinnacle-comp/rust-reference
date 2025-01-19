@@ -392,8 +392,14 @@
 <a href="#391" id="391">391</a>
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
-<a href="#394" id="394">394</a></pre></div><pre class="rust"><code><span class="doccomment">//! The Snowcap widget system.
-//! // TODO: these docs
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a></pre></div><pre class="rust"><code><span class="doccomment">//! Integration with the
+//! [Snowcap](https://github.com/pinnacle-comp/pinnacle/tree/main/snowcap) widget system.
+//!
+//! Snowcap is a really-early-in-development widget system, designed for Pinnacle.
+//! This module contains preliminary widgets made with the system.
 
 </span><span class="kw">use </span>indexmap::IndexMap;
 <span class="kw">use </span>snowcap_api::{
@@ -485,7 +491,7 @@
     }
 }
 
-<span class="doccomment">/// A keybind overlay.
+<span class="doccomment">/// A bindings overlay.
 </span><span class="attr">#[derive(Default, Clone, Debug)]
 </span><span class="kw">pub struct </span>BindOverlay {
     <span class="doccomment">/// The radius of the prompt's corners.
@@ -505,7 +511,7 @@
 }
 
 <span class="kw">impl </span>BindOverlay {
-    <span class="doccomment">/// Create the default keybind overlay.
+    <span class="doccomment">/// Creates the default bind overlay.
     ///
     /// Some of its characteristics can be changed by setting its fields.
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
@@ -520,7 +526,7 @@
         }
     }
 
-    <span class="doccomment">/// Show this keybind overlay.
+    <span class="doccomment">/// Shows this bind overlay.
     </span><span class="kw">pub fn </span>show(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="attr">#[derive(PartialEq, Eq, Hash)]
         </span><span class="kw">struct </span>KeybindRepr {

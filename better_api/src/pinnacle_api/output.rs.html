@@ -1082,10 +1082,7 @@
 <a href="#1081" id="1081">1081</a>
 <a href="#1082" id="1082">1082</a>
 <a href="#1083" id="1083">1083</a>
-<a href="#1084" id="1084">1084</a>
-<a href="#1085" id="1085">1085</a>
-<a href="#1086" id="1086">1086</a>
-<a href="#1087" id="1087">1087</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#1084" id="1084">1084</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -1123,7 +1120,8 @@
 
 <span class="doccomment">/// Gets handles to all currently plugged-in outputs.
 ///
-/// # Example
+/// # Examples
+///
 /// ```
 /// for output in output::get_all() {
 ///     println!("{} {} {}", output.make(), output.model(), output.serial());
@@ -1149,7 +1147,8 @@
 ///
 /// This ignores outputs you have explicitly disabled.
 ///
-/// # Example
+/// # Examples
+///
 /// ```
 /// for output in output::get_all_enabled() {
 ///     println!("{} {} {}", output.make(), output.model(), output.serial());
@@ -1170,7 +1169,8 @@
 ///
 /// By "name", we mean the name of the connector the output is connected to.
 ///
-/// # Example
+/// # Examples
+///
 /// ```
 /// let op = output.get_by_name("eDP-1")?;
 /// ```
@@ -1187,7 +1187,8 @@
 ///
 /// This is currently implemented as the one that has had the most recent pointer movement.
 ///
-/// # Example
+/// # Examples
+///
 /// ```
 /// let op = output.get_focused()?;
 /// ```
@@ -1204,37 +1205,42 @@
 
 <span class="doccomment">/// Runs a closure on all current and future outputs.
 ///
-/// When called, `for_all_outputs` will do two things:
-/// 1. Immediately run `for_all` with all currently connected outputs.
-/// 2. Call `for_all` with any newly connected outputs.
+/// When called, this will do two things:
+/// 1. Immediately run `for_each` with all currently connected outputs.
+/// 2. Call `for_each` with any newly connected outputs.
 ///
-/// Note that `for_all` will *not* run with outputs that have been unplugged and replugged.
+/// Note that `for_each` will *not* run with outputs that have been unplugged and replugged.
 /// This is to prevent duplicate setup. Instead, the compositor keeps track of any tags and
 /// state the output had when unplugged and restores them on replug. This may change in the future.
 ///
-/// # Example
+/// # Examples
+///
 /// ```
 /// // Add tags 1-3 to all outputs and set tag "1" to active
-/// output::for_all_outputs(|op| {
+/// output::for_each_output(|op| {
 ///     let tags = tag::add(op, ["1", "2", "3"]);
 ///     tags.next().unwrap().set_active(true);
 /// });
 /// ```
-</span><span class="kw">pub fn </span>for_all_outputs(<span class="kw-2">mut </span>for_all: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>) {
+</span><span class="kw">pub fn </span>for_each_output(<span class="kw-2">mut </span>for_each: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>) {
     <span class="kw">for </span>output <span class="kw">in </span>get_all() {
-        for_all(<span class="kw-2">&amp;</span>output);
+        for_each(<span class="kw-2">&amp;</span>output);
     }
 
     Client::signal_state()
         .output_connect
-        .add_callback(Box::new(for_all));
+        .add_callback(Box::new(for_each));
 }
 
-<span class="doccomment">/// Connects to an output signal.
+<span class="doccomment">/// Connects to an [`OutputSignal`].
 ///
-/// The compositor will fire off signals that your config can listen for and act upon.
-/// You can pass in an [`OutputSignal`] along with a callback and it will get run
-/// with the necessary arguments every time a signal of that type is received.
+/// # Examples
+///
+/// ```
+/// output::connect_signal(OutputSignal::Connect(Box::new(|output| {
+///     println!("New output: {}", output.name());
+/// })));
+/// ```
 </span><span class="kw">pub fn </span>connect_signal(signal: OutputSignal) -&gt; SignalHandle {
     <span class="kw">let </span><span class="kw-2">mut </span>signal_state = Client::signal_state();
 
@@ -1352,7 +1358,8 @@
     /// Note: If you leave space between two outputs when setting their locations,
     /// the pointer will not be able to move between them.
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```
     /// // Assume two monitors in order, "DP-1" and "HDMI-1", with the following dimensions:
     /// //  - "DP-1":   ┌─────┐
@@ -1395,7 +1402,8 @@
     /// Similarly, [`RightAlignCenter`][Alignment::RightAlignCenter] will place this output
     /// to the right of `other` and align their centers.
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```
     /// // Assume two monitors in order, "DP-1" and "HDMI-1", with the following dimensions:
     /// //  - "DP-1":   ┌─────┐
@@ -1498,9 +1506,10 @@
     /// 60Hz, use 60000.
     ///
     /// If this output doesn't support the given mode, it will be ignored.
-    /// // FIXME: check that i don't remember lol
+    /// // FIXME: check that, i don't remember lol
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```
     /// output::get_focused()?.set_mode(2560, 1440, 144000);
     /// ```
@@ -1520,9 +1529,10 @@
     /// See `xorg.conf(5)` for more information.
     ///
     /// You can parse a modeline from a string of the form
-    /// "&lt;clock&gt; &lt;hdisplay&gt; &lt;hsync_start&gt; &lt;hsync_end&gt; &lt;htotal&gt; &lt;vdisplay&gt; &lt;vsync_start&gt; &lt;vsync_end&gt; &lt;hsync&gt; &lt;vsync&gt;".
+    /// "\&lt;clock&gt; \&lt;hdisplay&gt; \&lt;hsync_start&gt; \&lt;hsync_end&gt; \&lt;htotal&gt; \&lt;vdisplay&gt; \&lt;vsync_start&gt; \&lt;vsync_end&gt; \&lt;hsync&gt; \&lt;vsync&gt;".
     ///
-    /// # Example
+    /// # Examples
+    ///
     /// ```
     /// output::set_modeline("173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync".parse()?);
     /// ```
@@ -1537,12 +1547,6 @@
     }
 
     <span class="doccomment">/// Sets this output's scaling factor.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// output::get_focused()?.set_scale(1.5);
-    /// ```
     </span><span class="kw">pub fn </span>set_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, scale: f32) {
         Client::output()
             .set_scale(SetScaleRequest {
@@ -1595,11 +1599,6 @@
     ///
     /// This will not remove it from the space and your tags and windows
     /// will still be interactable; only the monitor is turned off.
-    ///
-    /// # Example
-    /// ```
-    /// output::get_focused()?.set_powered(false);
-    /// ```
     </span><span class="kw">pub fn </span>set_powered(<span class="kw-2">&amp;</span><span class="self">self</span>, powered: bool) {
         Client::output()
             .set_powered(SetPoweredRequest {
@@ -1618,11 +1617,6 @@
     ///
     /// This will not remove it from the space and your tags and windows
     /// will still be interactable; only the monitor is turned off.
-    ///
-    /// # Example
-    /// ```
-    /// output::get_focused()?.toggle_powered();
-    /// ```
     </span><span class="kw">pub fn </span>toggle_powered(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         Client::output()
             .set_powered(SetPoweredRequest {
@@ -1946,7 +1940,7 @@
         <span class="self">self</span>.keyboard_focus_stack_visible_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// Async impl for [`Self::keyboard_focus_stack`].
+    <span class="doccomment">/// Async impl for [`Self::keyboard_focus_stack_visible`].
     </span><span class="kw">pub async fn </span>keyboard_focus_stack_visible_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
         <span class="self">self</span>.keyboard_focus_stack_async()
             .<span class="kw">await

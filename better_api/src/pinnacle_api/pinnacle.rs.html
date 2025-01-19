@@ -80,7 +80,7 @@
 
 </span><span class="doccomment">//! Compositor management.
 //!
-//! This module provides [`Pinnacle`], which allows you to quit the compositor.
+//! This module provides general compositor actions like quitting and reloading the config.
 
 </span><span class="kw">use </span>pinnacle_api_defs::pinnacle::{
     <span class="self">self</span>,
@@ -113,7 +113,7 @@
     </span><span class="kw">let _ </span>= Client::pinnacle().quit(QuitRequest {}).block_on_tokio();
 }
 
-<span class="doccomment">/// Reload the currently active config.
+<span class="doccomment">/// Reloads the currently active config.
 </span><span class="kw">pub fn </span>reload_config() {
     <span class="comment">// Ignore errors here, the config is meant to be killed
     </span><span class="kw">let _ </span>= Client::pinnacle()

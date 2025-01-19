@@ -690,7 +690,7 @@
     }
     <span class="doccomment">/// Signals relating to input events.
     </span>InputSignal =&gt; {
-        <span class="doccomment">/// A tag was set to active or not active.
+        <span class="doccomment">/// A new input device was connected.
         </span>InputDeviceAdded = {
             enum_name = DeviceAdded,
             callback_type = Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>DeviceHandle) + Send + <span class="lifetime">'static</span>&gt;,
