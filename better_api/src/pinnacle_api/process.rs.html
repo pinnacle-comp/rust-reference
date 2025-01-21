@@ -200,7 +200,14 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -210,9 +217,10 @@
 
 </span><span class="kw">use </span>std::{
     collections::HashMap,
-    os::fd::{FromRawFd, OwnedFd},
+    os::fd::{AsRawFd, FromRawFd, OwnedFd},
 };
 
+<span class="kw">use </span>passfd::FdPassingExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::process::v1::{SpawnRequest, WaitOnSpawnRequest};
 <span class="kw">use </span>tokio_stream::StreamExt;
 
@@ -347,7 +355,7 @@
 
     <span class="doccomment">/// Spawns this command, returning the spawned process's standard io, if any.
     </span><span class="kw">pub fn </span>spawn(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Child&gt; {
-        <span class="kw">let </span>child = Client::process()
+        <span class="kw">let </span>data = Client::process()
             .spawn(SpawnRequest {
                 cmd: <span class="self">self</span>.cmd.clone(),
                 unique: <span class="self">self</span>.unique,
@@ -358,48 +366,54 @@
             .block_on_tokio()
             .unwrap()
             .into_inner()
-            .spawn_data
-            .map(|data| {
-                <span class="kw">let </span>stdin = data
-                    .stdin_fd
-                    .map(|stdin_fd| {
-                        <span class="comment">// SAFETY: The fd was obtained from a compositor-side
-                        // `ChildStdin::into_owned_fd -&gt; IntoRawFd::into_raw_fd`, meaning the
-                        // compositor has given up ownership of the fd.
-                        </span><span class="kw">unsafe </span>{ OwnedFd::from_raw_fd(stdin_fd) }
-                    })
-                    .map(std::process::ChildStdin::from)
-                    .and_then(|stdin| tokio::process::ChildStdin::from_std(stdin).ok());
-                <span class="kw">let </span>stdout = data
-                    .stdout_fd
-                    .map(|stdout_fd| {
-                        <span class="comment">// SAFETY: The fd was obtained from a compositor-side
-                        // `ChildStdout::into_owned_fd -&gt; IntoRawFd::into_raw_fd`, meaning the
-                        // compositor has given up ownership of the fd.
-                        </span><span class="kw">unsafe </span>{ OwnedFd::from_raw_fd(stdout_fd) }
-                    })
-                    .map(std::process::ChildStdout::from)
-                    .and_then(|stdin| tokio::process::ChildStdout::from_std(stdin).ok());
-                <span class="kw">let </span>stderr = data
-                    .stderr_fd
-                    .map(|stderr_fd| {
-                        <span class="comment">// SAFETY: The fd was obtained from a compositor-side
-                        // `ChildStderr::into_owned_fd -&gt; IntoRawFd::into_raw_fd`, meaning the
-                        // compositor has given up ownership of the fd.
-                        </span><span class="kw">unsafe </span>{ OwnedFd::from_raw_fd(stderr_fd) }
-                    })
-                    .map(std::process::ChildStderr::from)
-                    .and_then(|stdin| tokio::process::ChildStderr::from_std(stdin).ok());
+            .spawn_data<span class="question-mark">?</span>;
 
-                Child {
-                    pid: data.pid,
-                    stdin,
-                    stdout,
-                    stderr,
-                }
-            });
+        <span class="kw">let </span>pid = data.pid;
+        <span class="kw">let </span>fd_socket_path = data.fd_socket_path;
 
-        child
+        <span class="kw">let </span><span class="kw-2">mut </span>stdin = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>stdout = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>stderr = <span class="prelude-val">None</span>;
+
+        <span class="kw">let </span>stream = std::os::unix::net::UnixStream::connect(fd_socket_path)
+            .expect(<span class="string">"this should be set up by the compositor"</span>);
+
+        <span class="kw">if </span>data.has_stdin {
+            <span class="kw">let </span>fd = stream.recv_fd().unwrap();
+            <span class="kw">let </span>child_stdin =
+                tokio::process::ChildStdin::from_std(std::process::ChildStdin::from(<span class="kw">unsafe </span>{
+                    OwnedFd::from_raw_fd(fd)
+                }))
+                .unwrap();
+            stdin = <span class="prelude-val">Some</span>(child_stdin);
+        }
+
+        <span class="kw">if </span>data.has_stdout {
+            <span class="kw">let </span>fd = stream.recv_fd().unwrap();
+            <span class="kw">let </span>child_stdout =
+                tokio::process::ChildStdout::from_std(std::process::ChildStdout::from(<span class="kw">unsafe </span>{
+                    OwnedFd::from_raw_fd(fd)
+                }))
+                .unwrap();
+            stdout = <span class="prelude-val">Some</span>(child_stdout);
+        }
+
+        <span class="kw">if </span>data.has_stderr {
+            <span class="kw">let </span>fd = stream.recv_fd().unwrap();
+            <span class="kw">let </span>child_stderr =
+                tokio::process::ChildStderr::from_std(std::process::ChildStderr::from(<span class="kw">unsafe </span>{
+                    OwnedFd::from_raw_fd(fd)
+                }))
+                .unwrap();
+            stderr = <span class="prelude-val">Some</span>(child_stderr);
+        }
+
+        <span class="prelude-val">Some</span>(Child {
+            pid,
+            stdin,
+            stdout,
+            stderr,
+        })
     }
 }
 </code></pre></div></section></main></body></html>
