@@ -772,7 +772,11 @@
 <a href="#771" id="771">771</a>
 <a href="#772" id="772">772</a>
 <a href="#773" id="773">773</a>
-<a href="#774" id="774">774</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -1029,10 +1033,12 @@
     Release,
 }
 
+<span class="kw">type </span>KeybindCallback = (Box&lt;<span class="kw">dyn </span>FnMut() + Send + <span class="lifetime">'static</span>&gt;, Edge);
+
 <span class="doccomment">/// A keybind.
 </span><span class="kw">pub struct </span>Keybind {
     bind_id: u32,
-    callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;(Box&lt;<span class="kw">dyn </span>FnMut() + Send + <span class="lifetime">'static</span>&gt;, Edge)&gt;&gt;,
+    callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;KeybindCallback&gt;&gt;,
 }
 
 <span class="macro">bind_impl!</span>(Keybind);
@@ -1141,10 +1147,12 @@
 
 <span class="comment">// Mousebinds
 
-</span><span class="doccomment">/// A mousebind.
+</span><span class="kw">type </span>MousebindCallback = (Box&lt;<span class="kw">dyn </span>FnMut() + Send + <span class="lifetime">'static</span>&gt;, Edge);
+
+<span class="doccomment">/// A mousebind.
 </span><span class="kw">pub struct </span>Mousebind {
     bind_id: u32,
-    callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;(Box&lt;<span class="kw">dyn </span>FnMut() + Send + <span class="lifetime">'static</span>&gt;, Edge)&gt;&gt;,
+    callback_sender: <span class="prelude-ty">Option</span>&lt;UnboundedSender&lt;MousebindCallback&gt;&gt;,
 }
 
 <span class="macro">bind_impl!</span>(Mousebind);
