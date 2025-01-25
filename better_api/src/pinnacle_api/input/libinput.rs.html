@@ -1187,7 +1187,7 @@
 ///   2. Runs it with all newly connected devices.
 ///
 /// Use this function for input device setup.
-</span><span class="kw">pub fn </span>for_all_devices&lt;F: FnMut(<span class="kw-2">&amp;</span>DeviceHandle) + Send + <span class="lifetime">'static</span>&gt;(<span class="kw-2">mut </span>for_all: F) {
+</span><span class="kw">pub fn </span>for_each_device&lt;F: FnMut(<span class="kw-2">&amp;</span>DeviceHandle) + Send + <span class="lifetime">'static</span>&gt;(<span class="kw-2">mut </span>for_all: F) {
     <span class="kw">for </span>device <span class="kw">in </span>get_devices() {
         for_all(<span class="kw-2">&amp;</span>device);
     }

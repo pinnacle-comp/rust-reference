@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["AccelProfile","ClickMethod","DeviceType","ScrollMethod","SendEventsMode","TapButtonMap"],"fn":["for_all_devices","get_devices"],"struct":["Capability","DeviceHandle"]};
+window.SIDEBAR_ITEMS = {"enum":["AccelProfile","ClickMethod","DeviceType","ScrollMethod","SendEventsMode","TapButtonMap"],"fn":["for_each_device","get_devices"],"struct":["Capability","DeviceHandle"]};
