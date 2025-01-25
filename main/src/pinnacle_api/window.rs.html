@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/window.rs`."><title>window.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">pinnacle_api/</div>window.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/window.rs`."><title>window.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../static.files/storage-59e33391.js"></script><script defer src="../../static.files/src-script-56102188.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">pinnacle_api/</div>window.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
 <a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
@@ -684,282 +684,177 @@
 <a href="#683" id="683">683</a>
 <a href="#684" id="684">684</a>
 <a href="#685" id="685">685</a>
-<a href="#686" id="686">686</a>
-<a href="#687" id="687">687</a>
-<a href="#688" id="688">688</a>
-<a href="#689" id="689">689</a>
-<a href="#690" id="690">690</a>
-<a href="#691" id="691">691</a>
-<a href="#692" id="692">692</a>
-<a href="#693" id="693">693</a>
-<a href="#694" id="694">694</a>
-<a href="#695" id="695">695</a>
-<a href="#696" id="696">696</a>
-<a href="#697" id="697">697</a>
-<a href="#698" id="698">698</a>
-<a href="#699" id="699">699</a>
-<a href="#700" id="700">700</a>
-<a href="#701" id="701">701</a>
-<a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
-<a href="#707" id="707">707</a>
-<a href="#708" id="708">708</a>
-<a href="#709" id="709">709</a>
-<a href="#710" id="710">710</a>
-<a href="#711" id="711">711</a>
-<a href="#712" id="712">712</a>
-<a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
-<a href="#719" id="719">719</a>
-<a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
-<a href="#722" id="722">722</a>
-<a href="#723" id="723">723</a>
-<a href="#724" id="724">724</a>
-<a href="#725" id="725">725</a>
-<a href="#726" id="726">726</a>
-<a href="#727" id="727">727</a>
-<a href="#728" id="728">728</a>
-<a href="#729" id="729">729</a>
-<a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
-<a href="#735" id="735">735</a>
-<a href="#736" id="736">736</a>
-<a href="#737" id="737">737</a>
-<a href="#738" id="738">738</a>
-<a href="#739" id="739">739</a>
-<a href="#740" id="740">740</a>
-<a href="#741" id="741">741</a>
-<a href="#742" id="742">742</a>
-<a href="#743" id="743">743</a>
-<a href="#744" id="744">744</a>
-<a href="#745" id="745">745</a>
-<a href="#746" id="746">746</a>
-<a href="#747" id="747">747</a>
-<a href="#748" id="748">748</a>
-<a href="#749" id="749">749</a>
-<a href="#750" id="750">750</a>
-<a href="#751" id="751">751</a>
-<a href="#752" id="752">752</a>
-<a href="#753" id="753">753</a>
-<a href="#754" id="754">754</a>
-<a href="#755" id="755">755</a>
-<a href="#756" id="756">756</a>
-<a href="#757" id="757">757</a>
-<a href="#758" id="758">758</a>
-<a href="#759" id="759">759</a>
-<a href="#760" id="760">760</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#686" id="686">686</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="doccomment">//! Window management.
 //!
-//! This module provides [`Window`], which allows you to get [`WindowHandle`]s and move and resize
+//! This module provides ways to get [`WindowHandle`]s and move and resize
 //! windows using the mouse.
 //!
 //! [`WindowHandle`]s allow you to do things like resize and move windows, toggle them between
 //! floating and tiled, close them, and more.
-//!
-//! This module also allows you to set window rules; see the [rules] module for more information.
 
 </span><span class="kw">use </span>futures::FutureExt;
-<span class="kw">use </span>num_enum::TryFromPrimitive;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
-    v0alpha1::SetOrToggle,
+    util::v1::SetOrToggle,
     window::{
         <span class="self">self</span>,
-        v0alpha1::{
-            AddWindowRuleRequest, CloseRequest, GetRequest, MoveGrabRequest, MoveToTagRequest,
-            RaiseRequest, ResizeGrabRequest, SetFloatingRequest, SetFocusedRequest,
-            SetFullscreenRequest, SetMaximizedRequest, SetTagRequest,
+        v1::{
+            GetAppIdRequest, GetFocusedRequest, GetLayoutModeRequest, GetLocRequest,
+            GetSizeRequest, GetTagIdsRequest, GetTitleRequest, MoveGrabRequest, MoveToTagRequest,
+            RaiseRequest, ResizeGrabRequest, SetDecorationModeRequest, SetFloatingRequest,
+            SetFocusedRequest, SetFullscreenRequest, SetMaximizedRequest, SetTagRequest,
         },
     },
 };
-<span class="kw">use </span>tracing::{error, instrument};
+<span class="kw">use </span>tokio::sync::mpsc::unbounded_channel;
+<span class="kw">use </span>tokio_stream::StreamExt;
 
 <span class="kw">use crate</span>::{
-    block_on_tokio,
+    client::Client,
     input::MouseButton,
     signal::{SignalHandle, WindowSignal},
-    signal_module,
-    tag::{Tag, TagHandle},
-    util::{Batch, Geometry},
+    tag::TagHandle,
+    util::{Batch, Point, Size},
+    BlockOnTokio,
 };
 
-<span class="kw">use </span><span class="self">self</span>::rules::{WindowRule, WindowRuleCondition};
-
-<span class="kw">pub mod </span>rules;
-
-<span class="doccomment">/// A struct containing methods that get [`WindowHandle`]s and move windows with the mouse.
+<span class="doccomment">/// Gets handles to all windows.
 ///
-/// See [`WindowHandle`] for more information.
-</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-</span><span class="kw">pub struct </span>Window;
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::window;
+/// for win in window::get_all() {
+///     println!("{}", win.title());
+/// }
+/// ```
+</span><span class="kw">pub fn </span>get_all() -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+    get_all_async().block_on_tokio()
+}
 
-<span class="kw">impl </span>Window {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u32) -&gt; WindowHandle {
-        WindowHandle { id }
-    }
+<span class="doccomment">/// Async impl for [`get_all`].
+</span><span class="kw">pub async fn </span>get_all_async() -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+    <span class="kw">let </span>window_ids = Client::window()
+        .get(pinnacle_api_defs::pinnacle::window::v1::GetRequest {})
+        .<span class="kw">await
+        </span>.unwrap()
+        .into_inner()
+        .window_ids;
 
-    <span class="doccomment">/// Start moving the window with the mouse.
-    ///
-    /// This will begin moving the window under the pointer using the specified [`MouseButton`].
-    /// The button must be held down at the time this method is called for the move to start.
-    ///
-    /// This is intended to be used with [`Input::mousebind`][crate::input::Input::mousebind].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::input::{Mod, MouseButton, MouseEdge};
-    ///
-    /// // Set `Super + left click` to begin moving a window
-    /// input.mousebind([Mod::Super], MouseButton::Left, MouseEdge::Press, || {
-    ///     window.begin_move(MouseButton::Left);
-    /// });
-    /// ```
-    </span><span class="kw">pub fn </span>begin_move(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().move_grab(MoveGrabRequest {
-            button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"Failed to begin window move: {err}"</span>);
-        }
-    }
+    window_ids.into_iter().map(|id| WindowHandle { id })
+}
 
-    <span class="doccomment">/// Start resizing the window with the mouse.
-    ///
-    /// This will begin resizing the window under the pointer using the specified [`MouseButton`].
-    /// The button must be held down at the time this method is called for the resize to start.
-    ///
-    /// This is intended to be used with [`Input::mousebind`][crate::input::Input::mousebind].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::input::{Mod, MouseButton, MouseEdge};
-    ///
-    /// // Set `Super + right click` to begin moving a window
-    /// input.mousebind([Mod::Super], MouseButton::Right, MouseEdge::Press, || {
-    ///     window.begin_resize(MouseButton::Right);
-    /// });
-    /// ```
-    </span><span class="kw">pub fn </span>begin_resize(<span class="kw-2">&amp;</span><span class="self">self</span>, button: MouseButton) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().resize_grab(ResizeGrabRequest {
-            button: <span class="prelude-val">Some</span>(button <span class="kw">as </span>u32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"Failed to begin window resize: {err}"</span>);
-        }
-    }
+<span class="doccomment">/// Gets a handle to the window with the current keyboard focus.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::window;
+/// if let Some(focused) = window::get_focused() {
+///     println!("{}", focused.title());
+/// }
+/// ```
+</span><span class="kw">pub fn </span>get_focused() -&gt; <span class="prelude-ty">Option</span>&lt;WindowHandle&gt; {
+    get_focused_async().block_on_tokio()
+}
 
-    <span class="doccomment">/// Get all windows.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let windows = window.get_all();
-    /// ```
-    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_all_async())
-    }
+<span class="doccomment">/// Async impl for [`get_focused`].
+</span><span class="kw">pub async fn </span>get_focused_async() -&gt; <span class="prelude-ty">Option</span>&lt;WindowHandle&gt; {
+    <span class="kw">let </span>windows = get_all_async().<span class="kw">await</span>;
 
-    <span class="doccomment">/// The async version of [`Window::get_all`].
-    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="kw">crate</span>::window()
-            .get(GetRequest {})
-            .<span class="kw">await
-            </span>.map(|resp| resp.into_inner().window_ids)
-            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to get windows: {err}"</span>))
-            .unwrap_or_default()
-            .into_iter()
-            .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
-            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-    }
+    windows.batch_find(|win| win.focused_async().boxed(), |focused| <span class="kw-2">*</span>focused)
+}
 
-    <span class="doccomment">/// Get the currently focused window.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let focused_window = window.get_focused()?;
-    /// ```
-    </span><span class="kw">pub fn </span>get_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;WindowHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_focused_async())
-    }
+<span class="doccomment">/// Begins an interactive window move.
+///
+/// This will start moving the window under the pointer until `button` is released.
+///
+/// `button` should be the mouse button that is held at the time
+/// this function is called. Otherwise, the move will not start.
+/// This is intended for use in tandem with a mousebind.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::window;
+/// # use pinnacle_api::input;
+/// # use pinnacle_api::input::Mod;
+/// # use pinnacle_api::input::MouseButton;
+/// input::mousebind(Mod::SUPER, MouseButton::Left)
+///     .on_press(|| window::begin_move(MouseButton::Left));
+/// ```
+</span><span class="kw">pub fn </span>begin_move(button: MouseButton) {
+    Client::window()
+        .move_grab(MoveGrabRequest {
+            button: button.into(),
+        })
+        .block_on_tokio()
+        .unwrap();
+}
 
-    <span class="doccomment">/// The async version of [`Window::get_focused`].
-    </span><span class="kw">pub async fn </span>get_focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;WindowHandle&gt; {
-        <span class="self">self</span>.get_all_async().<span class="kw">await</span>.batch_find(
-            |win| win.focused_async().boxed(),
-            |focused| focused.is_some_and(|focused| focused),
-        )
-    }
+<span class="doccomment">/// Begins an interactive window resize.
+///
+/// This will start resizing the window under the pointer until `button` is released.
+///
+/// `button` should be the mouse button that is held at the time
+/// this function is called. Otherwise, the move will not start.
+/// This is intended for use in tandem with a mousebind.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::window;
+/// # use pinnacle_api::input;
+/// # use pinnacle_api::input::Mod;
+/// # use pinnacle_api::input::MouseButton;
+/// input::mousebind(Mod::SUPER, MouseButton::Right)
+///     .on_press(|| window::begin_resize(MouseButton::Right));
+/// ```
+</span><span class="kw">pub fn </span>begin_resize(button: MouseButton) {
+    Client::window()
+        .resize_grab(ResizeGrabRequest {
+            button: button.into(),
+        })
+        .block_on_tokio()
+        .unwrap();
+}
 
-    <span class="doccomment">/// Add a window rule.
-    ///
-    /// A window rule is a set of criteria that a window must open with.
-    /// For it to apply, a [`WindowRuleCondition`] must evaluate to true for the window in question.
-    ///
-    /// See the [`rules`] module for more information.
-    </span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">&amp;</span><span class="self">self</span>, cond: WindowRuleCondition, rule: WindowRule) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().add_window_rule(AddWindowRuleRequest {
-            cond: <span class="prelude-val">Some</span>(cond.<span class="number">0</span>),
-            rule: <span class="prelude-val">Some</span>(rule.<span class="number">0</span>),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"Failed to add window rule: {err}"</span>);
-        }
-    }
+<span class="doccomment">/// Connects to a [`WindowSignal`].
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::window;
+/// # use pinnacle_api::signal::WindowSignal;
+/// window::connect_signal(WindowSignal::PointerEnter(Box::new(|window| {
+///     window.set_focused(true);
+/// })));
+/// ```
+</span><span class="kw">pub fn </span>connect_signal(signal: WindowSignal) -&gt; SignalHandle {
+    <span class="kw">let </span><span class="kw-2">mut </span>signal_state = Client::signal_state();
 
-    <span class="doccomment">/// Connect to a window signal.
-    ///
-    /// The compositor will fire off signals that your config can listen for and act upon.
-    /// You can pass in a [`WindowSignal`] along with a callback and it will get run
-    /// with the necessary arguments every time a signal of that type is received.
-    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: WindowSignal) -&gt; SignalHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = signal_module();
-
-        <span class="kw">match </span>signal {
-            WindowSignal::PointerEnter(f) =&gt; signal_state.window_pointer_enter.add_callback(f),
-            WindowSignal::PointerLeave(f) =&gt; signal_state.window_pointer_leave.add_callback(f),
-        }
+    <span class="kw">match </span>signal {
+        WindowSignal::PointerEnter(f) =&gt; signal_state.window_pointer_enter.add_callback(f),
+        WindowSignal::PointerLeave(f) =&gt; signal_state.window_pointer_leave.add_callback(f),
     }
 }
 
 <span class="doccomment">/// A handle to a window.
 ///
 /// This allows you to manipulate the window and get its properties.
-</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>WindowHandle {
-    id: u32,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) id: u32,
 }
 
-<span class="doccomment">/// Whether a window is fullscreen, maximized, or neither.
-</span><span class="attr">#[repr(i32)]
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, TryFromPrimitive)]
-</span><span class="kw">pub enum </span>FullscreenOrMaximized {
-    <span class="doccomment">/// The window is neither fullscreen nor maximized
-    </span>Neither = <span class="number">1</span>,
-    <span class="doccomment">/// The window is fullscreen
-    </span>Fullscreen,
-    <span class="doccomment">/// The window is maximized
-    </span>Maximized,
-}
-
-<span class="doccomment">/// A window's current display state.
-</span><span class="attr">#[repr(i32)]
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, TryFromPrimitive)]
-</span><span class="kw">pub enum </span>WindowState {
+<span class="doccomment">/// A window's current layout mode.
+</span><span class="attr">#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+</span><span class="kw">pub enum </span>LayoutMode {
     <span class="doccomment">/// The window is tiled.
-    </span>Tiled = <span class="number">1</span>,
+    </span>Tiled,
     <span class="doccomment">/// The window is floating.
     </span>Floating,
     <span class="doccomment">/// The window is fullscreen.
@@ -968,554 +863,511 @@
     </span>Maximized,
 }
 
-<span class="doccomment">/// Properties of a window.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
-</span><span class="kw">pub struct </span>WindowProperties {
-    <span class="doccomment">/// The location and size of the window
-    </span><span class="kw">pub </span>geometry: <span class="prelude-ty">Option</span>&lt;Geometry&gt;,
-    <span class="doccomment">/// The window's class
-    </span><span class="kw">pub </span>class: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// The window's title
-    </span><span class="kw">pub </span>title: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// Whether the window is focused or not
-    </span><span class="kw">pub </span>focused: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// Whether the window is floating or not
-    ///
-    /// Note that a window can still be floating even if it's fullscreen or maximized; those two
-    /// states will just override the floating state.
-    </span><span class="attr">#[deprecated = <span class="string">"use `state` instead"</span>]
-    </span><span class="kw">pub </span>floating: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// Whether the window is fullscreen, maximized, or neither
-    </span><span class="attr">#[deprecated = <span class="string">"use `state` instead"</span>]
-    </span><span class="kw">pub </span>fullscreen_or_maximized: <span class="prelude-ty">Option</span>&lt;FullscreenOrMaximized&gt;,
-    <span class="doccomment">/// All the tags on the window
-    </span><span class="kw">pub </span>tags: Vec&lt;TagHandle&gt;,
-    <span class="doccomment">/// The state of the window.
-    </span><span class="kw">pub </span>state: <span class="prelude-ty">Option</span>&lt;WindowState&gt;,
+<span class="kw">impl </span>TryFrom&lt;pinnacle_api_defs::pinnacle::window::v1::LayoutMode&gt; <span class="kw">for </span>LayoutMode {
+    <span class="kw">type </span>Error = ();
+
+    <span class="kw">fn </span>try_from(
+        value: pinnacle_api_defs::pinnacle::window::v1::LayoutMode,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">match </span>value {
+            window::v1::LayoutMode::Unspecified =&gt; <span class="prelude-val">Err</span>(()),
+            window::v1::LayoutMode::Tiled =&gt; <span class="prelude-val">Ok</span>(LayoutMode::Tiled),
+            window::v1::LayoutMode::Floating =&gt; <span class="prelude-val">Ok</span>(LayoutMode::Floating),
+            window::v1::LayoutMode::Fullscreen =&gt; <span class="prelude-val">Ok</span>(LayoutMode::Fullscreen),
+            window::v1::LayoutMode::Maximized =&gt; <span class="prelude-val">Ok</span>(LayoutMode::Maximized),
+        }
+    }
+}
+
+<span class="doccomment">/// A mode for window decorations (titlebar, shadows, etc).
+</span><span class="attr">#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+</span><span class="kw">pub enum </span>DecorationMode {
+    <span class="doccomment">/// The client should draw its own decorations.
+    </span>ClientSide,
+    <span class="doccomment">/// The server should draw decorations.
+    </span>ServerSide,
 }
 
 <span class="kw">impl </span>WindowHandle {
-    <span class="doccomment">/// Send a close request to this window.
+    <span class="doccomment">/// Sends a close request to this window.
     ///
     /// If the window is unresponsive, it may not close.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Close the focused window
-    /// window.get_focused()?.close()
-    /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().close(CloseRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .close(pinnacle_api_defs::pinnacle::window::v1::CloseRequest { window_id })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set this window to fullscreen or not.
-    ///
-    /// If it is maximized, setting it to fullscreen will remove the maximized state.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Set the focused window to fullscreen.
-    /// window.get_focused()?.set_fullscreen(true);
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Sets this window to fullscreen or not.
     </span><span class="kw">pub fn </span>set_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
-                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
-                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
-            } <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_fullscreen(SetFullscreenRequest {
+                window_id,
+                set_or_toggle: <span class="kw">match </span>set {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Toggle this window between fullscreen and not.
-    ///
-    /// If it is maximized, toggling it to fullscreen will remove the maximized state.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Toggle the focused window to and from fullscreen.
-    /// window.get_focused()?.toggle_fullscreen();
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Toggles this window between fullscreen and not.
     </span><span class="kw">pub fn </span>toggle_fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_fullscreen(SetFullscreenRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_fullscreen(SetFullscreenRequest {
+                window_id,
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set this window to maximized or not.
-    ///
-    /// If it is fullscreen, setting it to maximized will remove the fullscreen state.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Set the focused window to maximized.
-    /// window.get_focused()?.set_maximized(true);
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Sets this window to maximized or not.
     </span><span class="kw">pub fn </span>set_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
-                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
-                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
-            } <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_maximized(SetMaximizedRequest {
+                window_id,
+                set_or_toggle: <span class="kw">match </span>set {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Toggle this window between maximized and not.
-    ///
-    /// If it is fullscreen, toggling it to maximized will remove the fullscreen state.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Toggle the focused window to and from maximized.
-    /// window.get_focused()?.toggle_maximized();
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Toggles this window between maximized and not.
     </span><span class="kw">pub fn </span>toggle_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_maximized(SetMaximizedRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_maximized(SetMaximizedRequest {
+                window_id,
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set this window to floating or not.
+    <span class="doccomment">/// Sets this window to floating or not.
     ///
     /// Floating windows will not be tiled and can be moved around and resized freely.
-    ///
-    /// Note that fullscreen and maximized windows can still be floating; those two states will
-    /// just override the floating state.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Set the focused window to floating.
-    /// window.get_focused()?.set_floating(true);
-    /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_floating(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
-                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
-                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
-            } <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_floating(SetFloatingRequest {
+                window_id,
+                set_or_toggle: <span class="kw">match </span>set {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Toggle this window to and from floating.
+    <span class="doccomment">/// Toggles this window to and from floating.
     ///
     /// Floating windows will not be tiled and can be moved around and resized freely.
-    ///
-    /// Note that fullscreen and maximized windows can still be floating; those two states will
-    /// just override the floating state.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Toggle the focused window to and from floating.
-    /// window.get_focused()?.toggle_floating();
-    /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_floating(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_floating(SetFloatingRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_floating(SetFloatingRequest {
+                window_id,
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Focus or unfocus this window.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Unfocus the focused window
-    /// window.get_focused()?.set_focused(false);
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Focuses or unfocuses this window.
     </span><span class="kw">pub fn </span>set_focused(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
-                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
-                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
-            } <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_focused(SetFocusedRequest {
+                window_id,
+                set_or_toggle: <span class="kw">match </span>set {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Toggle this window to and from focused.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Toggle the focused window to and from floating.
-    /// // Calling this a second time will do nothing because there won't
-    /// // be a focused window.
-    /// window.get_focused()?.toggle_focused();
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Toggles this window between focused and unfocused.
     </span><span class="kw">pub fn </span>toggle_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_focused(SetFocusedRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .set_focused(SetFocusedRequest {
+                window_id,
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Move this window to the given `tag`.
+    <span class="doccomment">/// Sets this window's decoration mode.
+    </span><span class="kw">pub fn </span>set_decoration_mode(<span class="kw-2">&amp;</span><span class="self">self</span>, mode: DecorationMode) {
+        Client::window()
+            .set_decoration_mode(SetDecorationModeRequest {
+                window_id: <span class="self">self</span>.id,
+                decoration_mode: <span class="kw">match </span>mode {
+                    DecorationMode::ClientSide =&gt; window::v1::DecorationMode::ClientSide,
+                    DecorationMode::ServerSide =&gt; window::v1::DecorationMode::ServerSide,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
+    }
+
+    <span class="doccomment">/// Moves this window to the given `tag`.
     ///
     /// This will remove all tags from this window then tag it with `tag`, essentially moving the
     /// window to that tag.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::window;
+    /// # use pinnacle_api::tag;
+    /// # || {
     /// // Move the focused window to tag "Code" on the focused output
-    /// window.get_focused()?.move_to_tag(&amp;tag.get("Code", None)?);
+    /// window::get_focused()?.move_to_tag(&amp;tag::get("Code")?);
+    /// # Some(())
+    /// # };
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>move_to_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().move_to_tag(MoveToTagRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            tag_id: <span class="prelude-val">Some</span>(tag.id),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        <span class="kw">let </span>tag_id = tag.id;
+        Client::window()
+            .move_to_tag(MoveToTagRequest { window_id, tag_id })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set or unset a tag on this window.
+    <span class="doccomment">/// Sets or unsets a tag on this window.
     ///
     /// # Examples
     ///
-    /// ```
-    /// let focused = window.get_focused()?;
-    /// let tg = tag.get("Potato", None)?;
+    /// ```no_run
+    /// # use pinnacle_api::window;
+    /// # use pinnacle_api::tag;
+    /// # || {
+    /// let focused = window::get_focused()?;
+    /// let tag = tag::get("Potato")?;
     ///
-    /// focused.set_tag(&amp;tg, true); // `focused` now has tag "Potato"
-    /// focused.set_tag(&amp;tg, false); // `focused` no longer has tag "Potato"
+    /// focused.set_tag(&amp;tag, true); // `focused` now has tag "Potato"
+    /// focused.set_tag(&amp;tag, false); // `focused` no longer has tag "Potato"
+    /// # Some(())
+    /// # };
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle, set: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            tag_id: <span class="prelude-val">Some</span>(tag.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
-                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
-                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
-            } <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
-    }
-
-    <span class="doccomment">/// Toggle a tag on this window.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let focused = window.get_focused()?;
-    /// let tg = tag.get("Potato", None)?;
-    ///
-    /// // Assume `focused` does not have tag `tg`
-    ///
-    /// focused.toggle_tag(&amp;tg); // `focused` now has tag "Potato"
-    /// focused.toggle_tag(&amp;tg); // `focused` no longer has tag "Potato"
-    /// ```
-    </span><span class="attr">#[instrument]
-    </span><span class="kw">pub fn </span>toggle_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().set_tag(SetTagRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            tag_id: <span class="prelude-val">Some</span>(tag.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
-    }
-
-    <span class="doccomment">/// Raise this window.
-    ///
-    /// This will raise this window all the way to the top of the z-stack.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// window.get_focused()?.raise();
-    /// ```
-    </span><span class="attr">#[instrument]
-    </span><span class="kw">pub fn </span>raise(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::window().raise(RaiseRequest {
-            window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
-    }
-
-    <span class="doccomment">/// Get all properties of this window.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::window::WindowProperties;
-    ///
-    /// let WindowProperties {
-    ///     geometry,
-    ///     class,
-    ///     title,
-    ///     focused,
-    ///     floating,
-    ///     fullscreen_or_maximized,
-    ///     tags,
-    /// } = window.get_focused()?.props();
-    /// ```
-    </span><span class="kw">pub fn </span>props(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowProperties {
-        block_on_tokio(<span class="self">self</span>.props_async())
-    }
-
-    <span class="doccomment">/// The async version of [`props`][Self::props].
-    </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WindowProperties {
-        <span class="kw">let </span>response = <span class="kw">match </span><span class="kw">crate</span>::window()
-            .get_properties(window::v0alpha1::GetPropertiesRequest {
-                window_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        <span class="kw">let </span>tag_id = tag.id;
+        Client::window()
+            .set_tag(SetTagRequest {
+                window_id,
+                tag_id,
+                set_or_toggle: <span class="kw">match </span>set {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
             })
+            .block_on_tokio()
+            .unwrap();
+    }
+
+    <span class="doccomment">/// Toggles a tag on this window.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # use pinnacle_api::window;
+    /// # use pinnacle_api::tag;
+    /// # || {
+    /// let focused = window::get_focused()?;
+    /// let tag = tag::get("Potato")?;
+    ///
+    /// focused.toggle_tag(&amp;tag); // `focused` now has tag "Potato"
+    /// focused.toggle_tag(&amp;tag); // `focused` no longer has tag "Potato"
+    /// # Some(())
+    /// # };
+    /// ```
+    </span><span class="kw">pub fn </span>toggle_tag(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: <span class="kw-2">&amp;</span>TagHandle) {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        <span class="kw">let </span>tag_id = tag.id;
+        Client::window()
+            .set_tag(SetTagRequest {
+                window_id,
+                tag_id,
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
+    }
+
+    <span class="doccomment">/// Raises this window to the front.
+    </span><span class="kw">pub fn </span>raise(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .raise(RaiseRequest { window_id })
+            .block_on_tokio()
+            .unwrap();
+    }
+
+    <span class="doccomment">/// Gets this window's current location in the global space.
+    </span><span class="kw">pub fn </span>loc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Point&gt; {
+        <span class="self">self</span>.loc_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::loc`].
+    </span><span class="kw">pub async fn </span>loc_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Point&gt; {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_loc(GetLocRequest { window_id })
             .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(response) =&gt; response.into_inner(),
-            <span class="prelude-val">Err</span>(status) =&gt; {
-                <span class="macro">eprintln!</span>(<span class="string">"ERROR: {status}"</span>);
-                <span class="kw">return </span>WindowProperties::default();
-            }
-        };
+            </span>.unwrap()
+            .into_inner()
+            .loc
+            .map(|loc| Point { x: loc.x, y: loc.y })
+    }
 
-        <span class="kw">let </span>state = <span class="kw">match </span>response.state() {
-            window::v0alpha1::WindowState::Unspecified =&gt; <span class="prelude-val">None</span>,
-            window::v0alpha1::WindowState::Tiled =&gt; <span class="prelude-val">Some</span>(WindowState::Tiled),
-            window::v0alpha1::WindowState::Floating =&gt; <span class="prelude-val">Some</span>(WindowState::Floating),
-            window::v0alpha1::WindowState::Fullscreen =&gt; <span class="prelude-val">Some</span>(WindowState::Fullscreen),
-            window::v0alpha1::WindowState::Maximized =&gt; <span class="prelude-val">Some</span>(WindowState::Maximized),
-        };
+    <span class="doccomment">/// Gets this window's current size.
+    </span><span class="kw">pub fn </span>size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Size&gt; {
+        <span class="self">self</span>.size_async().block_on_tokio()
+    }
 
-        <span class="attr">#[allow(deprecated)]
-        </span><span class="kw">let </span>fullscreen_or_maximized = response
-            .fullscreen_or_maximized
-            .unwrap_or_default()
+    <span class="doccomment">/// Async impl for [`Self::size`].
+    </span><span class="kw">pub async fn </span>size_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Size&gt; {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_size(GetSizeRequest { window_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .size
+            .map(|size| Size {
+                w: size.width,
+                h: size.height,
+            })
+    }
+
+    <span class="doccomment">/// Gets this window's app id (class if it's an xwayland window).
+    ///
+    /// If it doesn't have one, this returns an empty string.
+    </span><span class="kw">pub fn </span>app_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.app_id_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::app_id`].
+    </span><span class="kw">pub async fn </span>app_id_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_app_id(GetAppIdRequest { window_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .app_id
+    }
+
+    <span class="doccomment">/// Gets this window's title.
+    ///
+    /// If it doesn't have one, this returns an empty string.
+    </span><span class="kw">pub fn </span>title(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.title_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::title`].
+    </span><span class="kw">pub async fn </span>title_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_title(GetTitleRequest { window_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .title
+    }
+
+    <span class="doccomment">/// Gets whether or not this window has keyboard focus.
+    </span><span class="kw">pub fn </span>focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.focused_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::focused`].
+    </span><span class="kw">pub async fn </span>focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_focused(GetFocusedRequest { window_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .focused
+    }
+
+    <span class="doccomment">/// Gets this window's current [`LayoutMode`].
+    </span><span class="kw">pub fn </span>layout_mode(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LayoutMode {
+        <span class="self">self</span>.layout_mode_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::layout_mode`].
+    </span><span class="kw">pub async fn </span>layout_mode_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LayoutMode {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_layout_mode(GetLayoutModeRequest { window_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .layout_mode()
             .try_into()
-            .ok();
-
-        <span class="kw">let </span>geometry = response.geometry.map(|geo| Geometry {
-            x: geo.x(),
-            y: geo.y(),
-            width: geo.width() <span class="kw">as </span>u32,
-            height: geo.height() <span class="kw">as </span>u32,
-        });
-
-        <span class="attr">#[allow(deprecated)]
-        </span>WindowProperties {
-            geometry,
-            class: response.class,
-            title: response.title,
-            focused: response.focused,
-            floating: response.floating,
-            fullscreen_or_maximized,
-            tags: response
-                .tag_ids
-                .into_iter()
-                .map(|id| Tag.new_handle(id))
-                .collect(),
-            state,
-        }
+            .unwrap_or(LayoutMode::Tiled)
     }
 
-    <span class="doccomment">/// Get this window's location and size.
-    ///
-    /// Shorthand for `self.props().geometry`.
-    </span><span class="kw">pub fn </span>geometry(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Geometry&gt; {
-        <span class="self">self</span>.props().geometry
+    <span class="doccomment">/// Gets whether or not this window is floating.
+    </span><span class="kw">pub fn </span>floating(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.floating_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`geometry`][Self::geometry].
-    </span><span class="kw">pub async fn </span>geometry_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Geometry&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.geometry
+    <span class="doccomment">/// Async impl for [`Self::floating`].
+    </span><span class="kw">pub async fn </span>floating_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.layout_mode_async().<span class="kw">await </span>== LayoutMode::Floating
     }
 
-    <span class="doccomment">/// Get this window's class.
-    ///
-    /// Shorthand for `self.props().class`.
-    </span><span class="kw">pub fn </span>class(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props().class
+    <span class="doccomment">/// Gets whether or not this window is fullscreen.
+    </span><span class="kw">pub fn </span>fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.fullscreen_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`class`][Self::class].
-    </span><span class="kw">pub async fn </span>class_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.class
+    <span class="doccomment">/// Async impl for [`Self::fullscreen`].
+    </span><span class="kw">pub async fn </span>fullscreen_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.layout_mode_async().<span class="kw">await </span>== LayoutMode::Fullscreen
     }
 
-    <span class="doccomment">/// Get this window's title.
-    ///
-    /// Shorthand for `self.props().title`.
-    </span><span class="kw">pub fn </span>title(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props().title
+    <span class="doccomment">/// Gets whether or not this window is maximized.
+    </span><span class="kw">pub fn </span>maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.maximized_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`title`][Self::title].
-    </span><span class="kw">pub async fn </span>title_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.title
+    <span class="doccomment">/// Async impl for [`Self::maximized`].
+    </span><span class="kw">pub async fn </span>maximized_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.layout_mode_async().<span class="kw">await </span>== LayoutMode::Maximized
     }
 
-    <span class="doccomment">/// Get whether or not this window is focused.
-    ///
-    /// Shorthand for `self.props().focused`.
-    </span><span class="kw">pub fn </span>focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props().focused
+    <span class="doccomment">/// Gets handles to all tags on this window.
+    </span><span class="kw">pub fn </span>tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+        <span class="self">self</span>.tags_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`focused`][Self::focused].
-    </span><span class="kw">pub async fn </span>focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.focused
-    }
-
-    <span class="doccomment">/// Get whether or not this window is floating.
-    ///
-    /// Shorthand for `self.props().floating`.
-    </span><span class="kw">pub fn </span>floating(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props()
-            .state
-            .map(|state| state == WindowState::Floating)
-    }
-
-    <span class="doccomment">/// The async version of [`floating`][Self::floating]
-    </span><span class="kw">pub async fn </span>floating_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async()
+    <span class="doccomment">/// Async impl for [`Self::tags`].
+    </span><span class="kw">pub async fn </span>tags_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+        <span class="kw">let </span>window_id = <span class="self">self</span>.id;
+        Client::window()
+            .get_tag_ids(GetTagIdsRequest { window_id })
             .<span class="kw">await
-            </span>.state
-            .map(|state| state == WindowState::Floating)
+            </span>.unwrap()
+            .into_inner()
+            .tag_ids
+            .into_iter()
+            .map(|id| TagHandle { id })
     }
 
-    <span class="doccomment">/// Get whether this window is fullscreen, maximized, or neither.
-    ///
-    /// Shorthand for `self.props().fullscreen_or_maximized`.
-    </span><span class="attr">#[deprecated = <span class="string">"use the `fullscreen` or `maximized` methods instead"</span>]
-    </span><span class="kw">pub fn </span>fullscreen_or_maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;FullscreenOrMaximized&gt; {
-        <span class="self">self</span>.props().state.map(|state| <span class="kw">match </span>state {
-            WindowState::Tiled | WindowState::Floating =&gt; FullscreenOrMaximized::Neither,
-            WindowState::Fullscreen =&gt; FullscreenOrMaximized::Fullscreen,
-            WindowState::Maximized =&gt; FullscreenOrMaximized::Maximized,
-        })
-    }
-
-    <span class="doccomment">/// The async version of [`fullscreen_or_maximized`][Self::fullscreen_or_maximized].
-    </span><span class="attr">#[deprecated = <span class="string">"use the `fullscreen_async` or `maximized_async` methods instead"</span>]
-    </span><span class="kw">pub async fn </span>fullscreen_or_maximized_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;FullscreenOrMaximized&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.state.map(|state| <span class="kw">match </span>state {
-            WindowState::Tiled | WindowState::Floating =&gt; FullscreenOrMaximized::Neither,
-            WindowState::Fullscreen =&gt; FullscreenOrMaximized::Fullscreen,
-            WindowState::Maximized =&gt; FullscreenOrMaximized::Maximized,
-        })
-    }
-
-    <span class="doccomment">/// Get whether or not this window is tiled.
-    </span><span class="kw">pub fn </span>tiled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props().state.map(|state| state == WindowState::Tiled)
-    }
-
-    <span class="doccomment">/// The async version of [`tiled`][Self::tiled].
-    </span><span class="kw">pub async fn </span>tiled_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async()
-            .<span class="kw">await
-            </span>.state
-            .map(|state| state == WindowState::Tiled)
-    }
-
-    <span class="doccomment">/// Get whether or not this window is fullscreen.
-    </span><span class="kw">pub fn </span>fullscreen(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props()
-            .state
-            .map(|state| state == WindowState::Fullscreen)
-    }
-
-    <span class="doccomment">/// The async version of [`fullscreen`][Self::fullscreen].
-    </span><span class="kw">pub async fn </span>fullscreen_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async()
-            .<span class="kw">await
-            </span>.state
-            .map(|state| state == WindowState::Fullscreen)
-    }
-
-    <span class="doccomment">/// Get whether or not this window is maximized.
-    </span><span class="kw">pub fn </span>maximized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props()
-            .state
-            .map(|state| state == WindowState::Maximized)
-    }
-
-    <span class="doccomment">/// The async version of [`maximized`][Self::maximized].
-    </span><span class="kw">pub async fn </span>maximized_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async()
-            .<span class="kw">await
-            </span>.state
-            .map(|state| state == WindowState::Maximized)
-    }
-
-    <span class="doccomment">/// Get all the tags on this window.
-    ///
-    /// Shorthand for `self.props().tags`.
-    </span><span class="kw">pub fn </span>tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
-        <span class="self">self</span>.props().tags
-    }
-
-    <span class="doccomment">/// The async version of [`tags`][Self::tags].
-    </span><span class="kw">pub async fn </span>tags_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.tags
-    }
-
-    <span class="doccomment">/// Returns whether this window is on an active tag.
+    <span class="doccomment">/// Gets whether or not this window has an active tag.
     </span><span class="kw">pub fn </span>is_on_active_tag(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.tags()
-            .batch_find(
-                |tag| tag.active_async().boxed(),
-                |active| active.unwrap_or_default(),
-            )
+        <span class="self">self</span>.is_on_active_tag_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::is_on_active_tag`].
+    </span><span class="kw">pub async fn </span>is_on_active_tag_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.tags_async()
+            .<span class="kw">await
+            </span>.batch_find(|tag| tag.active_async().boxed(), |active| <span class="kw-2">*</span>active)
             .is_some()
     }
 
-    <span class="doccomment">/// The async version of [`WindowHandle::is_on_active_tag`].
-    </span><span class="kw">pub async fn </span>is_on_active_tag_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">let </span>tags = <span class="self">self</span>.tags_async().<span class="kw">await</span>;
-        <span class="kw">crate</span>::util::batch_async(tags.iter().map(|tag| tag.active_async()))
-            .<span class="kw">await
-            </span>.contains(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="bool-val">true</span>))
-    }
-
-    <span class="doccomment">/// Get this window's raw compositor id.
+    <span class="doccomment">/// Gets this window's raw compositor id.
     </span><span class="kw">pub fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="self">self</span>.id
     }
+}
+
+<span class="doccomment">/// Adds a window rule.
+///
+/// Instead of using a declarative window rule system with match conditions,
+/// you supply a closure that acts on a newly opened window.
+/// You can use standard `if` statements and apply properties using the same
+/// methods that are used everywhere else in this API.
+///
+/// Note: this function is special in that if it is called, Pinnacle will wait for
+/// the provided closure to finish running before it sends windows an initial configure event.
+/// *Do not block here*. At best, short blocks will increase the time it takes for a window to
+/// open. At worst, a complete deadlock will prevent windows from opening at all.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::window;
+/// # use pinnacle_api::window::DecorationMode;
+/// # use pinnacle_api::tag;
+/// window::add_window_rule(|window| {
+///     // Make Alacritty always open on the "Terminal" tag
+///     if window.app_id() == "Alacritty" {
+///         window.set_tag(&amp;tag::get("Terminal").unwrap(), true);
+///     }
+///
+///     // Make all windows use client-side decorations
+///     window.set_decoration_mode(DecorationMode::ClientSide);
+/// });
+/// ```
+</span><span class="kw">pub fn </span>add_window_rule(<span class="kw-2">mut </span>for_all: <span class="kw">impl </span>FnMut(WindowHandle) + Send + <span class="lifetime">'static</span>) {
+    <span class="kw">let </span>(client_outgoing, client_outgoing_to_server) = unbounded_channel();
+    <span class="kw">let </span>client_outgoing_to_server =
+        tokio_stream::wrappers::UnboundedReceiverStream::new(client_outgoing_to_server);
+    <span class="kw">let </span><span class="kw-2">mut </span>client_incoming = Client::window()
+        .window_rule(client_outgoing_to_server)
+        .block_on_tokio()
+        .unwrap()
+        .into_inner();
+
+    <span class="kw">let </span>fut = <span class="kw">async move </span>{
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(response)) = client_incoming.next().<span class="kw">await </span>{
+            <span class="kw">let </span><span class="prelude-val">Some</span>(response) = response.response <span class="kw">else </span>{
+                <span class="kw">continue</span>;
+            };
+
+            <span class="kw">match </span>response {
+                window::v1::window_rule_response::Response::NewWindow(new_window_request) =&gt; {
+                    <span class="kw">let </span>request_id = new_window_request.request_id;
+                    <span class="kw">let </span>window_id = new_window_request.window_id;
+
+                    for_all(WindowHandle { id: window_id });
+
+                    <span class="kw">let </span>sent = client_outgoing
+                        .send(window::v1::WindowRuleRequest {
+                            request: <span class="prelude-val">Some</span>(window::v1::window_rule_request::Request::Finished(
+                                window::v1::window_rule_request::Finished { request_id },
+                            )),
+                        })
+                        .is_ok();
+
+                    <span class="kw">if </span>!sent {
+                        <span class="kw">break</span>;
+                    }
+                }
+            }
+        }
+    };
+
+    tokio::spawn(fut);
 }
 </code></pre></div></section></main></body></html>

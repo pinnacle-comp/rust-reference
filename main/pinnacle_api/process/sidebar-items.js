@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Process","SpawnCallbacks"]};
+window.SIDEBAR_ITEMS = {"struct":["Child","Command","ExitInfo"]};

@@ -1,9 +1,0 @@
-(function() {
-    var implementors = Object.fromEntries([["pinnacle_api",[["impl TryFromPrimitive for <a class=\"enum\" href=\"pinnacle_api/input/enum.Mod.html\" title=\"enum pinnacle_api::input::Mod\">Mod</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"pinnacle_api/input/enum.MouseEdge.html\" title=\"enum pinnacle_api::input::MouseEdge\">MouseEdge</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"pinnacle_api/output/enum.Transform.html\" title=\"enum pinnacle_api::output::Transform\">Transform</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"pinnacle_api/window/enum.FullscreenOrMaximized.html\" title=\"enum pinnacle_api::window::FullscreenOrMaximized\">FullscreenOrMaximized</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"pinnacle_api/window/enum.WindowState.html\" title=\"enum pinnacle_api::window::WindowState\">WindowState</a>"]]]]);
-    if (window.register_implementors) {
-        window.register_implementors(implementors);
-    } else {
-        window.pending_implementors = implementors;
-    }
-})()
-//{"start":57,"fragment_lengths":[828]}

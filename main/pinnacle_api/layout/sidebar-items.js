@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CornerLocation","Gaps","MasterSide"],"struct":["CornerLayout","CyclingLayoutManager","DwindleLayout","FairLayout","Layout","LayoutArgs","LayoutRequester","MasterStackLayout","SpiralLayout"],"trait":["LayoutGenerator","LayoutManager"]};
+window.SIDEBAR_ITEMS = {"enum":["LayoutDir"],"fn":["manage"],"mod":["generators"],"struct":["Gaps","LayoutArgs","LayoutNode","LayoutRequester"],"trait":["LayoutGenerator"]};

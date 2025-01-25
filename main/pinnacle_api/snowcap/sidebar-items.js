@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["integration"],"struct":["Snowcap"]};
+window.SIDEBAR_ITEMS = {"struct":["BindOverlay","QuitPrompt"]};

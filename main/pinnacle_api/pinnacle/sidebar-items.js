@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Backend"],"struct":["Pinnacle"]};
+window.SIDEBAR_ITEMS = {"enum":["Backend"],"fn":["backend","quit","reload_config"]};

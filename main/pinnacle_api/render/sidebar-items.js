@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ScalingFilter"],"struct":["Render"]};
+window.SIDEBAR_ITEMS = {"enum":["ScalingFilter"],"fn":["set_downscale_filter","set_upscale_filter"]};

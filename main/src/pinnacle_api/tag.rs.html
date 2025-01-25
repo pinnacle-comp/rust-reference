@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/tag.rs`."><title>tag.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">pinnacle_api/</div>tag.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/tag.rs`."><title>tag.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../static.files/storage-59e33391.js"></script><script defer src="../../static.files/src-script-56102188.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">pinnacle_api/</div>tag.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
 <a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
@@ -408,60 +408,7 @@
 <a href="#407" id="407">407</a>
 <a href="#408" id="408">408</a>
 <a href="#409" id="409">409</a>
-<a href="#410" id="410">410</a>
-<a href="#411" id="411">411</a>
-<a href="#412" id="412">412</a>
-<a href="#413" id="413">413</a>
-<a href="#414" id="414">414</a>
-<a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#410" id="410">410</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -485,253 +432,220 @@
 //! the ability to tag windows with multiple tags allows you to have one window show up on multiple
 //! different "workspaces". As you can see, this system is much more powerful than workspaces
 //! alone.
-//!
-//! # Configuration
-//! `tag` contains the [`Tag`] struct, which allows you to add new tags
-//! and get handles to already defined ones.
-//!
-//! These [`TagHandle`]s allow you to manipulate individual tags and get their properties.
 
 </span><span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>pinnacle_api_defs::pinnacle::{
-    tag::{
-        <span class="self">self</span>,
-        v0alpha1::{AddRequest, RemoveRequest, SetActiveRequest, SwitchToRequest},
+    tag::v1::{
+        AddRequest, GetActiveRequest, GetNameRequest, GetOutputNameRequest, GetRequest,
+        RemoveRequest, SetActiveRequest, SwitchToRequest,
     },
-    v0alpha1::SetOrToggle,
+    util::v1::SetOrToggle,
 };
-<span class="kw">use </span>tracing::{error, instrument};
 
 <span class="kw">use crate</span>::{
-    block_on_tokio,
-    output::{Output, OutputHandle},
+    client::Client,
+    output::OutputHandle,
     signal::{SignalHandle, TagSignal},
-    signal_module,
     util::Batch,
-    window::{Window, WindowHandle},
+    window::WindowHandle,
+    BlockOnTokio,
 };
 
-<span class="doccomment">/// A struct that allows you to add and remove tags and get [`TagHandle`]s.
-</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-</span><span class="kw">pub struct </span>Tag;
+<span class="doccomment">/// Adds tags to the specified output.
+///
+/// This will add tags with the given names to `output` and return [`TagHandle`]s to all of
+/// them.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::output;
+/// # use pinnacle_api::tag;
+/// // Add tags 1-5 to the focused output
+/// if let Some(op) = output::get_focused() {
+///     let tags = tag::add(&amp;op, ["1", "2", "3", "4", "5"]);
+/// }
+/// ```
+</span><span class="kw">pub fn </span>add(
+    output: <span class="kw-2">&amp;</span>OutputHandle,
+    tag_names: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>ToString&gt;,
+) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+    <span class="kw">let </span>output_name = output.name();
+    <span class="kw">let </span>tag_names = tag_names.into_iter().map(|name| name.to_string()).collect();
 
-<span class="kw">impl </span>Tag {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u32) -&gt; TagHandle {
-        TagHandle { id }
-    }
+    Client::tag()
+        .add(AddRequest {
+            output_name,
+            tag_names,
+        })
+        .block_on_tokio()
+        .unwrap()
+        .into_inner()
+        .tag_ids
+        .into_iter()
+        .map(|id| TagHandle { id })
+}
 
-    <span class="doccomment">/// Add tags to the specified output.
-    ///
-    /// This will add tags with the given names to `output` and return [`TagHandle`]s to all of
-    /// them.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Add tags 1-5 to the focused output
-    /// if let Some(op) = output.get_focused() {
-    ///     let tags = tag.add(&amp;op, ["1", "2", "3", "4", "5"]);
-    /// }
-    /// ```
-    </span><span class="kw">pub fn </span>add(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        output: <span class="kw-2">&amp;</span>OutputHandle,
-        tag_names: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>Into&lt;String&gt;&gt;,
-    ) -&gt; Vec&lt;TagHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.add_async(output, tag_names))
-    }
+<span class="doccomment">/// Gets handles to all tags across all outputs.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::tag;
+/// for tag in tag::get_all() {
+///     println!("{}", tag.name());
+/// }
+/// ```
+</span><span class="kw">pub fn </span>get_all() -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+    get_all_async().block_on_tokio()
+}
 
-    <span class="doccomment">/// The async version of [`Tag::add`].
-    </span><span class="kw">pub async fn </span>add_async(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        output: <span class="kw-2">&amp;</span>OutputHandle,
-        tag_names: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>Into&lt;String&gt;&gt;,
-    ) -&gt; Vec&lt;TagHandle&gt; {
-        <span class="kw">let </span>tag_names = tag_names.into_iter().map(Into::into).collect();
+<span class="doccomment">/// Async impl for [`get_all_async`].
+</span><span class="kw">pub async fn </span>get_all_async() -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+    Client::tag()
+        .get(GetRequest {})
+        .<span class="kw">await
+        </span>.unwrap()
+        .into_inner()
+        .tag_ids
+        .into_iter()
+        .map(|id| TagHandle { id })
+}
 
-        <span class="kw">let </span>tag_ids = <span class="kw">crate</span>::tag()
-            .add(AddRequest {
-                output_name: <span class="prelude-val">Some</span>(output.name.clone()),
-                tag_names,
-            })
-            .<span class="kw">await
-            </span>.map(|resp| resp.into_inner().tag_ids)
-            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to add tags: {err}"</span>))
-            .unwrap_or_default();
+<span class="doccomment">/// Gets a handle to the first tag with the given `name` on the focused output.
+///
+/// To get the first tag with the given `name` on a specific output, see
+/// [`get_on_output`].
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::tag;
+/// # || {
+/// let tag = tag::get("2")?;
+/// # Some(())
+/// # };
+/// ```
+</span><span class="kw">pub fn </span>get(name: <span class="kw">impl </span>ToString) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
+    get_async(name).block_on_tokio()
+}
 
-        tag_ids
-            .into_iter()
-            .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
-            .collect()
-    }
+<span class="doccomment">/// Async impl for [`get`].
+</span><span class="kw">pub async fn </span>get_async(name: <span class="kw">impl </span>ToString) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
+    <span class="kw">let </span>name = name.to_string();
+    <span class="kw">let </span>focused_op = <span class="kw">crate</span>::output::get_focused_async().<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="doccomment">/// Get handles to all tags across all outputs.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let all_tags = tag.get_all();
-    /// ```
-    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_all_async())
-    }
+    get_on_output_async(name, <span class="kw-2">&amp;</span>focused_op).<span class="kw">await
+</span>}
 
-    <span class="doccomment">/// The async version of [`Tag::get_all`].
-    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
-        <span class="kw">let </span>tag_ids = <span class="kw">crate</span>::tag()
-            .get(tag::v0alpha1::GetRequest {})
-            .<span class="kw">await
-            </span>.map(|resp| resp.into_inner().tag_ids)
-            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to get tags: {err}"</span>))
-            .unwrap_or_default();
+<span class="doccomment">/// Gets a handle to the first tag with the given `name` on `output`.
+///
+/// For a simpler way to get a tag on the focused output, see [`get`].
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::output;
+/// # use pinnacle_api::tag;
+/// # || {
+/// let output = output::get_by_name("eDP-1")?;
+/// let tag = tag::get_on_output("2", &amp;output)?;
+/// # Some(())
+/// # };
+/// ```
+</span><span class="kw">pub fn </span>get_on_output(name: <span class="kw">impl </span>ToString, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
+    get_on_output_async(name, output).block_on_tokio()
+}
 
-        tag_ids
-            .into_iter()
-            .map(<span class="kw">move </span>|id| <span class="self">self</span>.new_handle(id))
-            .collect()
-    }
+<span class="doccomment">/// Async impl for [`get_on_output`].
+</span><span class="kw">pub async fn </span>get_on_output_async(name: <span class="kw">impl </span>ToString, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
+    <span class="kw">let </span>name = name.to_string();
+    <span class="kw">let </span>output = output.clone();
+    get_all_async().<span class="kw">await</span>.batch_find(
+        |tag| <span class="kw">async </span>{ (tag.name_async().<span class="kw">await</span>, tag.output_async().<span class="kw">await</span>) }.boxed(),
+        |(n, op)| <span class="kw-2">*</span>n == name &amp;&amp; <span class="kw-2">*</span>op == output,
+    )
+}
 
-    <span class="doccomment">/// Get a handle to the first tag with the given name on the focused output.
-    ///
-    /// If you need to get a tag on a specific output, see [`Tag::get_on_output`].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Get tag "Thing" on the focused output
-    /// let tg = tag.get("Thing");
-    /// ```
-    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_async(name))
-    }
+<span class="doccomment">/// Removes the given tags from their outputs.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::tag;
+/// # use pinnacle_api::output;
+/// # || {
+/// let tags = tag::add(&amp;output::get_by_name("DP-1")?, ["1", "2", "Buckle", "Shoe"]);
+///
+/// tag::remove(tags); // "DP-1" no longer has any tags
+/// # Some(())
+/// # };
+/// ```
+</span><span class="kw">pub fn </span>remove(tags: <span class="kw">impl </span>IntoIterator&lt;Item = TagHandle&gt;) {
+    <span class="kw">let </span>tag_ids = tags.into_iter().map(|handle| handle.id).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="doccomment">/// The async version of [`Tag::get`].
-    </span><span class="kw">pub async fn </span>get_async(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
-        <span class="kw">let </span>name = name.into();
-        <span class="kw">let </span>focused_output = Output.get_focused();
+    Client::tag()
+        .remove(RemoveRequest { tag_ids })
+        .block_on_tokio()
+        .unwrap();
+}
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = focused_output {
-            <span class="self">self</span>.get_on_output_async(name, <span class="kw-2">&amp;</span>output).<span class="kw">await
-        </span>} <span class="kw">else </span>{
-            <span class="prelude-val">None
-        </span>}
-    }
+<span class="doccomment">/// Connects to a [`TagSignal`].
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::tag;
+/// # use pinnacle_api::signal::TagSignal;
+/// tag::connect_signal(TagSignal::Active(Box::new(|tag, active| {
+///     println!("Tag is active = {active}");
+/// })));
+/// ```
+</span><span class="kw">pub fn </span>connect_signal(signal: TagSignal) -&gt; SignalHandle {
+    <span class="kw">let </span><span class="kw-2">mut </span>signal_state = Client::signal_state();
 
-    <span class="doccomment">/// Get a handle to the first tag with the given name on the specified output.
-    ///
-    /// If you just need to get a tag on the focused output, see [`Tag::get`].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Get tag "Thing" on "HDMI-1"
-    /// let tg = tag.get_on_output("Thing", output.get_by_name("HDMI-2")?);
-    /// ```
-    </span><span class="kw">pub fn </span>get_on_output(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        name: <span class="kw">impl </span>Into&lt;String&gt;,
-        output: <span class="kw-2">&amp;</span>OutputHandle,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_on_output_async(name, output))
-    }
-
-    <span class="doccomment">/// The async version of [`Tag::get_on_output`].
-    </span><span class="kw">pub async fn </span>get_on_output_async(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        name: <span class="kw">impl </span>Into&lt;String&gt;,
-        output: <span class="kw-2">&amp;</span>OutputHandle,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;TagHandle&gt; {
-        <span class="kw">let </span>name = name.into();
-
-        <span class="self">self</span>.get_all_async().<span class="kw">await</span>.batch_find(
-            |tag| tag.props_async().boxed(),
-            |props| {
-                <span class="kw">let </span>same_tag_name = props.name.as_ref() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>name);
-                <span class="kw">let </span>same_output = props.output.as_ref().is_some_and(|op| op == output);
-
-                same_tag_name &amp;&amp; same_output
-            },
-        )
-    }
-
-    <span class="doccomment">/// Remove the given tags from their outputs.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tags = tag.add(output.get_by_name("DP-1")?, ["1", "2", "Buckle", "Shoe"]);
-    ///
-    /// tag.remove(tags); // "DP-1" no longer has any tags
-    /// ```
-    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;</span><span class="self">self</span>, tags: <span class="kw">impl </span>IntoIterator&lt;Item = TagHandle&gt;) {
-        <span class="kw">let </span>tag_ids = tags.into_iter().map(|handle| handle.id).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::tag().remove(RemoveRequest { tag_ids })) {
-            <span class="macro">error!</span>(<span class="string">"Failed to remove tags: {err}"</span>);
-        }
-    }
-
-    <span class="doccomment">/// Connect to a tag signal.
-    ///
-    /// The compositor will fire off signals that your config can listen for and act upon.
-    /// You can pass in a [`TagSignal`] along with a callback and it will get run
-    /// with the necessary arguments every time a signal of that type is received.
-    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: TagSignal) -&gt; SignalHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = signal_module();
-
-        <span class="kw">match </span>signal {
-            TagSignal::Active(f) =&gt; signal_state.tag_active.add_callback(f),
-        }
+    <span class="kw">match </span>signal {
+        TagSignal::Active(f) =&gt; signal_state.tag_active.add_callback(f),
     }
 }
 
 <span class="doccomment">/// A handle to a tag.
 ///
 /// This handle allows you to do things like switch to tags and get their properties.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>TagHandle {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: u32,
 }
 
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>TagHandle {
-    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        <span class="self">self</span>.id == other.id
-    }
-}
-
-<span class="kw">impl </span>Eq <span class="kw">for </span>TagHandle {}
-
-<span class="kw">impl </span>std::hash::Hash <span class="kw">for </span>TagHandle {
-    <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
-        <span class="self">self</span>.id.hash(state);
-    }
-}
-
 <span class="kw">impl </span>TagHandle {
-    <span class="doccomment">/// Activate this tag and deactivate all other ones on the same output.
+    <span class="doccomment">/// Activates this tag and deactivates all other ones on the same output.
     ///
-    /// This essentially emulates what a traditional workspace is.
+    /// This emulates what a traditional workspace is.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::tag;
     /// // Assume the focused output has the following inactive tags and windows:
     /// // "1": Alacritty
     /// // "2": Firefox, Discord
     /// // "3": Steam
-    /// tag.get("2")?.switch_to(); // Displays Firefox and Discord
-    /// tag.get("3")?.switch_to(); // Displays Steam
+    /// # || {
+    /// tag::get("2")?.switch_to(); // Displays Firefox and Discord
+    /// tag::get("3")?.switch_to(); // Displays Steam
+    /// # Some(())
+    /// # };
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>switch_to(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::tag().switch_to(SwitchToRequest {
-            tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
+
+        Client::tag()
+            .switch_to(SwitchToRequest { tag_id })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set this tag to active or not.
+    <span class="doccomment">/// Sets this tag to active or not.
     ///
     /// While active, windows with this tag will be displayed.
     ///
@@ -740,29 +654,36 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::tag;
     /// // Assume the focused output has the following inactive tags and windows:
     /// // "1": Alacritty
     /// // "2": Firefox, Discord
     /// // "3": Steam
-    /// tag.get("2")?.set_active(true);  // Displays Firefox and Discord
-    /// tag.get("3")?.set_active(true);  // Displays Firefox, Discord, and Steam
-    /// tag.get("2")?.set_active(false); // Displays Steam
+    /// # || {
+    /// tag::get("2")?.set_active(true);  // Displays Firefox and Discord
+    /// tag::get("3")?.set_active(true);  // Displays Firefox, Discord, and Steam
+    /// tag::get("2")?.set_active(false); // Displays Steam
+    /// # Some(())
+    /// # };
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_active(<span class="kw-2">&amp;</span><span class="self">self</span>, set: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::tag().set_active(SetActiveRequest {
-            tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(<span class="kw">match </span>set {
-                <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
-                <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
-            } <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
+
+        Client::tag()
+            .set_active(SetActiveRequest {
+                tag_id,
+                set_or_toggle: <span class="kw">match </span>set {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Toggle this tag between active and inactive.
+    <span class="doccomment">/// Toggles this tag between active and inactive.
     ///
     /// While active, windows with this tag will be displayed.
     ///
@@ -771,157 +692,130 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::tag;
     /// // Assume the focused output has the following inactive tags and windows:
     /// // "1": Alacritty
     /// // "2": Firefox, Discord
     /// // "3": Steam
-    /// tag.get("2")?.toggle(); // Displays Firefox and Discord
-    /// tag.get("3")?.toggle(); // Displays Firefox, Discord, and Steam
-    /// tag.get("3")?.toggle(); // Displays Firefox, Discord
-    /// tag.get("2")?.toggle(); // Displays nothing
+    /// # || {
+    /// tag::get("2")?.toggle_active(); // Displays Firefox and Discord
+    /// tag::get("3")?.toggle_active(); // Displays Firefox, Discord, and Steam
+    /// tag::get("3")?.toggle_active(); // Displays Firefox, Discord
+    /// tag::get("2")?.toggle_active(); // Displays nothing
+    /// # Some(())
+    /// # };
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>toggle_active(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::tag().set_active(SetActiveRequest {
-            tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
-            set_or_toggle: <span class="prelude-val">Some</span>(SetOrToggle::Toggle <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
+
+        Client::tag()
+            .set_active(SetActiveRequest {
+                tag_id,
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Remove this tag from its output.
+    <span class="doccomment">/// Removes this tag from its output.
     ///
     /// # Examples
     ///
-    /// ```
-    /// let tags = tag
-    ///     .add(output.get_by_name("DP-1")?, ["1", "2", "Buckle", "Shoe"])
-    ///     .collect::&lt;Vec&lt;_&gt;&gt;;
+    /// ```no_run
+    /// # use pinnacle_api::tag;
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// let tags =
+    ///     tag::add(&amp;output::get_by_name("DP-1")?, ["1", "2", "Buckle", "Shoe"]).collect::&lt;Vec&lt;_&gt;&gt;();
     ///
     /// tags[1].remove();
     /// tags[3].remove();
+    /// # Some(())
+    /// # };
     /// // "DP-1" now only has tags "1" and "Buckle"
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::tag().remove(RemoveRequest {
-            tag_ids: <span class="macro">vec!</span>[<span class="self">self</span>.id],
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
-    }
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
 
-    <span class="doccomment">/// Get all properties of this tag.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::tag::TagProperties;
-    ///
-    /// let TagProperties {
-    ///     active,
-    ///     name,
-    ///     output,
-    /// } = tag.get("1", None)?.props();
-    /// ```
-    </span><span class="kw">pub fn </span>props(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagProperties {
-        block_on_tokio(<span class="self">self</span>.props_async())
-    }
-
-    <span class="doccomment">/// The async version of [`TagHandle::props`].
-    </span><span class="attr">#[instrument]
-    </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TagProperties {
-        <span class="kw">let </span>response = <span class="kw">match </span><span class="kw">crate</span>::tag()
-            .get_properties(tag::v0alpha1::GetPropertiesRequest {
-                tag_id: <span class="prelude-val">Some</span>(<span class="self">self</span>.id),
+        Client::tag()
+            .remove(RemoveRequest {
+                tag_ids: <span class="macro">vec!</span>[tag_id],
             })
+            .block_on_tokio()
+            .unwrap();
+    }
+
+    <span class="doccomment">/// Gets whether or not this tag is active.
+    </span><span class="kw">pub fn </span>active(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.active_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::active`].
+    </span><span class="kw">pub async fn </span>active_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
+
+        Client::tag()
+            .get_active(GetActiveRequest { tag_id })
             .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(resp) =&gt; resp.into_inner(),
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-                <span class="kw">return </span>TagProperties::default();
-            }
-        };
-
-        TagProperties {
-            active: response.active,
-            name: response.name,
-            output: response.output_name.map(|name| Output.new_handle(name)),
-            windows: response
-                .window_ids
-                .into_iter()
-                .map(|id| Window.new_handle(id))
-                .collect(),
-        }
+            </span>.unwrap()
+            .into_inner()
+            .active
     }
 
-    <span class="doccomment">/// Get this tag's active status.
-    ///
-    /// Shorthand for `self.props().active`.
-    </span><span class="kw">pub fn </span>active(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props().active
+    <span class="doccomment">/// Gets this tag's name.
+    </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.name_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`TagHandle::active`].
-    </span><span class="kw">pub async fn </span>active_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.active
+    <span class="doccomment">/// Async impl for [`Self::name`].
+    </span><span class="kw">pub async fn </span>name_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
+
+        Client::tag()
+            .get_name(GetNameRequest { tag_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .name
     }
 
-    <span class="doccomment">/// Get this tag's name.
-    ///
-    /// Shorthand for `self.props().name`.
-    </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props().name
+    <span class="doccomment">/// Gets a handle to the output this tag is on.
+    </span><span class="kw">pub fn </span>output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputHandle {
+        <span class="self">self</span>.output_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`TagHandle::name`].
-    </span><span class="kw">pub async fn </span>name_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.name
+    <span class="doccomment">/// Async impl for [`Self::output`].
+    </span><span class="kw">pub async fn </span>output_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputHandle {
+        <span class="kw">let </span>tag_id = <span class="self">self</span>.id;
+
+        <span class="kw">let </span>name = Client::tag()
+            .get_output_name(GetOutputNameRequest { tag_id })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .output_name;
+        OutputHandle { name }
     }
 
-    <span class="doccomment">/// Get a handle to the output this tag is on.
-    ///
-    /// Shorthand for `self.props().output`.
-    </span><span class="kw">pub fn </span>output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
-        <span class="self">self</span>.props().output
+    <span class="doccomment">/// Gets all windows with this tag.
+    </span><span class="kw">pub fn </span>windows(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        <span class="self">self</span>.windows_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`TagHandle::output`].
-    </span><span class="kw">pub async fn </span>output_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.output
+    <span class="doccomment">/// Async impl for [`Self::windows`].
+    </span><span class="kw">pub async fn </span>windows_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        <span class="kw">let </span>windows = <span class="kw">crate</span>::window::get_all_async().<span class="kw">await</span>;
+        <span class="kw">let </span>this = <span class="self">self</span>.clone();
+        windows.batch_filter(
+            |win| win.tags_async().boxed(),
+            <span class="kw">move </span>|<span class="kw-2">mut </span>tags| tags.any(|tag| tag == this),
+        )
     }
 
-    <span class="doccomment">/// Get all windows with this tag.
-    ///
-    /// Shorthand for `self.props().windows`.
-    </span><span class="kw">pub fn </span>windows(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="self">self</span>.props().windows
-    }
-
-    <span class="doccomment">/// The async version of [`TagHandle::windows`].
-    </span><span class="kw">pub async fn </span>windows_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.windows
-    }
-
-    <span class="doccomment">/// Get this tag's raw compositor id.
+    <span class="doccomment">/// Gets this tag's raw compositor id.
     </span><span class="kw">pub fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="self">self</span>.id
     }
-}
-
-<span class="doccomment">/// Properties of a tag.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
-</span><span class="kw">pub struct </span>TagProperties {
-    <span class="doccomment">/// Whether the tag is active or not
-    </span><span class="kw">pub </span>active: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// The name of the tag
-    </span><span class="kw">pub </span>name: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// The output the tag is on
-    </span><span class="kw">pub </span>output: <span class="prelude-ty">Option</span>&lt;OutputHandle&gt;,
-    <span class="doccomment">/// The windows that have this tag
-    </span><span class="kw">pub </span>windows: Vec&lt;WindowHandle&gt;,
 }
 </code></pre></div></section></main></body></html>

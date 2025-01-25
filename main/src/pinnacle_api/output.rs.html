@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/output.rs`."><title>output.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">pinnacle_api/</div>output.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `api/rust/src/output.rs`."><title>output.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pinnacle_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../static.files/storage-59e33391.js"></script><script defer src="../../static.files/src-script-56102188.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">pinnacle_api/</div>output.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
 <a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
@@ -1137,964 +1137,167 @@
 <a href="#1136" id="1136">1136</a>
 <a href="#1137" id="1137">1137</a>
 <a href="#1138" id="1138">1138</a>
-<a href="#1139" id="1139">1139</a>
-<a href="#1140" id="1140">1140</a>
-<a href="#1141" id="1141">1141</a>
-<a href="#1142" id="1142">1142</a>
-<a href="#1143" id="1143">1143</a>
-<a href="#1144" id="1144">1144</a>
-<a href="#1145" id="1145">1145</a>
-<a href="#1146" id="1146">1146</a>
-<a href="#1147" id="1147">1147</a>
-<a href="#1148" id="1148">1148</a>
-<a href="#1149" id="1149">1149</a>
-<a href="#1150" id="1150">1150</a>
-<a href="#1151" id="1151">1151</a>
-<a href="#1152" id="1152">1152</a>
-<a href="#1153" id="1153">1153</a>
-<a href="#1154" id="1154">1154</a>
-<a href="#1155" id="1155">1155</a>
-<a href="#1156" id="1156">1156</a>
-<a href="#1157" id="1157">1157</a>
-<a href="#1158" id="1158">1158</a>
-<a href="#1159" id="1159">1159</a>
-<a href="#1160" id="1160">1160</a>
-<a href="#1161" id="1161">1161</a>
-<a href="#1162" id="1162">1162</a>
-<a href="#1163" id="1163">1163</a>
-<a href="#1164" id="1164">1164</a>
-<a href="#1165" id="1165">1165</a>
-<a href="#1166" id="1166">1166</a>
-<a href="#1167" id="1167">1167</a>
-<a href="#1168" id="1168">1168</a>
-<a href="#1169" id="1169">1169</a>
-<a href="#1170" id="1170">1170</a>
-<a href="#1171" id="1171">1171</a>
-<a href="#1172" id="1172">1172</a>
-<a href="#1173" id="1173">1173</a>
-<a href="#1174" id="1174">1174</a>
-<a href="#1175" id="1175">1175</a>
-<a href="#1176" id="1176">1176</a>
-<a href="#1177" id="1177">1177</a>
-<a href="#1178" id="1178">1178</a>
-<a href="#1179" id="1179">1179</a>
-<a href="#1180" id="1180">1180</a>
-<a href="#1181" id="1181">1181</a>
-<a href="#1182" id="1182">1182</a>
-<a href="#1183" id="1183">1183</a>
-<a href="#1184" id="1184">1184</a>
-<a href="#1185" id="1185">1185</a>
-<a href="#1186" id="1186">1186</a>
-<a href="#1187" id="1187">1187</a>
-<a href="#1188" id="1188">1188</a>
-<a href="#1189" id="1189">1189</a>
-<a href="#1190" id="1190">1190</a>
-<a href="#1191" id="1191">1191</a>
-<a href="#1192" id="1192">1192</a>
-<a href="#1193" id="1193">1193</a>
-<a href="#1194" id="1194">1194</a>
-<a href="#1195" id="1195">1195</a>
-<a href="#1196" id="1196">1196</a>
-<a href="#1197" id="1197">1197</a>
-<a href="#1198" id="1198">1198</a>
-<a href="#1199" id="1199">1199</a>
-<a href="#1200" id="1200">1200</a>
-<a href="#1201" id="1201">1201</a>
-<a href="#1202" id="1202">1202</a>
-<a href="#1203" id="1203">1203</a>
-<a href="#1204" id="1204">1204</a>
-<a href="#1205" id="1205">1205</a>
-<a href="#1206" id="1206">1206</a>
-<a href="#1207" id="1207">1207</a>
-<a href="#1208" id="1208">1208</a>
-<a href="#1209" id="1209">1209</a>
-<a href="#1210" id="1210">1210</a>
-<a href="#1211" id="1211">1211</a>
-<a href="#1212" id="1212">1212</a>
-<a href="#1213" id="1213">1213</a>
-<a href="#1214" id="1214">1214</a>
-<a href="#1215" id="1215">1215</a>
-<a href="#1216" id="1216">1216</a>
-<a href="#1217" id="1217">1217</a>
-<a href="#1218" id="1218">1218</a>
-<a href="#1219" id="1219">1219</a>
-<a href="#1220" id="1220">1220</a>
-<a href="#1221" id="1221">1221</a>
-<a href="#1222" id="1222">1222</a>
-<a href="#1223" id="1223">1223</a>
-<a href="#1224" id="1224">1224</a>
-<a href="#1225" id="1225">1225</a>
-<a href="#1226" id="1226">1226</a>
-<a href="#1227" id="1227">1227</a>
-<a href="#1228" id="1228">1228</a>
-<a href="#1229" id="1229">1229</a>
-<a href="#1230" id="1230">1230</a>
-<a href="#1231" id="1231">1231</a>
-<a href="#1232" id="1232">1232</a>
-<a href="#1233" id="1233">1233</a>
-<a href="#1234" id="1234">1234</a>
-<a href="#1235" id="1235">1235</a>
-<a href="#1236" id="1236">1236</a>
-<a href="#1237" id="1237">1237</a>
-<a href="#1238" id="1238">1238</a>
-<a href="#1239" id="1239">1239</a>
-<a href="#1240" id="1240">1240</a>
-<a href="#1241" id="1241">1241</a>
-<a href="#1242" id="1242">1242</a>
-<a href="#1243" id="1243">1243</a>
-<a href="#1244" id="1244">1244</a>
-<a href="#1245" id="1245">1245</a>
-<a href="#1246" id="1246">1246</a>
-<a href="#1247" id="1247">1247</a>
-<a href="#1248" id="1248">1248</a>
-<a href="#1249" id="1249">1249</a>
-<a href="#1250" id="1250">1250</a>
-<a href="#1251" id="1251">1251</a>
-<a href="#1252" id="1252">1252</a>
-<a href="#1253" id="1253">1253</a>
-<a href="#1254" id="1254">1254</a>
-<a href="#1255" id="1255">1255</a>
-<a href="#1256" id="1256">1256</a>
-<a href="#1257" id="1257">1257</a>
-<a href="#1258" id="1258">1258</a>
-<a href="#1259" id="1259">1259</a>
-<a href="#1260" id="1260">1260</a>
-<a href="#1261" id="1261">1261</a>
-<a href="#1262" id="1262">1262</a>
-<a href="#1263" id="1263">1263</a>
-<a href="#1264" id="1264">1264</a>
-<a href="#1265" id="1265">1265</a>
-<a href="#1266" id="1266">1266</a>
-<a href="#1267" id="1267">1267</a>
-<a href="#1268" id="1268">1268</a>
-<a href="#1269" id="1269">1269</a>
-<a href="#1270" id="1270">1270</a>
-<a href="#1271" id="1271">1271</a>
-<a href="#1272" id="1272">1272</a>
-<a href="#1273" id="1273">1273</a>
-<a href="#1274" id="1274">1274</a>
-<a href="#1275" id="1275">1275</a>
-<a href="#1276" id="1276">1276</a>
-<a href="#1277" id="1277">1277</a>
-<a href="#1278" id="1278">1278</a>
-<a href="#1279" id="1279">1279</a>
-<a href="#1280" id="1280">1280</a>
-<a href="#1281" id="1281">1281</a>
-<a href="#1282" id="1282">1282</a>
-<a href="#1283" id="1283">1283</a>
-<a href="#1284" id="1284">1284</a>
-<a href="#1285" id="1285">1285</a>
-<a href="#1286" id="1286">1286</a>
-<a href="#1287" id="1287">1287</a>
-<a href="#1288" id="1288">1288</a>
-<a href="#1289" id="1289">1289</a>
-<a href="#1290" id="1290">1290</a>
-<a href="#1291" id="1291">1291</a>
-<a href="#1292" id="1292">1292</a>
-<a href="#1293" id="1293">1293</a>
-<a href="#1294" id="1294">1294</a>
-<a href="#1295" id="1295">1295</a>
-<a href="#1296" id="1296">1296</a>
-<a href="#1297" id="1297">1297</a>
-<a href="#1298" id="1298">1298</a>
-<a href="#1299" id="1299">1299</a>
-<a href="#1300" id="1300">1300</a>
-<a href="#1301" id="1301">1301</a>
-<a href="#1302" id="1302">1302</a>
-<a href="#1303" id="1303">1303</a>
-<a href="#1304" id="1304">1304</a>
-<a href="#1305" id="1305">1305</a>
-<a href="#1306" id="1306">1306</a>
-<a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
-<a href="#1314" id="1314">1314</a>
-<a href="#1315" id="1315">1315</a>
-<a href="#1316" id="1316">1316</a>
-<a href="#1317" id="1317">1317</a>
-<a href="#1318" id="1318">1318</a>
-<a href="#1319" id="1319">1319</a>
-<a href="#1320" id="1320">1320</a>
-<a href="#1321" id="1321">1321</a>
-<a href="#1322" id="1322">1322</a>
-<a href="#1323" id="1323">1323</a>
-<a href="#1324" id="1324">1324</a>
-<a href="#1325" id="1325">1325</a>
-<a href="#1326" id="1326">1326</a>
-<a href="#1327" id="1327">1327</a>
-<a href="#1328" id="1328">1328</a>
-<a href="#1329" id="1329">1329</a>
-<a href="#1330" id="1330">1330</a>
-<a href="#1331" id="1331">1331</a>
-<a href="#1332" id="1332">1332</a>
-<a href="#1333" id="1333">1333</a>
-<a href="#1334" id="1334">1334</a>
-<a href="#1335" id="1335">1335</a>
-<a href="#1336" id="1336">1336</a>
-<a href="#1337" id="1337">1337</a>
-<a href="#1338" id="1338">1338</a>
-<a href="#1339" id="1339">1339</a>
-<a href="#1340" id="1340">1340</a>
-<a href="#1341" id="1341">1341</a>
-<a href="#1342" id="1342">1342</a>
-<a href="#1343" id="1343">1343</a>
-<a href="#1344" id="1344">1344</a>
-<a href="#1345" id="1345">1345</a>
-<a href="#1346" id="1346">1346</a>
-<a href="#1347" id="1347">1347</a>
-<a href="#1348" id="1348">1348</a>
-<a href="#1349" id="1349">1349</a>
-<a href="#1350" id="1350">1350</a>
-<a href="#1351" id="1351">1351</a>
-<a href="#1352" id="1352">1352</a>
-<a href="#1353" id="1353">1353</a>
-<a href="#1354" id="1354">1354</a>
-<a href="#1355" id="1355">1355</a>
-<a href="#1356" id="1356">1356</a>
-<a href="#1357" id="1357">1357</a>
-<a href="#1358" id="1358">1358</a>
-<a href="#1359" id="1359">1359</a>
-<a href="#1360" id="1360">1360</a>
-<a href="#1361" id="1361">1361</a>
-<a href="#1362" id="1362">1362</a>
-<a href="#1363" id="1363">1363</a>
-<a href="#1364" id="1364">1364</a>
-<a href="#1365" id="1365">1365</a>
-<a href="#1366" id="1366">1366</a>
-<a href="#1367" id="1367">1367</a>
-<a href="#1368" id="1368">1368</a>
-<a href="#1369" id="1369">1369</a>
-<a href="#1370" id="1370">1370</a>
-<a href="#1371" id="1371">1371</a>
-<a href="#1372" id="1372">1372</a>
-<a href="#1373" id="1373">1373</a>
-<a href="#1374" id="1374">1374</a>
-<a href="#1375" id="1375">1375</a>
-<a href="#1376" id="1376">1376</a>
-<a href="#1377" id="1377">1377</a>
-<a href="#1378" id="1378">1378</a>
-<a href="#1379" id="1379">1379</a>
-<a href="#1380" id="1380">1380</a>
-<a href="#1381" id="1381">1381</a>
-<a href="#1382" id="1382">1382</a>
-<a href="#1383" id="1383">1383</a>
-<a href="#1384" id="1384">1384</a>
-<a href="#1385" id="1385">1385</a>
-<a href="#1386" id="1386">1386</a>
-<a href="#1387" id="1387">1387</a>
-<a href="#1388" id="1388">1388</a>
-<a href="#1389" id="1389">1389</a>
-<a href="#1390" id="1390">1390</a>
-<a href="#1391" id="1391">1391</a>
-<a href="#1392" id="1392">1392</a>
-<a href="#1393" id="1393">1393</a>
-<a href="#1394" id="1394">1394</a>
-<a href="#1395" id="1395">1395</a>
-<a href="#1396" id="1396">1396</a>
-<a href="#1397" id="1397">1397</a>
-<a href="#1398" id="1398">1398</a>
-<a href="#1399" id="1399">1399</a>
-<a href="#1400" id="1400">1400</a>
-<a href="#1401" id="1401">1401</a>
-<a href="#1402" id="1402">1402</a>
-<a href="#1403" id="1403">1403</a>
-<a href="#1404" id="1404">1404</a>
-<a href="#1405" id="1405">1405</a>
-<a href="#1406" id="1406">1406</a>
-<a href="#1407" id="1407">1407</a>
-<a href="#1408" id="1408">1408</a>
-<a href="#1409" id="1409">1409</a>
-<a href="#1410" id="1410">1410</a>
-<a href="#1411" id="1411">1411</a>
-<a href="#1412" id="1412">1412</a>
-<a href="#1413" id="1413">1413</a>
-<a href="#1414" id="1414">1414</a>
-<a href="#1415" id="1415">1415</a>
-<a href="#1416" id="1416">1416</a>
-<a href="#1417" id="1417">1417</a>
-<a href="#1418" id="1418">1418</a>
-<a href="#1419" id="1419">1419</a>
-<a href="#1420" id="1420">1420</a>
-<a href="#1421" id="1421">1421</a>
-<a href="#1422" id="1422">1422</a>
-<a href="#1423" id="1423">1423</a>
-<a href="#1424" id="1424">1424</a>
-<a href="#1425" id="1425">1425</a>
-<a href="#1426" id="1426">1426</a>
-<a href="#1427" id="1427">1427</a>
-<a href="#1428" id="1428">1428</a>
-<a href="#1429" id="1429">1429</a>
-<a href="#1430" id="1430">1430</a>
-<a href="#1431" id="1431">1431</a>
-<a href="#1432" id="1432">1432</a>
-<a href="#1433" id="1433">1433</a>
-<a href="#1434" id="1434">1434</a>
-<a href="#1435" id="1435">1435</a>
-<a href="#1436" id="1436">1436</a>
-<a href="#1437" id="1437">1437</a>
-<a href="#1438" id="1438">1438</a>
-<a href="#1439" id="1439">1439</a>
-<a href="#1440" id="1440">1440</a>
-<a href="#1441" id="1441">1441</a>
-<a href="#1442" id="1442">1442</a>
-<a href="#1443" id="1443">1443</a>
-<a href="#1444" id="1444">1444</a>
-<a href="#1445" id="1445">1445</a>
-<a href="#1446" id="1446">1446</a>
-<a href="#1447" id="1447">1447</a>
-<a href="#1448" id="1448">1448</a>
-<a href="#1449" id="1449">1449</a>
-<a href="#1450" id="1450">1450</a>
-<a href="#1451" id="1451">1451</a>
-<a href="#1452" id="1452">1452</a>
-<a href="#1453" id="1453">1453</a>
-<a href="#1454" id="1454">1454</a>
-<a href="#1455" id="1455">1455</a>
-<a href="#1456" id="1456">1456</a>
-<a href="#1457" id="1457">1457</a>
-<a href="#1458" id="1458">1458</a>
-<a href="#1459" id="1459">1459</a>
-<a href="#1460" id="1460">1460</a>
-<a href="#1461" id="1461">1461</a>
-<a href="#1462" id="1462">1462</a>
-<a href="#1463" id="1463">1463</a>
-<a href="#1464" id="1464">1464</a>
-<a href="#1465" id="1465">1465</a>
-<a href="#1466" id="1466">1466</a>
-<a href="#1467" id="1467">1467</a>
-<a href="#1468" id="1468">1468</a>
-<a href="#1469" id="1469">1469</a>
-<a href="#1470" id="1470">1470</a>
-<a href="#1471" id="1471">1471</a>
-<a href="#1472" id="1472">1472</a>
-<a href="#1473" id="1473">1473</a>
-<a href="#1474" id="1474">1474</a>
-<a href="#1475" id="1475">1475</a>
-<a href="#1476" id="1476">1476</a>
-<a href="#1477" id="1477">1477</a>
-<a href="#1478" id="1478">1478</a>
-<a href="#1479" id="1479">1479</a>
-<a href="#1480" id="1480">1480</a>
-<a href="#1481" id="1481">1481</a>
-<a href="#1482" id="1482">1482</a>
-<a href="#1483" id="1483">1483</a>
-<a href="#1484" id="1484">1484</a>
-<a href="#1485" id="1485">1485</a>
-<a href="#1486" id="1486">1486</a>
-<a href="#1487" id="1487">1487</a>
-<a href="#1488" id="1488">1488</a>
-<a href="#1489" id="1489">1489</a>
-<a href="#1490" id="1490">1490</a>
-<a href="#1491" id="1491">1491</a>
-<a href="#1492" id="1492">1492</a>
-<a href="#1493" id="1493">1493</a>
-<a href="#1494" id="1494">1494</a>
-<a href="#1495" id="1495">1495</a>
-<a href="#1496" id="1496">1496</a>
-<a href="#1497" id="1497">1497</a>
-<a href="#1498" id="1498">1498</a>
-<a href="#1499" id="1499">1499</a>
-<a href="#1500" id="1500">1500</a>
-<a href="#1501" id="1501">1501</a>
-<a href="#1502" id="1502">1502</a>
-<a href="#1503" id="1503">1503</a>
-<a href="#1504" id="1504">1504</a>
-<a href="#1505" id="1505">1505</a>
-<a href="#1506" id="1506">1506</a>
-<a href="#1507" id="1507">1507</a>
-<a href="#1508" id="1508">1508</a>
-<a href="#1509" id="1509">1509</a>
-<a href="#1510" id="1510">1510</a>
-<a href="#1511" id="1511">1511</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#1139" id="1139">1139</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="doccomment">//! Output management.
 //!
-//! An output is Pinnacle's terminology for a monitor.
+//! An output is the general Wayland term for a monitor.
 //!
-//! This module provides [`Output`], which allows you to get [`OutputHandle`]s for different
-//! connected monitors and set them up.
+//! TODO: expand
 
 </span><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>futures::FutureExt;
-<span class="kw">use </span>pinnacle_api_defs::pinnacle::output::{
-    <span class="self">self</span>,
-    v0alpha1::{
-        set_scale_request::AbsoluteOrRelative, SetLocationRequest, SetModeRequest,
-        SetModelineRequest, SetPoweredRequest, SetScaleRequest, SetTransformRequest,
+<span class="kw">use </span>pinnacle_api_defs::pinnacle::{
+    output::{
+        <span class="self">self</span>,
+        v1::{
+            GetEnabledRequest, GetFocusStackWindowIdsRequest, GetFocusedRequest, GetInfoRequest,
+            GetLocRequest, GetLogicalSizeRequest, GetModesRequest, GetPhysicalSizeRequest,
+            GetPoweredRequest, GetRequest, GetScaleRequest, GetTagIdsRequest, GetTransformRequest,
+            SetLocRequest, SetModeRequest, SetModelineRequest, SetPoweredRequest, SetScaleRequest,
+            SetTransformRequest,
+        },
     },
+    util::v1::{AbsOrRel, SetOrToggle},
 };
-<span class="kw">use </span>tracing::{error, instrument};
 
 <span class="kw">use crate</span>::{
-    block_on_tokio,
+    client::Client,
     signal::{OutputSignal, SignalHandle},
-    signal_module,
-    tag::{Tag, TagHandle},
-    util::Batch,
-    window::{Window, WindowHandle},
+    tag::TagHandle,
+    util::{Batch, Point, Size},
+    window::WindowHandle,
+    BlockOnTokio,
 };
 
-<span class="doccomment">/// A struct that allows you to get handles to connected outputs and set them up.
+<span class="doccomment">/// Gets handles to all currently plugged-in outputs.
 ///
-/// See [`OutputHandle`] for more information.
-</span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-</span><span class="kw">pub struct </span>Output;
-
-<span class="kw">impl </span>Output {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_handle(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; OutputHandle {
-        OutputHandle { name: name.into() }
-    }
-
-    <span class="doccomment">/// Get handles to all connected outputs.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let outputs = output.get_all();
-    /// ```
-    </span><span class="kw">pub fn </span>get_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_all_async())
-    }
-
-    <span class="doccomment">/// The async version of [`Output::get_all`].
-    </span><span class="kw">pub async fn </span>get_all_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
-        <span class="kw">crate</span>::output()
-            .get(output::v0alpha1::GetRequest {})
-            .<span class="kw">await
-            </span>.map(|resp| resp.into_inner().output_names)
-            .inspect_err(|err| <span class="macro">error!</span>(<span class="string">"Failed to get outputs: {err}"</span>))
-            .unwrap_or_default()
-            .into_iter()
-            .map(|name| <span class="self">self</span>.new_handle(name))
-            .collect()
-    }
-
-    <span class="doccomment">/// Get handles to all outputs that are connected and enabled.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let enabled = output.get_all_enabled();
-    /// ```
-    </span><span class="kw">pub fn </span>get_all_enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_all_enabled_async())
-    }
-
-    <span class="doccomment">/// The async version of [`Output::get_all_enabled`].
-    </span><span class="kw">pub async fn </span>get_all_enabled_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;OutputHandle&gt; {
-        <span class="kw">let </span>outputs = <span class="self">self</span>.get_all_async().<span class="kw">await</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>enabled_outputs = Vec::new();
-        <span class="kw">for </span>output <span class="kw">in </span>outputs {
-            <span class="kw">if </span>output.enabled_async().<span class="kw">await</span>.unwrap_or_default() {
-                enabled_outputs.push(output);
-            }
-        }
-
-        enabled_outputs
-    }
-
-    <span class="doccomment">/// Get a handle to the output with the given name.
-    ///
-    /// By "name", we mean the name of the connector the output is connected to.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let op = output.get_by_name("eDP-1")?;
-    /// let op2 = output.get_by_name("HDMI-2")?;
-    /// ```
-    </span><span class="kw">pub fn </span>get_by_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
-        block_on_tokio(<span class="self">self</span>.get_by_name_async(name))
-    }
-
-    <span class="doccomment">/// The async version of [`Output::get_by_name`].
-    </span><span class="kw">pub async fn </span>get_by_name_async(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
-        <span class="kw">let </span>name: String = name.into();
-        <span class="self">self</span>.get_all_async()
-            .<span class="kw">await
-            </span>.into_iter()
-            .find(|output| output.name == name)
-    }
-
-    <span class="doccomment">/// Get a handle to the focused output.
-    ///
-    /// This is currently implemented as the one that has had the most recent pointer movement.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let op = output.get_focused()?;
-    /// ```
-    </span><span class="kw">pub fn </span>get_focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
-        <span class="self">self</span>.get_all()
-            .into_iter()
-            .find(|output| <span class="macro">matches!</span>(output.props().focused, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)))
-    }
-
-    <span class="doccomment">/// The async version of [`Output::get_focused`].
-    </span><span class="kw">pub async fn </span>get_focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
-        <span class="self">self</span>.get_all_async().<span class="kw">await</span>.batch_find(
-            |output| output.props_async().boxed(),
-            |props| props.focused.is_some_and(|focused| focused),
-        )
-    }
-
-    <span class="doccomment">/// Connect a closure to be run on all current and future outputs.
-    ///
-    /// When called, `connect_for_all` will do two things:
-    /// 1. Immediately run `for_all` with all currently connected outputs.
-    /// 2. Create a future that will call `for_all` with any newly connected outputs.
-    ///
-    /// Note that `for_all` will *not* run with outputs that have been unplugged and replugged.
-    /// This is to prevent duplicate setup. Instead, the compositor keeps track of any tags and
-    /// state the output had when unplugged and restores them on replug.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Add tags 1-3 to all outputs and set tag "1" to active
-    /// output.connect_for_all(|op| {
-    ///     let tags = tag.add(&amp;op, ["1", "2", "3"]);
-    ///     tags.first()?.set_active(true);
-    /// });
-    /// ```
-    </span><span class="kw">pub fn </span>connect_for_all(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>for_all: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>) {
-        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.get_all() {
-            for_all(<span class="kw-2">&amp;</span>output);
-        }
-
-        signal_module()
-            .output_connect
-            .add_callback(Box::new(for_all));
-    }
-
-    <span class="doccomment">/// Connect to an output signal.
-    ///
-    /// The compositor will fire off signals that your config can listen for and act upon.
-    /// You can pass in an [`OutputSignal`] along with a callback and it will get run
-    /// with the necessary arguments every time a signal of that type is received.
-    </span><span class="kw">pub fn </span>connect_signal(<span class="kw-2">&amp;</span><span class="self">self</span>, signal: OutputSignal) -&gt; SignalHandle {
-        <span class="kw">let </span><span class="kw-2">mut </span>signal_state = signal_module();
-
-        <span class="kw">match </span>signal {
-            OutputSignal::Connect(f) =&gt; signal_state.output_connect.add_callback(f),
-            OutputSignal::Disconnect(f) =&gt; signal_state.output_disconnect.add_callback(f),
-            OutputSignal::Resize(f) =&gt; signal_state.output_resize.add_callback(f),
-            OutputSignal::Move(f) =&gt; signal_state.output_move.add_callback(f),
-        }
-    }
-
-    <span class="doccomment">/// Declaratively setup outputs.
-    ///
-    /// This method allows you to specify [`OutputSetup`]s that will be applied to outputs already
-    /// connected and that will be connected in the future. It handles the setting of modes,
-    /// scales, tags, and more.
-    ///
-    /// Setups will be applied top to bottom.
-    ///
-    /// See [`OutputSetup`] for more information.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::output::OutputSetup;
-    /// use pinnacle_api::output::OutputId;
-    ///
-    /// output.setup([
-    ///     // Give all outputs tags 1 through 5
-    ///     OutputSetup::new_with_matcher(|_| true).with_tags(["1", "2", "3", "4", "5"]),
-    ///     // Give outputs with a preferred mode of 4K a scale of 2.0
-    ///     OutputSetup::new_with_matcher(|op| op.preferred_mode()?.pixel_width == 2160)
-    ///         .with_scale(2.0),
-    ///     // Additionally give eDP-1 tags 6 and 7
-    ///     OutputSetup::new(OutputId::name("eDP-1")).with_tags(["6", "7"]),
-    /// ]);
-    /// ```
-    </span><span class="kw">pub fn </span>setup(<span class="kw-2">&amp;</span><span class="self">self</span>, setups: <span class="kw">impl </span>IntoIterator&lt;Item = OutputSetup&gt;) {
-        <span class="kw">let </span>setups = setups.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-
-        <span class="kw">let </span>apply_setups = <span class="kw">move </span>|output: <span class="kw-2">&amp;</span>OutputHandle| {
-            <span class="kw">for </span>setup <span class="kw">in </span>setups.iter() {
-                <span class="kw">if </span>setup.output.matches(output) {
-                    setup.apply(output);
-                }
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(tag) = output.tags().first() {
-                tag.set_active(<span class="bool-val">true</span>);
-            }
-        };
-
-        <span class="self">self</span>.connect_for_all(<span class="kw">move </span>|output| {
-            apply_setups(output);
-        });
-    }
-
-    <span class="doccomment">/// Specify locations for outputs and when they should be laid out.
-    ///
-    /// This method allows you to specify locations for outputs, either as a specific point
-    /// or relative to another output.
-    ///
-    /// This will relayout outputs according to the given [`UpdateLocsOn`] flags.
-    ///
-    /// Layouts not specified in `setup` or that have cyclic relative-to outputs will be
-    /// laid out in a line to the right of the rightmost output.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::output::UpdateLocsOn;
-    /// use pinnacle_api::output::OutputLoc;
-    /// use pinnacle_api::output::OutputId;
-    ///
-    /// output.setup_locs(
-    ///     // Relayout all outputs when outputs are connected, disconnected, and resized
-    ///     UpdateLocsOn::all(),
-    ///     [
-    ///         // Anchor eDP-1 to (0, 0) so other outputs can be placed relative to it
-    ///         (OutputId::name("eDP-1"), OutputLoc::Point(0, 0)),
-    ///         // Place HDMI-A-1 below it centered
-    ///         (
-    ///             OutputId::name("HDMI-A-1"),
-    ///             OutputLoc::RelativeTo(OutputId::name("eDP-1"), Alignment::BottomAlignCenter),
-    ///         ),
-    ///         // Place HDMI-A-2 below HDMI-A-1.
-    ///         (
-    ///             OutputId::name("HDMI-A-2"),
-    ///             OutputLoc::RelativeTo(OutputId::name("HDMI-A-1"), Alignment::BottomAlignCenter),
-    ///         ),
-    ///         // Additionally, if HDMI-A-1 isn't connected, place it below eDP-1 instead.
-    ///         (
-    ///             OutputId::name("HDMI-A-2"),
-    ///             OutputLoc::RelativeTo(OutputId::name("eDP-1"), Alignment::BottomAlignCenter),
-    ///         ),
-    ///     ]
-    /// );
-    /// ```
-    </span><span class="kw">pub fn </span>setup_locs(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        update_locs_on: UpdateLocsOn,
-        setup: <span class="kw">impl </span>IntoIterator&lt;Item = (OutputId, OutputLoc)&gt;,
-    ) {
-        <span class="kw">let </span>setup: Vec&lt;<span class="kw">_</span>&gt; = setup.into_iter().collect();
-
-        <span class="kw">let </span>layout_outputs = <span class="kw">move </span>|| {
-            <span class="kw">let </span>outputs = Output.get_all_enabled();
-
-            <span class="kw">let </span><span class="kw-2">mut </span>rightmost_output_and_x: <span class="prelude-ty">Option</span>&lt;(OutputHandle, i32)&gt; = <span class="prelude-val">None</span>;
-
-            <span class="kw">let </span><span class="kw-2">mut </span>placed_outputs = Vec::&lt;OutputHandle&gt;::new();
-
-            <span class="comment">// Place outputs with OutputSetupLoc::Point
-            </span><span class="kw">for </span>output <span class="kw">in </span>outputs.iter() {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="kw">_</span>, OutputLoc::Point(x, y))) =
-                    setup.iter().find(|(op_id, <span class="kw">_</span>)| op_id.matches(output))
-                {
-                    output.set_location(x, y);
-
-                    placed_outputs.push(output.clone());
-                    <span class="kw">let </span>props = output.props();
-                    <span class="kw">let </span>x = props.x.expect(<span class="string">"output should have x-coord"</span>);
-                    <span class="kw">let </span>width = props
-                        .logical_width
-                        .expect(<span class="string">"output should have logical width"</span>)
-                        <span class="kw">as </span>i32;
-                    <span class="kw">if </span>rightmost_output_and_x.is_none()
-                        || rightmost_output_and_x
-                            .as_ref()
-                            .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
-                    {
-                        rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
-                    }
-                }
-            }
-
-            <span class="comment">// Attempt to place relative outputs
-            //
-            // Because this code is hideous I'm gonna comment what it does
-            </span><span class="kw">while let </span><span class="prelude-val">Some</span>((output, relative_to, alignment)) =
-                setup.iter().find_map(|(setup_op_id, loc)| {
-                    <span class="comment">// For every location setup,
-                    // find the first unplaced output it refers to that has a relative location
-                    </span>outputs
-                        .iter()
-                        .find(|setup_op| {
-                            !placed_outputs.contains(setup_op) &amp;&amp; setup_op_id.matches(setup_op)
-                        })
-                        .and_then(|setup_op| <span class="kw">match </span>loc {
-                            OutputLoc::RelativeTo(rel_id, alignment) =&gt; {
-                                placed_outputs.iter().find_map(|placed_op| {
-                                    (rel_id.matches(placed_op))
-                                        .then_some((setup_op, placed_op, alignment))
-                                })
-                            }
-                            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-                        })
-                })
-            {
-                output.set_loc_adj_to(relative_to, <span class="kw-2">*</span>alignment);
-
-                placed_outputs.push(output.clone());
-                <span class="kw">let </span>props = output.props();
-                <span class="kw">let </span>x = props.x.expect(<span class="string">"output should have x-coord"</span>);
-                <span class="kw">let </span>width = props
-                    .logical_width
-                    .expect(<span class="string">"output should have logical width"</span>) <span class="kw">as </span>i32;
-                <span class="kw">if </span>rightmost_output_and_x.is_none()
-                    || rightmost_output_and_x
-                        .as_ref()
-                        .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
-                {
-                    rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
-                }
-            }
-
-            <span class="comment">// Place all remaining outputs right of the rightmost one
-            </span><span class="kw">for </span>output <span class="kw">in </span>outputs
-                .iter()
-                .filter(|op| !placed_outputs.contains(op))
-                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-            {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>((rm_op, <span class="kw">_</span>)) = rightmost_output_and_x.as_ref() {
-                    output.set_loc_adj_to(rm_op, Alignment::RightAlignTop);
-                } <span class="kw">else </span>{
-                    output.set_location(<span class="number">0</span>, <span class="number">0</span>);
-                }
-
-                placed_outputs.push(output.clone());
-                <span class="kw">let </span>props = output.props();
-                <span class="kw">let </span>x = props.x.expect(<span class="string">"output should have x-coord"</span>);
-                <span class="kw">let </span>width = props
-                    .logical_width
-                    .expect(<span class="string">"output should have logical width"</span>) <span class="kw">as </span>i32;
-                <span class="kw">if </span>rightmost_output_and_x.is_none()
-                    || rightmost_output_and_x
-                        .as_ref()
-                        .is_some_and(|(<span class="kw">_</span>, rm_x)| x + width &gt; <span class="kw-2">*</span>rm_x)
-                {
-                    rightmost_output_and_x = <span class="prelude-val">Some</span>((output.clone(), x + width));
-                }
-            }
-        };
-
-        layout_outputs();
-
-        <span class="kw">let </span>layout_outputs_clone1 = layout_outputs.clone();
-        <span class="kw">let </span>layout_outputs_clone2 = layout_outputs.clone();
-
-        <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::CONNECT) {
-            <span class="self">self</span>.connect_signal(OutputSignal::Connect(Box::new(<span class="kw">move </span>|<span class="kw">_</span>| {
-                layout_outputs_clone2();
-            })));
-        }
-
-        <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::DISCONNECT) {
-            <span class="self">self</span>.connect_signal(OutputSignal::Disconnect(Box::new(<span class="kw">move </span>|<span class="kw">_</span>| {
-                layout_outputs_clone1();
-            })));
-        }
-
-        <span class="kw">if </span>update_locs_on.contains(UpdateLocsOn::RESIZE) {
-            <span class="self">self</span>.connect_signal(OutputSignal::Resize(Box::new(<span class="kw">move </span>|<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>| {
-                layout_outputs();
-            })));
-        }
-    }
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::output;
+/// for output in output::get_all() {
+///     println!("{} {} {}", output.make(), output.model(), output.serial());
+/// }
+/// ```
+</span><span class="kw">pub fn </span>get_all() -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+    get_all_async().block_on_tokio()
 }
 
-<span class="doccomment">/// A matcher for outputs.
-</span><span class="kw">enum </span>OutputMatcher {
-    <span class="doccomment">/// Match outputs by unique id.
-    </span>Id(OutputId),
-    <span class="doccomment">/// Match outputs using a function that returns a bool.
-    </span>Fn(Box&lt;<span class="kw">dyn </span>Fn(<span class="kw-2">&amp;</span>OutputHandle) -&gt; bool + Send + Sync&gt;),
+<span class="doccomment">/// Async impl for [`get_all`].
+</span><span class="kw">pub async fn </span>get_all_async() -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+    Client::output()
+        .get(GetRequest {})
+        .<span class="kw">await
+        </span>.unwrap()
+        .into_inner()
+        .output_names
+        .into_iter()
+        .map(|name| OutputHandle { name })
 }
 
-<span class="kw">impl </span>OutputMatcher {
-    <span class="doccomment">/// Returns whether this matcher matches the given output.
-    </span><span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; bool {
-        <span class="kw">match </span><span class="self">self </span>{
-            OutputMatcher::Id(id) =&gt; id.matches(output),
-            OutputMatcher::Fn(matcher) =&gt; matcher(output),
-        }
-    }
+<span class="doccomment">/// Gets handles to all currently plugged-in *and enabled* outputs.
+///
+/// This ignores outputs you have explicitly disabled.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::output;
+/// for output in output::get_all_enabled() {
+///     println!("{} {} {}", output.make(), output.model(), output.serial());
+/// }
+/// ```
+</span><span class="kw">pub fn </span>get_all_enabled() -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+    get_all_enabled_async().block_on_tokio()
 }
 
-<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>OutputMatcher {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Id(name) =&gt; f.debug_tuple(<span class="string">"Name"</span>).field(name).finish(),
-            <span class="self">Self</span>::Fn(<span class="kw">_</span>) =&gt; f
-                .debug_tuple(<span class="string">"Fn"</span>)
-                .field(<span class="kw-2">&amp;</span><span class="string">"&lt;Box&lt;dyn Fn(&amp;OutputHandle)&gt; -&gt; bool&gt;"</span>)
-                .finish(),
-        }
-    }
+<span class="doccomment">/// Async impl for [`get_all_enabled`].
+</span><span class="kw">pub async fn </span>get_all_enabled_async() -&gt; <span class="kw">impl </span>Iterator&lt;Item = OutputHandle&gt; {
+    get_all_async()
+        .<span class="kw">await
+        </span>.batch_filter(|op| op.enabled_async().boxed(), |enabled| enabled)
 }
 
-<span class="kw">enum </span>OutputMode {
-    Mode(Mode),
-    Modeline(Modeline),
+<span class="doccomment">/// Gets a handle to the output with the given name.
+///
+/// By "name", we mean the name of the connector the output is connected to.
+</span><span class="kw">pub fn </span>get_by_name(name: <span class="kw">impl </span>ToString) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+    get_by_name_async(name).block_on_tokio()
 }
 
-<span class="doccomment">/// An output setup for use in [`Output::setup`].
-</span><span class="kw">pub struct </span>OutputSetup {
-    output: OutputMatcher,
-    mode: <span class="prelude-ty">Option</span>&lt;OutputMode&gt;,
-    scale: <span class="prelude-ty">Option</span>&lt;f32&gt;,
-    tag_names: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
-    transform: <span class="prelude-ty">Option</span>&lt;Transform&gt;,
+<span class="doccomment">/// Async impl for [`get_by_name`].
+</span><span class="kw">pub async fn </span>get_by_name_async(name: <span class="kw">impl </span>ToString) -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+    get_all_async().<span class="kw">await</span>.find(|op| op.name == name.to_string())
 }
 
-<span class="kw">impl </span>OutputSetup {
-    <span class="doccomment">/// Creates a new `OutputSetup` that applies to the output with the given name.
-    </span><span class="kw">pub fn </span>new(id: OutputId) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            output: OutputMatcher::Id(id),
-            mode: <span class="prelude-val">None</span>,
-            scale: <span class="prelude-val">None</span>,
-            tag_names: <span class="prelude-val">None</span>,
-            transform: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="doccomment">/// Creates a new `OutputSetup` that matches outputs according to the given function.
-    </span><span class="kw">pub fn </span>new_with_matcher(
-        matcher: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>OutputHandle) -&gt; bool + Send + Sync + <span class="lifetime">'static</span>,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            output: OutputMatcher::Fn(Box::new(matcher)),
-            mode: <span class="prelude-val">None</span>,
-            scale: <span class="prelude-val">None</span>,
-            tag_names: <span class="prelude-val">None</span>,
-            transform: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="doccomment">/// Makes this setup apply the given [`Mode`] to its outputs.
-    ///
-    /// This will overwrite [`OutputSetup::with_modeline`] if called after it.
-    </span><span class="kw">pub fn </span>with_mode(<span class="self">self</span>, mode: Mode) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            mode: <span class="prelude-val">Some</span>(OutputMode::Mode(mode)),
-            ..<span class="self">self
-        </span>}
-    }
-
-    <span class="doccomment">/// Makes this setup apply the given [`Modeline`] to its outputs.
-    ///
-    /// You can parse a modeline string into a modeline. See [`OutputHandle::set_modeline`] for
-    /// specifics.
-    ///
-    /// This will overwrite [`OutputSetup::with_mode`] if called after it.
-    </span><span class="kw">pub fn </span>with_modeline(<span class="self">self</span>, modeline: Modeline) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            mode: <span class="prelude-val">Some</span>(OutputMode::Modeline(modeline)),
-            ..<span class="self">self
-        </span>}
-    }
-
-    <span class="doccomment">/// Makes this setup apply the given scale to its outputs.
-    </span><span class="kw">pub fn </span>with_scale(<span class="self">self</span>, scale: f32) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            scale: <span class="prelude-val">Some</span>(scale),
-            ..<span class="self">self
-        </span>}
-    }
-
-    <span class="doccomment">/// Makes this setup add tags with the given names to its outputs.
-    </span><span class="kw">pub fn </span>with_tags(<span class="self">self</span>, tag_names: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw">impl </span>ToString&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            tag_names: <span class="prelude-val">Some</span>(tag_names.into_iter().map(|s| s.to_string()).collect()),
-            ..<span class="self">self
-        </span>}
-    }
-
-    <span class="doccomment">/// Makes this setup apply the given transform to its outputs.
-    </span><span class="kw">pub fn </span>with_transform(<span class="self">self</span>, transform: Transform) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            transform: <span class="prelude-val">Some</span>(transform),
-            ..<span class="self">self
-        </span>}
-    }
-
-    <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(mode) = <span class="kw-2">&amp;</span><span class="self">self</span>.mode {
-            <span class="kw">match </span>mode {
-                OutputMode::Mode(mode) =&gt; {
-                    output.set_mode(
-                        mode.pixel_width,
-                        mode.pixel_height,
-                        <span class="prelude-val">Some</span>(mode.refresh_rate_millihertz),
-                    );
-                }
-                OutputMode::Modeline(modeline) =&gt; {
-                    output.set_modeline(<span class="kw-2">*</span>modeline);
-                }
-            }
-        }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(scale) = <span class="self">self</span>.scale {
-            output.set_scale(scale);
-        }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(tag_names) = <span class="kw-2">&amp;</span><span class="self">self</span>.tag_names {
-            Tag.add(output, tag_names);
-        }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(transform) = <span class="self">self</span>.transform {
-            output.set_transform(transform);
-        }
-    }
+<span class="doccomment">/// Gets a handle to the currently focused output.
+///
+/// This is currently implemented as the one that has had the most recent pointer movement.
+</span><span class="kw">pub fn </span>get_focused() -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+    get_focused_async().block_on_tokio()
 }
 
-<span class="doccomment">/// A location for an output.
-</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>OutputLoc {
-    <span class="doccomment">/// A specific point in the global space of the form (x, y).
-    </span>Point(i32, i32),
-    <span class="doccomment">/// A location relative to another output with an [`Alignment`].
-    </span>RelativeTo(OutputId, Alignment),
+<span class="doccomment">/// Async impl for [`get_focused`].
+</span><span class="kw">pub async fn </span>get_focused_async() -&gt; <span class="prelude-ty">Option</span>&lt;OutputHandle&gt; {
+    get_all_async()
+        .<span class="kw">await
+        </span>.batch_find(|op| op.focused_async().boxed(), |focused| <span class="kw-2">*</span>focused)
 }
 
-<span class="doccomment">/// An identifier for an output.
-</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-</span><span class="kw">pub enum </span>OutputId {
-    <span class="doccomment">/// Identify using the output's name.
-    </span>Name(String),
-}
-
-<span class="kw">impl </span>OutputId {
-    <span class="doccomment">/// Creates an [`OutputId::Name`].
-    ///
-    /// This is a convenience function so you don't have to call `.into()`
-    /// or `.to_string()`.
-    </span><span class="kw">pub fn </span>name(name: <span class="kw">impl </span>ToString) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Name(name.to_string())
+<span class="doccomment">/// Runs a closure on all current and future outputs.
+///
+/// When called, this will do two things:
+/// 1. Immediately run `for_each` with all currently connected outputs.
+/// 2. Call `for_each` with any newly connected outputs.
+///
+/// Note that `for_each` will *not* run with outputs that have been unplugged and replugged.
+/// This is to prevent duplicate setup. Instead, the compositor keeps track of any tags and
+/// state the output had when unplugged and restores them on replug. This may change in the future.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::output;
+/// # use pinnacle_api::tag;
+/// // Add tags 1-3 to all outputs and set tag "1" to active
+/// output::for_each_output(|op| {
+///     let mut tags = tag::add(op, ["1", "2", "3"]);
+///     tags.next().unwrap().set_active(true);
+/// });
+/// ```
+</span><span class="kw">pub fn </span>for_each_output(<span class="kw-2">mut </span>for_each: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>OutputHandle) + Send + <span class="lifetime">'static</span>) {
+    <span class="kw">for </span>output <span class="kw">in </span>get_all() {
+        for_each(<span class="kw-2">&amp;</span>output);
     }
 
-    <span class="doccomment">/// Returns whether `output` is identified by this `OutputId`.
-    </span><span class="kw">pub fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="kw-2">&amp;</span>OutputHandle) -&gt; bool {
-        <span class="kw">match </span><span class="self">self </span>{
-            OutputId::Name(name) =&gt; <span class="kw-2">*</span>name == output.name(),
-        }
-    }
+    Client::signal_state()
+        .output_connect
+        .add_callback(Box::new(for_each));
 }
 
-<span class="macro">bitflags::bitflags!</span> {
-    <span class="doccomment">/// Flags for when [`Output::setup_locs`] should relayout outputs.
-    </span><span class="attr">#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
-    </span><span class="kw">pub struct </span>UpdateLocsOn: u8 {
-        <span class="doccomment">/// Relayout when an output is connected.
-        </span><span class="kw">const </span>CONNECT = <span class="number">1</span>;
-        <span class="doccomment">/// Relayout when an output is disconnected.
-        </span><span class="kw">const </span>DISCONNECT = <span class="number">1 </span>&lt;&lt; <span class="number">1</span>;
-        <span class="doccomment">/// Relayout when an output is resized, either through a scale or mode change.
-        </span><span class="kw">const </span>RESIZE = <span class="number">1 </span>&lt;&lt; <span class="number">2</span>;
+<span class="doccomment">/// Connects to an [`OutputSignal`].
+///
+/// # Examples
+///
+/// ```no_run
+/// # use pinnacle_api::output;
+/// # use pinnacle_api::signal::OutputSignal;
+/// output::connect_signal(OutputSignal::Connect(Box::new(|output| {
+///     println!("New output: {}", output.name());
+/// })));
+/// ```
+</span><span class="kw">pub fn </span>connect_signal(signal: OutputSignal) -&gt; SignalHandle {
+    <span class="kw">let </span><span class="kw-2">mut </span>signal_state = Client::signal_state();
+
+    <span class="kw">match </span>signal {
+        OutputSignal::Connect(f) =&gt; signal_state.output_connect.add_callback(f),
+        OutputSignal::Disconnect(f) =&gt; signal_state.output_disconnect.add_callback(f),
+        OutputSignal::Resize(f) =&gt; signal_state.output_resize.add_callback(f),
+        OutputSignal::Move(f) =&gt; signal_state.output_move.add_callback(f),
     }
 }
 
@@ -2137,13 +1340,13 @@
 
 <span class="doccomment">/// An output transform.
 ///
-/// This determines what orientation outputs will render at.
-</span><span class="attr">#[derive(num_enum::TryFromPrimitive, Default, Debug, Copy, Clone, PartialEq, Eq, Hash)]
+/// This determines what orientation outputs will render with.
+</span><span class="attr">#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash)]
 #[repr(i32)]
 </span><span class="kw">pub enum </span>Transform {
     <span class="doccomment">/// No transform.
     </span><span class="attr">#[default]
-    </span>Normal = <span class="number">1</span>,
+    </span>Normal,
     <span class="doccomment">/// 90 degrees counter-clockwise.
     </span>_90,
     <span class="doccomment">/// 180 degrees counter-clockwise.
@@ -2160,8 +1363,41 @@
     </span>Flipped270,
 }
 
+<span class="kw">impl </span>TryFrom&lt;output::v1::Transform&gt; <span class="kw">for </span>Transform {
+    <span class="kw">type </span>Error = ();
+
+    <span class="kw">fn </span>try_from(value: output::v1::Transform) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">match </span>value {
+            output::v1::Transform::Unspecified =&gt; <span class="prelude-val">Err</span>(()),
+            output::v1::Transform::Normal =&gt; <span class="prelude-val">Ok</span>(Transform::Normal),
+            output::v1::Transform::Transform90 =&gt; <span class="prelude-val">Ok</span>(Transform::_90),
+            output::v1::Transform::Transform180 =&gt; <span class="prelude-val">Ok</span>(Transform::_180),
+            output::v1::Transform::Transform270 =&gt; <span class="prelude-val">Ok</span>(Transform::_270),
+            output::v1::Transform::Flipped =&gt; <span class="prelude-val">Ok</span>(Transform::Flipped),
+            output::v1::Transform::Flipped90 =&gt; <span class="prelude-val">Ok</span>(Transform::Flipped90),
+            output::v1::Transform::Flipped180 =&gt; <span class="prelude-val">Ok</span>(Transform::Flipped180),
+            output::v1::Transform::Flipped270 =&gt; <span class="prelude-val">Ok</span>(Transform::Flipped270),
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;Transform&gt; <span class="kw">for </span>output::v1::Transform {
+    <span class="kw">fn </span>from(value: Transform) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>value {
+            Transform::Normal =&gt; output::v1::Transform::Normal,
+            Transform::_90 =&gt; output::v1::Transform::Transform90,
+            Transform::_180 =&gt; output::v1::Transform::Transform180,
+            Transform::_270 =&gt; output::v1::Transform::Transform270,
+            Transform::Flipped =&gt; output::v1::Transform::Flipped,
+            Transform::Flipped90 =&gt; output::v1::Transform::Flipped90,
+            Transform::Flipped180 =&gt; output::v1::Transform::Flipped180,
+            Transform::Flipped270 =&gt; output::v1::Transform::Flipped270,
+        }
+    }
+}
+
 <span class="kw">impl </span>OutputHandle {
-    <span class="doccomment">/// Set the location of this output in the global space.
+    <span class="doccomment">/// Sets the location of this output in the global space.
     ///
     /// On startup, Pinnacle will lay out all connected outputs starting at (0, 0)
     /// and going to the right, with their top borders aligned.
@@ -2173,7 +1409,8 @@
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```no_run
+    /// # use pinnacle_api::output;
     /// // Assume two monitors in order, "DP-1" and "HDMI-1", with the following dimensions:
     /// //  - "DP-1":   ┌─────┐
     /// //              │     │1920x1080
@@ -2182,10 +1419,11 @@
     /// //              │ 2560x │
     /// //              │ 1440  │
     /// //              └───────┘
-    ///
-    /// output.get_by_name("DP-1")?.set_location(0, 0);
-    /// output.get_by_name("HDMI-1")?.set_location(1920, -360);
-    ///
+    /// # || {
+    /// output::get_by_name("DP-1")?.set_loc(0, 0);
+    /// output::get_by_name("HDMI-1")?.set_loc(1920, -360);
+    /// # Some(())
+    /// # };
     /// // Results in:
     /// //   x=0    ┌───────┐y=-360
     /// // y=0┌─────┤       │
@@ -2193,20 +1431,20 @@
     /// //    └─────┴───────┘
     /// //          ^x=1920
     /// ```
-    </span><span class="attr">#[instrument(skip(x, y))]
-    </span><span class="kw">pub fn </span>set_location(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;i32&gt;&gt;, y: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;i32&gt;&gt;) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_location(SetLocationRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            x: x.into(),
-            y: y.into(),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+    </span><span class="kw">pub fn </span>set_loc(<span class="kw-2">&amp;</span><span class="self">self</span>, x: i32, y: i32) {
+        Client::output()
+            .set_loc(SetLocRequest {
+                output_name: <span class="self">self</span>.name(),
+                x,
+                y,
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set this output adjacent to another one.
+    <span class="doccomment">/// Sets this output adjacent to another one.
     ///
-    /// This is a helper method over [`OutputHandle::set_location`] to make laying out outputs
+    /// This is a helper method over [`OutputHandle::set_loc`] to make laying out outputs
     /// easier.
     ///
     /// `alignment` is an [`Alignment`] of how you want this output to be placed.
@@ -2217,9 +1455,9 @@
     ///
     /// # Examples
     ///
-    /// ```
-    /// use pinnacle_api::output::Alignment;
-    ///
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # use pinnacle_api::output::Alignment;
     /// // Assume two monitors in order, "DP-1" and "HDMI-1", with the following dimensions:
     /// //  - "DP-1":   ┌─────┐
     /// //              │     │1920x1080
@@ -2228,9 +1466,12 @@
     /// //              │ 2560x │
     /// //              │ 1440  │
     /// //              └───────┘
-    ///
-    /// output.get_by_name("DP-1")?.set_loc_adj_to(output.get_by_name("HDMI-1")?, Alignment::BottomAlignRight);
-    ///
+    /// # || {
+    /// let dp_1 = output::get_by_name("DP-1")?;
+    /// let hdmi_1 = output::get_by_name("HDMI-1")?;
+    /// dp_1.set_loc_adj_to(&amp;hdmi_1, Alignment::BottomAlignRight);
+    /// # Some(())
+    /// # };
     /// // Results in:
     /// // ┌───────┐
     /// // │       │
@@ -2242,18 +1483,24 @@
     /// // "HDMI-1" was placed at (1920, 0) during the compositor's initial output layout.
     /// ```
     </span><span class="kw">pub fn </span>set_loc_adj_to(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>OutputHandle, alignment: Alignment) {
-        <span class="kw">let </span>self_props = <span class="self">self</span>.props();
-        <span class="kw">let </span>other_props = other.props();
+        <span class="kw">let </span>(self_size, other_loc, other_size) = <span class="kw">async </span>{
+            <span class="macro">tokio::join!</span>(
+                <span class="self">self</span>.logical_size_async(),
+                other.loc_async(),
+                other.logical_size_async()
+            )
+        }
+        .block_on_tokio();
 
         <span class="comment">// poor man's try {}
         </span><span class="kw">let </span>attempt_set_loc = || -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
-            <span class="kw">let </span>other_x = other_props.x<span class="question-mark">?</span>;
-            <span class="kw">let </span>other_y = other_props.y<span class="question-mark">?</span>;
-            <span class="kw">let </span>other_width = other_props.logical_width<span class="question-mark">? </span><span class="kw">as </span>i32;
-            <span class="kw">let </span>other_height = other_props.logical_height<span class="question-mark">? </span><span class="kw">as </span>i32;
+            <span class="kw">let </span>other_x = other_loc<span class="question-mark">?</span>.x;
+            <span class="kw">let </span>other_y = other_loc<span class="question-mark">?</span>.y;
+            <span class="kw">let </span>other_width = other_size<span class="question-mark">?</span>.w <span class="kw">as </span>i32;
+            <span class="kw">let </span>other_height = other_size<span class="question-mark">?</span>.h <span class="kw">as </span>i32;
 
-            <span class="kw">let </span>self_width = self_props.logical_width<span class="question-mark">? </span><span class="kw">as </span>i32;
-            <span class="kw">let </span>self_height = self_props.logical_height<span class="question-mark">? </span><span class="kw">as </span>i32;
+            <span class="kw">let </span>self_width = self_size<span class="question-mark">?</span>.w <span class="kw">as </span>i32;
+            <span class="kw">let </span>self_height = self_size<span class="question-mark">?</span>.h <span class="kw">as </span>i32;
 
             <span class="kw">use </span>Alignment::<span class="kw-2">*</span>;
 
@@ -2297,7 +1544,7 @@
                 }
             }
 
-            <span class="self">self</span>.set_location(<span class="prelude-val">Some</span>(x), <span class="prelude-val">Some</span>(y));
+            <span class="self">self</span>.set_loc(x, y);
 
             <span class="prelude-val">Some</span>(())
         };
@@ -2305,9 +1552,9 @@
         attempt_set_loc();
     }
 
-    <span class="doccomment">/// Set this output's mode.
+    <span class="doccomment">/// Sets this output's mode.
     ///
-    /// If `refresh_rate_millihertz` is provided, Pinnacle will attempt to use the mode with that
+    /// If `refresh_rate_mhz` is provided, Pinnacle will attempt to use the mode with that
     /// refresh rate. If it is not, Pinnacle will attempt to use the mode with the
     /// highest refresh rate that matches the given size.
     ///
@@ -2318,487 +1565,535 @@
     ///
     /// # Examples
     ///
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// // Sets the focused output to 2560x1440 at 144Hz
+    /// output::get_focused()?.set_mode(2560, 1440, 144000);
+    /// # Some(())
+    /// # };
     /// ```
-    /// output.get_focused()?.set_mode(2560, 1440, 144000);
-    /// ```
-    </span><span class="attr">#[instrument(skip(refresh_rate_millihertz))]
-    </span><span class="kw">pub fn </span>set_mode(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pixel_width: u32,
-        pixel_height: u32,
-        refresh_rate_millihertz: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt;,
-    ) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_mode(SetModeRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            pixel_width: <span class="prelude-val">Some</span>(pixel_width),
-            pixel_height: <span class="prelude-val">Some</span>(pixel_height),
-            refresh_rate_millihz: refresh_rate_millihertz.into(),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+    </span><span class="kw">pub fn </span>set_mode(<span class="kw-2">&amp;</span><span class="self">self</span>, width: u32, height: u32, refresh_rate_mhz: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt;) {
+        Client::output()
+            .set_mode(SetModeRequest {
+                output_name: <span class="self">self</span>.name(),
+                size: <span class="prelude-val">Some</span>(pinnacle_api_defs::pinnacle::util::v1::Size { width, height }),
+                refresh_rate_mhz: refresh_rate_mhz.into(),
+                custom: <span class="bool-val">false</span>,
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set a custom modeline for this output.
+    <span class="doccomment">/// Sets this output's mode to a custom one.
+    ///
+    /// If `refresh_rate_mhz` is provided, Pinnacle will create a new mode with that refresh rate.
+    /// If it is not, it will default to 60Hz.
+    ///
+    /// The refresh rate should be given in millihertz. For example, if you want a refresh rate of
+    /// 60Hz, use 60000.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// // Sets the focused output to 2560x1440 at 144Hz
+    /// output::get_focused()?.set_custom_mode(2560, 1440, 75000);
+    /// # Some(())
+    /// # };
+    /// ```
+    </span><span class="kw">pub fn </span>set_custom_mode(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        width: u32,
+        height: u32,
+        refresh_rate_mhz: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt;,
+    ) {
+        Client::output()
+            .set_mode(SetModeRequest {
+                output_name: <span class="self">self</span>.name(),
+                size: <span class="prelude-val">Some</span>(pinnacle_api_defs::pinnacle::util::v1::Size { width, height }),
+                refresh_rate_mhz: refresh_rate_mhz.into(),
+                custom: <span class="bool-val">true</span>,
+            })
+            .block_on_tokio()
+            .unwrap();
+    }
+
+    <span class="doccomment">/// Sets a custom modeline for this output.
     ///
     /// See `xorg.conf(5)` for more information.
     ///
     /// You can parse a modeline from a string of the form
-    /// `&lt;clock&gt; &lt;hdisplay&gt; &lt;hsync_start&gt; &lt;hsync_end&gt; &lt;htotal&gt; &lt;vdisplay&gt; &lt;vsync_start&gt; &lt;vsync_end&gt; &lt;hsync&gt; &lt;vsync&gt;`.
+    /// "\&lt;clock&gt; \&lt;hdisplay&gt; \&lt;hsync_start&gt; \&lt;hsync_end&gt; \&lt;htotal&gt; \&lt;vdisplay&gt; \&lt;vsync_start&gt; \&lt;vsync_end&gt; \&lt;hsync&gt; \&lt;vsync&gt;".
     ///
     /// # Examples
     ///
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// let output = output::get_focused()?;
+    /// output.set_modeline("173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync".parse().unwrap());
+    /// # Some(())
+    /// # };
     /// ```
-    /// output.set_modeline("173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync".parse()?);
-    /// ```
-    </span><span class="attr">#[instrument(skip(modeline))]
     </span><span class="kw">pub fn </span>set_modeline(<span class="kw-2">&amp;</span><span class="self">self</span>, modeline: Modeline) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_modeline(SetModelineRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            clock: <span class="prelude-val">Some</span>(modeline.clock),
-            hdisplay: <span class="prelude-val">Some</span>(modeline.hdisplay),
-            hsync_start: <span class="prelude-val">Some</span>(modeline.hsync_start),
-            hsync_end: <span class="prelude-val">Some</span>(modeline.hsync_end),
-            htotal: <span class="prelude-val">Some</span>(modeline.htotal),
-            vdisplay: <span class="prelude-val">Some</span>(modeline.vdisplay),
-            vsync_start: <span class="prelude-val">Some</span>(modeline.vsync_start),
-            vsync_end: <span class="prelude-val">Some</span>(modeline.vsync_end),
-            vtotal: <span class="prelude-val">Some</span>(modeline.vtotal),
-            hsync_pos: <span class="prelude-val">Some</span>(modeline.hsync),
-            vsync_pos: <span class="prelude-val">Some</span>(modeline.vsync),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        Client::output()
+            .set_modeline(SetModelineRequest {
+                output_name: <span class="self">self</span>.name(),
+                modeline: <span class="prelude-val">Some</span>(modeline.into()),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Set this output's scaling factor.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// output.get_focused()?.set_scale(1.5);
-    /// ```
-    </span><span class="attr">#[instrument]
+    <span class="doccomment">/// Sets this output's scaling factor.
     </span><span class="kw">pub fn </span>set_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, scale: f32) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_scale(SetScaleRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            absolute_or_relative: <span class="prelude-val">Some</span>(AbsoluteOrRelative::Absolute(scale)),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        Client::output()
+            .set_scale(SetScaleRequest {
+                output_name: <span class="self">self</span>.name(),
+                scale,
+                abs_or_rel: AbsOrRel::Absolute.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Increase this output's scaling factor by `increase_by`.
+    <span class="doccomment">/// Changes this output's scaling factor by a relative amount.
     ///
     /// # Examples
     ///
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # || {
+    /// output::get_focused()?.change_scale(0.25);
+    /// output::get_focused()?.change_scale(-0.25);
+    /// # Some(())
+    /// # };
     /// ```
-    /// output.get_focused()?.increase_scale(0.25);
-    /// ```
-    </span><span class="attr">#[instrument]
-    </span><span class="kw">pub fn </span>increase_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, increase_by: f32) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_scale(SetScaleRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            absolute_or_relative: <span class="prelude-val">Some</span>(AbsoluteOrRelative::Relative(increase_by)),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+    </span><span class="kw">pub fn </span>change_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, change_by: f32) {
+        Client::output()
+            .set_scale(SetScaleRequest {
+                output_name: <span class="self">self</span>.name(),
+                scale: change_by,
+                abs_or_rel: AbsOrRel::Relative.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Decrease this output's scaling factor by `decrease_by`.
-    ///
-    /// This simply calls [`OutputHandle::increase_scale`] with the negative of `decrease_by`.
+    <span class="doccomment">/// Sets this output's [`Transform`].
     ///
     /// # Examples
     ///
-    /// ```
-    /// output.get_focused()?.decrease_scale(0.25);
-    /// ```
-    </span><span class="kw">pub fn </span>decrease_scale(<span class="kw-2">&amp;</span><span class="self">self</span>, decrease_by: f32) {
-        <span class="self">self</span>.increase_scale(-decrease_by);
-    }
-
-    <span class="doccomment">/// Set this output's transform.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::output::Transform;
-    ///
+    /// ```no_run
+    /// # use pinnacle_api::output;
+    /// # use pinnacle_api::output::Transform;
     /// // Rotate 90 degrees counter-clockwise
-    /// output.set_transform(Transform::_90);
+    /// # || {
+    /// output::get_focused()?.set_transform(Transform::_90);
+    /// # Some(())
+    /// # };
     /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_transform(<span class="kw-2">&amp;</span><span class="self">self</span>, transform: Transform) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_transform(SetTransformRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            transform: <span class="prelude-val">Some</span>(transform <span class="kw">as </span>i32),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        Client::output()
+            .set_transform(SetTransformRequest {
+                output_name: <span class="self">self</span>.name(),
+                transform: output::v1::Transform::from(transform).into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Power on or off this output.
+    <span class="doccomment">/// Powers on or off this output.
     ///
     /// This will not remove it from the space and your tags and windows
     /// will still be interactable; only the monitor is turned off.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Power off `output`
-    /// output.set_powered(false);
-    /// ```
-    </span><span class="attr">#[instrument]
     </span><span class="kw">pub fn </span>set_powered(<span class="kw-2">&amp;</span><span class="self">self</span>, powered: bool) {
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = block_on_tokio(<span class="kw">crate</span>::output().set_powered(SetPoweredRequest {
-            output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-            powered: <span class="prelude-val">Some</span>(powered),
-        })) {
-            <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-        }
+        Client::output()
+            .set_powered(SetPoweredRequest {
+                output_name: <span class="self">self</span>.name(),
+                set_or_toggle: <span class="kw">match </span>powered {
+                    <span class="bool-val">true </span>=&gt; SetOrToggle::Set,
+                    <span class="bool-val">false </span>=&gt; SetOrToggle::Unset,
+                }
+                .into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// Get all properties of this output.
+    <span class="doccomment">/// Toggles the power on this output.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// use pinnacle_api::output::OutputProperties;
-    ///
-    /// let OutputProperties {
-    ///     ..
-    /// } = output.get_focused()?.props();
-    /// ```
-    </span><span class="kw">pub fn </span>props(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputProperties {
-        block_on_tokio(<span class="self">self</span>.props_async())
+    /// This will not remove it from the space and your tags and windows
+    /// will still be interactable; only the monitor is turned off.
+    </span><span class="kw">pub fn </span>toggle_powered(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        Client::output()
+            .set_powered(SetPoweredRequest {
+                output_name: <span class="self">self</span>.name(),
+                set_or_toggle: SetOrToggle::Toggle.into(),
+            })
+            .block_on_tokio()
+            .unwrap();
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::props`].
-    </span><span class="attr">#[instrument]
-    </span><span class="kw">pub async fn </span>props_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OutputProperties {
-        <span class="kw">let </span>response = <span class="kw">match </span><span class="kw">crate</span>::output()
-            .get_properties(output::v0alpha1::GetPropertiesRequest {
-                output_name: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
+    <span class="doccomment">/// Gets this output's make.
+    </span><span class="kw">pub fn </span>make(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.make_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::make`].
+    </span><span class="kw">pub async fn </span>make_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        Client::output()
+            .get_info(GetInfoRequest {
+                output_name: <span class="self">self</span>.name(),
             })
             .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(resp) =&gt; resp.into_inner(),
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="macro">error!</span>(<span class="string">"{err}"</span>);
-                <span class="kw">return </span>OutputProperties::default();
-            }
-        };
-
-        OutputProperties {
-            make: response.make,
-            model: response.model,
-            x: response.x,
-            y: response.y,
-            logical_width: response.logical_width,
-            logical_height: response.logical_height,
-            current_mode: response.current_mode.and_then(|mode| {
-                <span class="prelude-val">Some</span>(Mode {
-                    pixel_width: mode.pixel_width<span class="question-mark">?</span>,
-                    pixel_height: mode.pixel_height<span class="question-mark">?</span>,
-                    refresh_rate_millihertz: mode.refresh_rate_millihz<span class="question-mark">?</span>,
-                })
-            }),
-            preferred_mode: response.preferred_mode.and_then(|mode| {
-                <span class="prelude-val">Some</span>(Mode {
-                    pixel_width: mode.pixel_width<span class="question-mark">?</span>,
-                    pixel_height: mode.pixel_height<span class="question-mark">?</span>,
-                    refresh_rate_millihertz: mode.refresh_rate_millihz<span class="question-mark">?</span>,
-                })
-            }),
-            modes: response
-                .modes
-                .into_iter()
-                .flat_map(|mode| {
-                    <span class="prelude-val">Some</span>(Mode {
-                        pixel_width: mode.pixel_width<span class="question-mark">?</span>,
-                        pixel_height: mode.pixel_height<span class="question-mark">?</span>,
-                        refresh_rate_millihertz: mode.refresh_rate_millihz<span class="question-mark">?</span>,
-                    })
-                })
-                .collect(),
-            physical_width: response.physical_width,
-            physical_height: response.physical_height,
-            focused: response.focused,
-            tags: response
-                .tag_ids
-                .into_iter()
-                .map(|id| Tag.new_handle(id))
-                .collect(),
-            scale: response.scale,
-            transform: response.transform.and_then(|tf| tf.try_into().ok()),
-            serial: response.serial_str,
-            keyboard_focus_stack: response
-                .keyboard_focus_stack_window_ids
-                .into_iter()
-                .map(|id| Window.new_handle(id))
-                .collect(),
-            enabled: response.enabled,
-            powered: response.powered,
-        }
+            </span>.unwrap()
+            .into_inner()
+            .make
     }
 
-    <span class="comment">// TODO: make a macro for the following or something
+    <span class="doccomment">/// Gets this output's model.
+    </span><span class="kw">pub fn </span>model(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.model_async().block_on_tokio()
+    }
 
-    </span><span class="doccomment">/// Get this output's make.
+    <span class="doccomment">/// Async impl for [`Self::model`].
+    </span><span class="kw">pub async fn </span>model_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        Client::output()
+            .get_info(GetInfoRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .model
+    }
+
+    <span class="doccomment">/// Gets this output's serial.
+    </span><span class="kw">pub fn </span>serial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.serial_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::serial`].
+    </span><span class="kw">pub async fn </span>serial_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        Client::output()
+            .get_info(GetInfoRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .serial
+    }
+
+    <span class="doccomment">/// Gets this output's location in the global space.
     ///
-    /// Shorthand for `self.props().make`.
-    </span><span class="kw">pub fn </span>make(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props().make
+    /// May return `None` if it is disabled.
+    </span><span class="kw">pub fn </span>loc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Point&gt; {
+        <span class="self">self</span>.loc_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::make`].
-    </span><span class="kw">pub async fn </span>make_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.make
+    <span class="doccomment">/// Async impl for [`Self::loc`].
+    </span><span class="kw">pub async fn </span>loc_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Point&gt; {
+        Client::output()
+            .get_loc(GetLocRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .loc
+            .map(|loc| Point { x: loc.x, y: loc.y })
     }
 
-    <span class="doccomment">/// Get this output's model.
+    <span class="doccomment">/// Gets this output's logical size in logical pixels.
     ///
-    /// Shorthand for `self.props().make`.
-    </span><span class="kw">pub fn </span>model(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props().model
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::model`].
-    </span><span class="kw">pub async fn </span>model_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.model
-    }
-
-    <span class="doccomment">/// Get this output's x position in the global space.
+    /// If this output has a scale of 1, this will equal the output's
+    /// actual pixel size. If it has an output of 2, it will have half the
+    /// logical pixel width and height. Similarly, if it has a scale of 0.5,
+    /// it will have double the logical pixel width and height.
     ///
-    /// Shorthand for `self.props().x`.
-    </span><span class="kw">pub fn </span>x(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
-        <span class="self">self</span>.props().x
+    /// May return `None` if it is disabled.
+    </span><span class="kw">pub fn </span>logical_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Size&gt; {
+        <span class="self">self</span>.logical_size_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::x`].
-    </span><span class="kw">pub async fn </span>x_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.x
+    <span class="doccomment">/// Async impl for [`Self::logical_size`].
+    </span><span class="kw">pub async fn </span>logical_size_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Size&gt; {
+        Client::output()
+            .get_logical_size(GetLogicalSizeRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .logical_size
+            .map(|size| Size {
+                w: size.width,
+                h: size.height,
+            })
     }
 
-    <span class="doccomment">/// Get this output's y position in the global space.
+    <span class="doccomment">/// Gets this output's current mode.
     ///
-    /// Shorthand for `self.props().y`.
-    </span><span class="kw">pub fn </span>y(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
-        <span class="self">self</span>.props().y
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::y`].
-    </span><span class="kw">pub async fn </span>y_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.y
-    }
-
-    <span class="doccomment">/// Get this output's logical width in pixels.
-    ///
-    /// If the output is disabled, this returns None.
-    ///
-    /// Shorthand for `self.props().logical_width`.
-    </span><span class="kw">pub fn </span>logical_width(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().logical_width
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::logical_width`].
-    </span><span class="kw">pub async fn </span>logical_width_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.logical_width
-    }
-
-    <span class="doccomment">/// Get this output's logical height in pixels.
-    ///
-    /// If the output is disabled, this returns None.
-    ///
-    /// Shorthand for `self.props().logical_height`.
-    </span><span class="kw">pub fn </span>logical_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().logical_height
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::logical_height`].
-    </span><span class="kw">pub async fn </span>logical_height_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.logical_height
-    }
-
-    <span class="doccomment">/// Get this output's current mode.
-    ///
-    /// Shorthand for `self.props().current_mode`.
+    /// May return `None` if it is disabled.
     </span><span class="kw">pub fn </span>current_mode(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
-        <span class="self">self</span>.props().current_mode
+        <span class="self">self</span>.current_mode_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::current_mode`].
+    <span class="doccomment">/// Async impl for [`Self::current_mode`].
     </span><span class="kw">pub async fn </span>current_mode_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.current_mode
+        Client::output()
+            .get_modes(GetModesRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .current_mode
+            .map(|mode| Mode {
+                size: Size {
+                    w: mode.size.expect(<span class="string">"mode should have a size"</span>).width,
+                    h: mode.size.expect(<span class="string">"mode should have a size"</span>).height,
+                },
+                refresh_rate_mhz: mode.refresh_rate_mhz,
+            })
     }
 
-    <span class="doccomment">/// Get this output's preferred mode.
+    <span class="doccomment">/// Gets this output's current mode.
     ///
-    /// Shorthand for `self.props().preferred_mode`.
+    /// May return `None` if it is disabled.
     </span><span class="kw">pub fn </span>preferred_mode(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
-        <span class="self">self</span>.props().preferred_mode
+        <span class="self">self</span>.preferred_mode_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::preferred_mode`].
+    <span class="doccomment">/// Async impl for [`Self::preferred_mode`].
     </span><span class="kw">pub async fn </span>preferred_mode_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Mode&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.preferred_mode
+        Client::output()
+            .get_modes(GetModesRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .preferred_mode
+            .map(|mode| Mode {
+                size: Size {
+                    w: mode.size.expect(<span class="string">"mode should have a size"</span>).width,
+                    h: mode.size.expect(<span class="string">"mode should have a size"</span>).height,
+                },
+                refresh_rate_mhz: mode.refresh_rate_mhz,
+            })
     }
 
-    <span class="doccomment">/// Get all available modes this output supports.
+    <span class="doccomment">/// Gets all modes currently known to this output.
+    </span><span class="kw">pub fn </span>modes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Mode&gt; {
+        <span class="self">self</span>.modes_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::modes`].
+    </span><span class="kw">pub async fn </span>modes_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Mode&gt; {
+        Client::output()
+            .get_modes(GetModesRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .modes
+            .into_iter()
+            .map(|mode| Mode {
+                size: Size {
+                    w: mode.size.expect(<span class="string">"mode should have a size"</span>).width,
+                    h: mode.size.expect(<span class="string">"mode should have a size"</span>).height,
+                },
+                refresh_rate_mhz: mode.refresh_rate_mhz,
+            })
+    }
+
+    <span class="doccomment">/// Gets this output's physical size in millimeters.
     ///
-    /// Shorthand for `self.props().modes`.
-    </span><span class="kw">pub fn </span>modes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Mode&gt; {
-        <span class="self">self</span>.props().modes
+    /// Returns a size of 0, 0 if unknown.
+    </span><span class="kw">pub fn </span>physical_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Size {
+        <span class="self">self</span>.physical_size_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::modes`].
-    </span><span class="kw">pub async fn </span>modes_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Mode&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.modes
+    <span class="doccomment">/// Async impl for [`Self::physical_size`].
+    </span><span class="kw">pub async fn </span>physical_size_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Size {
+        Client::output()
+            .get_physical_size(GetPhysicalSizeRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .physical_size
+            .map(|size| Size {
+                w: size.width,
+                h: size.height,
+            })
+            .unwrap_or_default()
     }
 
-    <span class="doccomment">/// Get this output's physical width in millimeters.
-    ///
-    /// Shorthand for `self.props().physical_width`.
-    </span><span class="kw">pub fn </span>physical_width(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().physical_width
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::physical_width`].
-    </span><span class="kw">pub async fn </span>physical_width_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.physical_width
-    }
-
-    <span class="doccomment">/// Get this output's physical height in millimeters.
-    ///
-    /// Shorthand for `self.props().physical_height`.
-    </span><span class="kw">pub fn </span>physical_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props().physical_height
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::physical_height`].
-    </span><span class="kw">pub async fn </span>physical_height_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.physical_height
-    }
-
-    <span class="doccomment">/// Get whether this output is focused or not.
+    <span class="doccomment">/// Gets whether or not this output is focused.
     ///
     /// This is currently implemented as the output with the most recent pointer motion.
+    </span><span class="kw">pub fn </span>focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.focused_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::focused`].
+    </span><span class="kw">pub async fn </span>focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        Client::output()
+            .get_focused(GetFocusedRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .focused
+    }
+
+    <span class="doccomment">/// Gets handles to all tags on this output.
+    </span><span class="kw">pub fn </span>tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+        <span class="self">self</span>.tags_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::tags`].
+    </span><span class="kw">pub async fn </span>tags_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = TagHandle&gt; {
+        Client::output()
+            .get_tag_ids(GetTagIdsRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .tag_ids
+            .into_iter()
+            .map(|id| TagHandle { id })
+    }
+
+    <span class="doccomment">/// Gets this output's current scale.
+    </span><span class="kw">pub fn </span>scale(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
+        <span class="self">self</span>.scale_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::scale`].
+    </span><span class="kw">pub async fn </span>scale_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
+        Client::output()
+            .get_scale(GetScaleRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .scale
+    }
+
+    <span class="doccomment">/// Gets this output's current transform.
+    </span><span class="kw">pub fn </span>transform(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Transform {
+        <span class="self">self</span>.transform_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::transform`].
+    </span><span class="kw">pub async fn </span>transform_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Transform {
+        Client::output()
+            .get_transform(GetTransformRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .transform()
+            .try_into()
+            .unwrap_or_default()
+    }
+
+    <span class="doccomment">/// Gets this window's keyboard focus stack.
     ///
-    /// Shorthand for `self.props().focused`.
-    </span><span class="kw">pub fn </span>focused(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props().focused
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::focused`].
-    </span><span class="kw">pub async fn </span>focused_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.focused
-    }
-
-    <span class="doccomment">/// Get the tags this output has.
-    ///
-    /// Shorthand for `self.props().tags`
-    </span><span class="kw">pub fn </span>tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
-        <span class="self">self</span>.props().tags
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::tags`].
-    </span><span class="kw">pub async fn </span>tags_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TagHandle&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.tags
-    }
-
-    <span class="doccomment">/// Get this output's scaling factor.
-    ///
-    /// Shorthand for `self.props().scale`
-    </span><span class="kw">pub fn </span>scale(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;f32&gt; {
-        <span class="self">self</span>.props().scale
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::scale`].
-    </span><span class="kw">pub async fn </span>scale_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;f32&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.scale
-    }
-
-    <span class="doccomment">/// Get this output's transform.
-    ///
-    /// Shorthand for `self.props().transform`
-    </span><span class="kw">pub fn </span>transform(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Transform&gt; {
-        <span class="self">self</span>.props().transform
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::transform`].
-    </span><span class="kw">pub async fn </span>transform_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Transform&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.transform
-    }
-
-    <span class="doccomment">/// Get this output's EDID serial.
-    ///
-    /// Shorthand for `self.props().serial`
-    </span><span class="kw">pub fn </span>serial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props().serial
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::serial`].
-    </span><span class="kw">pub async fn </span>serial_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.serial
-    }
-
-    <span class="doccomment">/// Get this output's keyboard focus stack.
+    /// Pinnacle keeps a stack of the windows that get keyboard focus.
+    /// This can be used, for example, for an `Alt + Tab`-style keybind
+    /// that focused the previously focused window.
     ///
     /// This will return the focus stack containing *all* windows on this output.
     /// If you only want windows on active tags, see
     /// [`OutputHandle::keyboard_focus_stack_visible`].
+    </span><span class="kw">pub fn </span>keyboard_focus_stack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        <span class="self">self</span>.keyboard_focus_stack_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::keyboard_focus_stack`].
+    </span><span class="kw">pub async fn </span>keyboard_focus_stack_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        Client::output()
+            .get_focus_stack_window_ids(GetFocusStackWindowIdsRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .window_ids
+            .into_iter()
+            .map(|id| WindowHandle { id })
+    }
+
+    <span class="doccomment">/// Gets this window's keyboard focus stack with only windows on active tags.
     ///
-    /// Shorthand for `self.props().keyboard_focus_stack`
-    </span><span class="kw">pub fn </span>keyboard_focus_stack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="self">self</span>.props().keyboard_focus_stack
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::keyboard_focus_stack`].
-    </span><span class="kw">pub async fn </span>keyboard_focus_stack_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.keyboard_focus_stack
-    }
-
-    <span class="doccomment">/// Get this output's keyboard focus stack with only visible windows.
+    /// Pinnacle keeps a stack of the windows that get keyboard focus.
+    /// This can be used, for example, for an `Alt + Tab`-style keybind
+    /// that focused the previously focused window.
     ///
-    /// If you only want a focus stack containing all windows on this output, see
-    /// [`OutputHandle::keyboard_focus_stack`].
-    </span><span class="kw">pub fn </span>keyboard_focus_stack_visible(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;WindowHandle&gt; {
-        <span class="kw">let </span>keyboard_focus_stack = <span class="self">self</span>.props().keyboard_focus_stack;
-
-        keyboard_focus_stack
-            .batch_filter(|win| win.is_on_active_tag_async().boxed(), |is_on| <span class="kw-2">*</span>is_on)
-            .collect()
+    /// This will return the focus stack containing only windows on active tags on this output.
+    /// If you want *all* windows on this output, see [`OutputHandle::keyboard_focus_stack`].
+    </span><span class="kw">pub fn </span>keyboard_focus_stack_visible(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        <span class="self">self</span>.keyboard_focus_stack_visible_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// Get whether this output is enabled.
+    <span class="doccomment">/// Async impl for [`Self::keyboard_focus_stack_visible`].
+    </span><span class="kw">pub async fn </span>keyboard_focus_stack_visible_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WindowHandle&gt; {
+        <span class="self">self</span>.keyboard_focus_stack_async()
+            .<span class="kw">await
+            </span>.batch_filter(|win| win.is_on_active_tag_async().boxed(), |is_on| is_on)
+    }
+
+    <span class="doccomment">/// Gets whether this output is enabled.
+    </span><span class="kw">pub fn </span>enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.enabled_async().block_on_tokio()
+    }
+
+    <span class="doccomment">/// Async impl for [`Self::enabled`].
+    </span><span class="kw">pub async fn </span>enabled_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        Client::output()
+            .get_enabled(GetEnabledRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .enabled
+    }
+
+    <span class="doccomment">/// Gets whether or not this output is powered.
     ///
-    /// Disabled outputs act as if you unplugged them.
-    </span><span class="kw">pub fn </span>enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props().enabled
+    /// Unpowered outputs are turned off but you can still interact with them.
+    </span><span class="kw">pub fn </span>powered(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.powered_async().block_on_tokio()
     }
 
-    <span class="doccomment">/// The async version of [`OutputHandle::enabled`].
-    </span><span class="kw">pub async fn </span>enabled_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.enabled
+    <span class="doccomment">/// Async impl for [`Self::powered`].
+    </span><span class="kw">pub async fn </span>powered_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        Client::output()
+            .get_powered(GetPoweredRequest {
+                output_name: <span class="self">self</span>.name(),
+            })
+            .<span class="kw">await
+            </span>.unwrap()
+            .into_inner()
+            .powered
     }
 
-    <span class="doccomment">/// Get whether this output is powered.
-    ///
-    /// Unpowered outputs will be turned off but you can still interact with them.
-    ///
-    /// Outputs can be disabled but still powered; this just means
-    /// they will turn on when powered. Disabled and unpowered outputs
-    /// will not power on when enabled, but will still be interactable.
-    </span><span class="kw">pub fn </span>powered(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props().powered
-    }
-
-    <span class="doccomment">/// The async version of [`OutputHandle::powered`].
-    </span><span class="kw">pub async fn </span>powered_async(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-        <span class="self">self</span>.props_async().<span class="kw">await</span>.powered
-    }
-
-    <span class="doccomment">/// Get this output's unique name (the name of its connector).
+    <span class="doccomment">/// Gets this output's unique name (the name of its connector).
     </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="self">self</span>.name.to_string()
     }
@@ -2807,70 +2102,12 @@
 <span class="doccomment">/// A possible output pixel dimension and refresh rate configuration.
 </span><span class="attr">#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 </span><span class="kw">pub struct </span>Mode {
-    <span class="doccomment">/// The width of the output, in pixels.
-    </span><span class="kw">pub </span>pixel_width: u32,
-    <span class="doccomment">/// The height of the output, in pixels.
-    </span><span class="kw">pub </span>pixel_height: u32,
+    <span class="doccomment">/// The size of the mode, in pixels.
+    </span><span class="kw">pub </span>size: Size,
     <span class="doccomment">/// The output's refresh rate, in millihertz.
     ///
     /// For example, 60Hz is returned as 60000.
-    </span><span class="kw">pub </span>refresh_rate_millihertz: u32,
-}
-
-<span class="doccomment">/// The properties of an output.
-</span><span class="attr">#[non_exhaustive]
-#[derive(Debug, Clone, PartialEq, Default)]
-</span><span class="kw">pub struct </span>OutputProperties {
-    <span class="doccomment">/// The make of the output.
-    </span><span class="kw">pub </span>make: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// The model of the output.
-    ///
-    /// This is something like "27GL83A" or whatever crap monitor manufacturers name their monitors
-    /// these days.
-    </span><span class="kw">pub </span>model: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// The x position of the output in the global space.
-    </span><span class="kw">pub </span>x: <span class="prelude-ty">Option</span>&lt;i32&gt;,
-    <span class="doccomment">/// The y position of the output in the global space.
-    </span><span class="kw">pub </span>y: <span class="prelude-ty">Option</span>&lt;i32&gt;,
-    <span class="doccomment">/// The logical width of this output in the global space
-    /// taking into account scaling, in pixels.
-    </span><span class="kw">pub </span>logical_width: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The logical height of this output in the global space
-    /// taking into account scaling, in pixels.
-    </span><span class="kw">pub </span>logical_height: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The output's current mode.
-    </span><span class="kw">pub </span>current_mode: <span class="prelude-ty">Option</span>&lt;Mode&gt;,
-    <span class="doccomment">/// The output's preferred mode.
-    </span><span class="kw">pub </span>preferred_mode: <span class="prelude-ty">Option</span>&lt;Mode&gt;,
-    <span class="doccomment">/// All available modes the output supports.
-    </span><span class="kw">pub </span>modes: Vec&lt;Mode&gt;,
-    <span class="doccomment">/// The output's physical width in millimeters.
-    </span><span class="kw">pub </span>physical_width: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The output's physical height in millimeters.
-    </span><span class="kw">pub </span>physical_height: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// Whether this output is focused or not.
-    ///
-    /// This is currently implemented as the output with the most recent pointer motion.
-    </span><span class="kw">pub </span>focused: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// The tags this output has.
-    </span><span class="kw">pub </span>tags: Vec&lt;TagHandle&gt;,
-    <span class="doccomment">/// This output's scaling factor.
-    </span><span class="kw">pub </span>scale: <span class="prelude-ty">Option</span>&lt;f32&gt;,
-    <span class="doccomment">/// This output's transform.
-    </span><span class="kw">pub </span>transform: <span class="prelude-ty">Option</span>&lt;Transform&gt;,
-    <span class="doccomment">/// This output's EDID serial.
-    </span><span class="kw">pub </span>serial: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="doccomment">/// This output's window keyboard focus stack.
-    </span><span class="kw">pub </span>keyboard_focus_stack: Vec&lt;WindowHandle&gt;,
-    <span class="doccomment">/// Whether this output is enabled.
-    ///
-    /// Enabled outputs are mapped in the global space and usable.
-    /// Disabled outputs function as if you unplugged them.
-    </span><span class="kw">pub </span>enabled: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// Whether this output is powered.
-    ///
-    /// Unpowered outputs will be off but you can still interact with them.
-    </span><span class="kw">pub </span>powered: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    </span><span class="kw">pub </span>refresh_rate_mhz: u32,
 }
 
 <span class="doccomment">/// A custom modeline.
@@ -2888,6 +2125,24 @@
     <span class="kw">pub </span>vtotal: u32,
     <span class="kw">pub </span>hsync: bool,
     <span class="kw">pub </span>vsync: bool,
+}
+
+<span class="kw">impl </span>From&lt;Modeline&gt; <span class="kw">for </span>output::v1::Modeline {
+    <span class="kw">fn </span>from(modeline: Modeline) -&gt; <span class="self">Self </span>{
+        output::v1::Modeline {
+            clock: modeline.clock,
+            hdisplay: modeline.hdisplay,
+            hsync_start: modeline.hsync_start,
+            hsync_end: modeline.hsync_end,
+            htotal: modeline.htotal,
+            vdisplay: modeline.vdisplay,
+            vsync_start: modeline.vsync_start,
+            vsync_end: modeline.vsync_end,
+            vtotal: modeline.vtotal,
+            hsync: modeline.hsync,
+            vsync: modeline.vsync,
+        }
+    }
 }
 
 <span class="doccomment">/// Error for the `FromStr` implementation for [`Modeline`].
@@ -2935,7 +2190,8 @@
 <span class="kw">impl </span>FromStr <span class="kw">for </span>Modeline {
     <span class="kw">type </span><span class="prelude-val">Err </span>= ParseModelineError;
 
-    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+    <span class="doccomment">/// Tries to convert the provided modeline string to a [`Modeline`].
+    </span><span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>args = s.split_whitespace();
 
         <span class="kw">let </span>clock = args

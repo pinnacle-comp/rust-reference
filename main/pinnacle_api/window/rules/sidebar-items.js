@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["DecorationMode"],"struct":["WindowRule","WindowRuleCondition"]};
