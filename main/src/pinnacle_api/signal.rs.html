@@ -451,7 +451,25 @@
 <a href="#450" id="450">450</a>
 <a href="#451" id="451">451</a>
 <a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a></pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a></pre></div><pre class="rust"><code><span class="doccomment">//! Compositor signals.
 //!
 //! Your config can connect to various compositor signals that allow you to, for example, do
 //! something when an output is connected or when the pointer enters a window.
@@ -671,6 +689,21 @@
                 }
             },
         }
+        <span class="doccomment">/// The window got keyboard focus.
+        ///
+        /// Callbacks receive the newly focused window.
+        </span>WindowFocused = {
+            enum_name = Focused,
+            callback_type = SingleWindowFn,
+            client_request = window_focused,
+            on_response = |response, callbacks| {
+                <span class="kw">let </span>handle = WindowHandle { id: response.window_id };
+
+                <span class="kw">for </span>callback <span class="kw">in </span>callbacks {
+                    callback(<span class="kw-2">&amp;</span>handle);
+                }
+            },
+        }
     }
     <span class="doccomment">/// Signals relating to tag events.
     </span>TagSignal =&gt; {
@@ -717,6 +750,7 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_enter: SignalData&lt;WindowPointerEnter&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) window_pointer_leave: SignalData&lt;WindowPointerLeave&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) window_focused: SignalData&lt;WindowFocused&gt;,
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) tag_active: SignalData&lt;TagActive&gt;,
 
@@ -738,6 +772,7 @@
             output_move: SignalData::new(),
             window_pointer_enter: SignalData::new(),
             window_pointer_leave: SignalData::new(),
+            window_focused: SignalData::new(),
             tag_active: SignalData::new(),
             input_device_added: SignalData::new(),
         }
@@ -750,6 +785,7 @@
         <span class="self">self</span>.output_move.reset();
         <span class="self">self</span>.window_pointer_enter.reset();
         <span class="self">self</span>.window_pointer_leave.reset();
+        <span class="self">self</span>.window_focused.reset();
         <span class="self">self</span>.tag_active.reset();
         <span class="self">self</span>.input_device_added.reset();
     }
