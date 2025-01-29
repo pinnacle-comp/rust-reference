@@ -1137,7 +1137,14 @@
 <a href="#1136" id="1136">1136</a>
 <a href="#1137" id="1137">1137</a>
 <a href="#1138" id="1138">1138</a>
-<a href="#1139" id="1139">1139</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a></pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
@@ -1397,6 +1404,13 @@
 }
 
 <span class="kw">impl </span>OutputHandle {
+    <span class="doccomment">/// Creates an output handle from a name.
+    </span><span class="kw">pub fn </span>from_name(name: <span class="kw">impl </span>ToString) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            name: name.to_string(),
+        }
+    }
+
     <span class="doccomment">/// Sets the location of this output in the global space.
     ///
     /// On startup, Pinnacle will lay out all connected outputs starting at (0, 0)
