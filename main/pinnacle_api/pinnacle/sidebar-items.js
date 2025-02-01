@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Backend"],"fn":["backend","quit","reload_config"]};
+window.SIDEBAR_ITEMS = {"enum":["Backend"],"fn":["backend","quit","reload_config","set_xwayland_self_scaling"]};
