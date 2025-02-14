@@ -369,7 +369,7 @@
 </span><span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> main {
     (<span class="macro-nonterminal">$func</span>:ident) =&gt; {
-        <span class="attr">#[<span class="macro-nonterminal">$crate::tokio::main</span>]
+        <span class="attr">#[<span class="macro-nonterminal">$crate::tokio::main</span>(<span class="kw">crate </span>= <span class="string">"pinnacle_api::tokio"</span>)]
         </span><span class="kw">async fn </span>main() {
             <span class="macro-nonterminal">$</span><span class="macro">crate::config!</span>(<span class="macro-nonterminal">$func</span>);
         }
