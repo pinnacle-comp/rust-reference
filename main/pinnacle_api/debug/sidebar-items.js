@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["set_damage_visualization","set_opaque_region_visualization_visualization","toggle_damage_visualization","toggle_opaque_region_visualization"]};

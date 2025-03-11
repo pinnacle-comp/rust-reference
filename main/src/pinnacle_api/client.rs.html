@@ -104,7 +104,15 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a></pre></div><pre class="rust"><code><span class="kw">use </span>pinnacle_api_defs::pinnacle::{
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a></pre></div><pre class="rust"><code><span class="kw">use </span>pinnacle_api_defs::pinnacle::{
+    debug::v1::debug_service_client::DebugServiceClient,
     input::v1::input_service_client::InputServiceClient,
     layout::v1::layout_service_client::LayoutServiceClient,
     output::v1::output_service_client::OutputServiceClient,
@@ -133,6 +141,7 @@
     layout: LayoutServiceClient&lt;Channel&gt;,
     render: RenderServiceClient&lt;Channel&gt;,
     signal: SignalServiceClient&lt;Channel&gt;,
+    debug: DebugServiceClient&lt;Channel&gt;,
 }
 
 <span class="kw">impl </span>Client {
@@ -196,6 +205,10 @@
         })
     }
 
+    <span class="kw">pub fn </span>debug() -&gt; DebugServiceClient&lt;Channel&gt; {
+        <span class="self">Self</span>::get().debug.clone()
+    }
+
     <span class="kw">fn </span>new(channel: Channel) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             pinnacle: PinnacleServiceClient::new(channel.clone()),
@@ -207,6 +220,7 @@
             layout: LayoutServiceClient::new(channel.clone()),
             render: RenderServiceClient::new(channel.clone()),
             signal: SignalServiceClient::new(channel.clone()),
+            debug: DebugServiceClient::new(channel.clone()),
         }
     }
 }
