@@ -116,7 +116,7 @@
 /// When on, parts of the screen that are opaque will have a transparent blue rectangle
 /// drawn over it, while parts that are not opaque will have a transparent red rectangle
 /// drawn.
-</span><span class="kw">pub fn </span>set_opaque_region_visualization_visualization(set: bool) {
+</span><span class="kw">pub fn </span>set_opaque_region_visualization(set: bool) {
     Client::debug()
         .set_opaque_region_visualization(SetOpaqueRegionVisualizationRequest {
             set_or_toggle: <span class="kw">match </span>set {
