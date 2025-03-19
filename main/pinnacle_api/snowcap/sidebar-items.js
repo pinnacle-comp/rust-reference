@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BindOverlay","QuitPrompt"]};
+window.SIDEBAR_ITEMS = {"struct":["BindOverlay","ConfigCrashedMessage","QuitPrompt"]};
