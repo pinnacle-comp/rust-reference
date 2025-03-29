@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["connect","listen"],"mod":["input","layer","snowcap","widget"]};

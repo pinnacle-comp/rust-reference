@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Alignment","Length","ScrollableAlignment","ScrollableDirection","WidgetDef"],"mod":["font"],"struct":["Color","Column","Container","Padding","Row","Scrollable","ScrollableProperties","Text","WidgetId"]};
