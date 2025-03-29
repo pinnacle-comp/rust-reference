@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BindInfoKind","MouseButton"],"fn":["bind_infos","connect_signal","keybind","mousebind","set_repeat_rate","set_xcursor_size","set_xcursor_theme","set_xkb_config"],"mod":["libinput"],"struct":["BindInfo","BindLayer","Keybind","Keysym","Mod","Mousebind","XkbConfig"],"trait":["Bind","ToKeysym"]};
