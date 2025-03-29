@@ -1,5 +1,5 @@
 (function() {
-    var implementors = Object.fromEntries([["tokio",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.85.1/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"tokio/io/struct.Ready.html\" title=\"struct tokio::io::Ready\">Ready</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.85.1/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"tokio/time/struct.Instant.html\" title=\"struct tokio::time::Instant\">Instant</a>"]]]]);
+    var implementors = Object.fromEntries([["tokio",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.85.0/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"tokio/io/struct.Ready.html\" title=\"struct tokio::io::Ready\">Ready</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.85.0/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"tokio/time/struct.Instant.html\" title=\"struct tokio::time::Instant\">Instant</a>"]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
