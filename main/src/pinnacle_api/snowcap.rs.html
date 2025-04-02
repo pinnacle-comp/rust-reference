@@ -494,7 +494,11 @@
 <a href="#493" id="493">493</a>
 <a href="#494" id="494">494</a>
 <a href="#495" id="495">495</a>
-<a href="#496" id="496">496</a></pre></div><pre class="rust"><code><span class="doccomment">//! Integration with the
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a></pre></div><pre class="rust"><code><span class="doccomment">//! Integration with the
 //! [Snowcap](https://github.com/pinnacle-comp/pinnacle/tree/main/snowcap) widget system.
 //!
 //! Snowcap is a really-early-in-development widget system, designed for Pinnacle.
@@ -691,7 +695,7 @@
 
         <span class="kw">let </span>bind_infos = <span class="kw">crate</span>::input::bind_infos();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>groups = IndexMap::&lt;<span class="prelude-ty">Option</span>&lt;String&gt;, GroupBinds&gt;::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>groups = IndexMap::&lt;String, GroupBinds&gt;::new();
 
         <span class="kw">for </span>bind_info <span class="kw">in </span>bind_infos {
             <span class="kw">let </span>mods = bind_info.mods;
@@ -712,7 +716,9 @@
                         layer,
                     };
                     <span class="kw">let </span>descs = group.keybinds.entry(repr).or_default();
-                    descs.extend(desc);
+                    <span class="kw">if </span>!desc.is_empty() {
+                        descs.push(desc);
+                    }
                 }
                 BindInfoKind::Mouse { button } =&gt; {
                     <span class="kw">let </span>repr = MousebindRepr {
@@ -731,18 +737,20 @@
                         layer,
                     };
                     <span class="kw">let </span>descs = group.mousebinds.entry(repr).or_default();
-                    descs.extend(desc);
+                    <span class="kw">if </span>!desc.is_empty() {
+                        descs.push(desc);
+                    }
                 }
             }
         }
 
         <span class="comment">// List keybinds with no group last
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(data) = groups.shift_remove(<span class="kw-2">&amp;</span><span class="prelude-val">None</span>) {
-            groups.insert(<span class="prelude-val">None</span>, data);
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(data) = groups.shift_remove(<span class="string">""</span>) {
+            groups.insert(<span class="string">""</span>.to_string(), data);
         }
 
         <span class="kw">let </span>sections = groups.into_iter().flat_map(|(group, data)| {
-            <span class="kw">let </span>group_title = Text::new(group.unwrap_or(<span class="string">"Other"</span>.into()))
+            <span class="kw">let </span>group_title = Text::new(<span class="kw">if </span>!group.is_empty() { group } <span class="kw">else </span>{ <span class="string">"Other"</span>.into() })
                 .font(<span class="self">self</span>.font.clone().weight(Weight::Bold))
                 .size(<span class="number">19.0</span>);
 
