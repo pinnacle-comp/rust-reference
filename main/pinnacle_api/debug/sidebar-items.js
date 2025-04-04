@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["set_damage_visualization","set_opaque_region_visualization","toggle_damage_visualization","toggle_opaque_region_visualization"]};
+window.SIDEBAR_ITEMS = {"fn":["set_cursor_plane_scanout","set_damage_visualization","set_opaque_region_visualization","set_process_piping","toggle_cursor_plane_scanout","toggle_damage_visualization","toggle_opaque_region_visualization","toggle_process_piping"]};
