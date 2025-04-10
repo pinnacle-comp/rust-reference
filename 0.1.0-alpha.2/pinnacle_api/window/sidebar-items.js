@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DecorationMode","LayoutMode"],"fn":["add_window_rule","begin_move","begin_resize","connect_signal","get_all","get_all_async","get_focused","get_focused_async"],"struct":["WindowHandle"]};
