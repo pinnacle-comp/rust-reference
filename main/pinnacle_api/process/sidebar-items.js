@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Child","Command","ExitInfo"]};
+window.SIDEBAR_ITEMS = {"fn":["set_env"],"struct":["Child","Command","ExitInfo"]};
