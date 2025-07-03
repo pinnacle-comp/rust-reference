@@ -15,7 +15,7 @@
 <a href=#15 id=15 data-nosnippet>15</a><span class="kw">use </span>pinnacle_api_defs::pinnacle::process::v1::{SetEnvRequest, SpawnRequest, WaitOnSpawnRequest};
 <a href=#16 id=16 data-nosnippet>16</a><span class="kw">use </span>tokio_stream::StreamExt;
 <a href=#17 id=17 data-nosnippet>17</a>
-<a href=#18 id=18 data-nosnippet>18</a><span class="kw">use crate</span>::{client::Client, BlockOnTokio};
+<a href=#18 id=18 data-nosnippet>18</a><span class="kw">use crate</span>::{BlockOnTokio, client::Client};
 <a href=#19 id=19 data-nosnippet>19</a>
 <a href=#20 id=20 data-nosnippet>20</a><span class="doccomment">/// Adds an environment variable that all newly spawned [`Command`]s will inherit.
 <a href=#21 id=21 data-nosnippet>21</a></span><span class="kw">pub fn </span>set_env(key: <span class="kw">impl </span>ToString, value: <span class="kw">impl </span>ToString) {

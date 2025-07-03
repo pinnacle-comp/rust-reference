@@ -9,25 +9,25 @@
 <a href=#9 id=9 data-nosnippet>9</a></span><span class="attr">#![allow(clippy::type_complexity)]
 <a href=#10 id=10 data-nosnippet>10</a>
 <a href=#11 id=11 data-nosnippet>11</a></span><span class="kw">use </span>std::{
-<a href=#12 id=12 data-nosnippet>12</a>    collections::{btree_map, BTreeMap},
+<a href=#12 id=12 data-nosnippet>12</a>    collections::{BTreeMap, btree_map},
 <a href=#13 id=13 data-nosnippet>13</a>    sync::{
-<a href=#14 id=14 data-nosnippet>14</a>        atomic::{AtomicU32, Ordering},
-<a href=#15 id=15 data-nosnippet>15</a>        Arc,
+<a href=#14 id=14 data-nosnippet>14</a>        Arc,
+<a href=#15 id=15 data-nosnippet>15</a>        atomic::{AtomicU32, Ordering},
 <a href=#16 id=16 data-nosnippet>16</a>    },
 <a href=#17 id=17 data-nosnippet>17</a>};
 <a href=#18 id=18 data-nosnippet>18</a>
-<a href=#19 id=19 data-nosnippet>19</a><span class="kw">use </span>futures::{pin_mut, FutureExt};
+<a href=#19 id=19 data-nosnippet>19</a><span class="kw">use </span>futures::{FutureExt, pin_mut};
 <a href=#20 id=20 data-nosnippet>20</a><span class="kw">use </span>pinnacle_api_defs::pinnacle::signal::v1::{SignalRequest, StreamControl};
 <a href=#21 id=21 data-nosnippet>21</a><span class="kw">use </span>tokio::sync::{
-<a href=#22 id=22 data-nosnippet>22</a>    mpsc::{unbounded_channel, UnboundedSender},
+<a href=#22 id=22 data-nosnippet>22</a>    mpsc::{UnboundedSender, unbounded_channel},
 <a href=#23 id=23 data-nosnippet>23</a>    oneshot,
 <a href=#24 id=24 data-nosnippet>24</a>};
-<a href=#25 id=25 data-nosnippet>25</a><span class="kw">use </span>tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
+<a href=#25 id=25 data-nosnippet>25</a><span class="kw">use </span>tokio_stream::{StreamExt, wrappers::UnboundedReceiverStream};
 <a href=#26 id=26 data-nosnippet>26</a><span class="kw">use </span>tonic::Streaming;
 <a href=#27 id=27 data-nosnippet>27</a>
 <a href=#28 id=28 data-nosnippet>28</a><span class="kw">use crate</span>::{
-<a href=#29 id=29 data-nosnippet>29</a>    input::libinput::DeviceHandle, output::OutputHandle, tag::TagHandle, window::WindowHandle,
-<a href=#30 id=30 data-nosnippet>30</a>    BlockOnTokio,
+<a href=#29 id=29 data-nosnippet>29</a>    BlockOnTokio, input::libinput::DeviceHandle, output::OutputHandle, tag::TagHandle,
+<a href=#30 id=30 data-nosnippet>30</a>    window::WindowHandle,
 <a href=#31 id=31 data-nosnippet>31</a>};
 <a href=#32 id=32 data-nosnippet>32</a>
 <a href=#33 id=33 data-nosnippet>33</a><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>Signal {
