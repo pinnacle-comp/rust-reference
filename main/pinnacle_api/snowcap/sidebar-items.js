@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BindOverlay","ConfigCrashedMessage","QuitPrompt"]};
+window.SIDEBAR_ITEMS = {"enum":["FocusBorderMessage"],"struct":["BindOverlay","ConfigCrashedMessage","FocusBorder","QuitPrompt"]};

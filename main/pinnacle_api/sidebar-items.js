@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["block","connect"],"macro":["batch_boxed","batch_boxed_async","config","main"],"mod":["debug","input","layout","output","pinnacle","process","render","signal","snowcap","tag","util","window"],"struct":["Keysym"]};
+window.SIDEBAR_ITEMS = {"fn":["block","connect"],"macro":["batch_boxed","batch_boxed_async","config","main"],"mod":["debug","experimental","input","layout","output","pinnacle","process","render","signal","snowcap","tag","util","window"],"struct":["Keysym"]};
