@@ -1,5 +1,5 @@
 (function() {
-    var implementors = Object.fromEntries([["tokio",[["impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.91.1/core/iter/traits/marker/trait.FusedIterator.html\" title=\"trait core::iter::traits::marker::FusedIterator\">FusedIterator</a> for <a class=\"struct\" href=\"tokio/sync/mpsc/struct.PermitIterator.html\" title=\"struct tokio::sync::mpsc::PermitIterator\">PermitIterator</a>&lt;'_, T&gt;"]]]]);
+    var implementors = Object.fromEntries([["tokio",[["impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.92.0/core/iter/traits/marker/trait.FusedIterator.html\" title=\"trait core::iter::traits::marker::FusedIterator\">FusedIterator</a> for <a class=\"struct\" href=\"tokio/sync/mpsc/struct.PermitIterator.html\" title=\"struct tokio::sync::mpsc::PermitIterator\">PermitIterator</a>&lt;'_, T&gt;"]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
