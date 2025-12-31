@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Alignment","Transform","Vrr"],"fn":["connect_signal","for_each_output","get_all","get_all_async","get_all_enabled","get_all_enabled_async","get_by_name","get_by_name_async","get_focused","get_focused_async"],"struct":["Mode","Modeline","OutputHandle","ParseModelineError"]};
