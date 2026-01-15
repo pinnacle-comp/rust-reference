@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InputSignal","OutputSignal","TagSignal","WindowSignal"],"struct":["SignalHandle"]};
