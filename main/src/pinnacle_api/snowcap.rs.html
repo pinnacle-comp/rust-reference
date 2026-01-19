@@ -11,7 +11,7 @@
 <a href=#11 id=11 data-nosnippet>11</a>    decoration::{DecorationHandle, NewDecorationError},
 <a href=#12 id=12 data-nosnippet>12</a>    layer::{ExclusiveZone, KeyboardInteractivity, ZLayer},
 <a href=#13 id=13 data-nosnippet>13</a>    widget::{
-<a href=#14 id=14 data-nosnippet>14</a>        Alignment, Border, Color, Length, Padding, Program, Radius, WidgetDef,
+<a href=#14 id=14 data-nosnippet>14</a>        Alignment, Background, Border, Color, Length, Padding, Program, Radius, WidgetDef,
 <a href=#15 id=15 data-nosnippet>15</a>        button::{<span class="self">self</span>, Button, Styles},
 <a href=#16 id=16 data-nosnippet>16</a>        column::Column,
 <a href=#17 id=17 data-nosnippet>17</a>        container::Container,
@@ -77,7 +77,7 @@
 <a href=#77 id=77 data-nosnippet>77</a>        .horizontal_alignment(Alignment::Center)
 <a href=#78 id=78 data-nosnippet>78</a>        .style(snowcap_api::widget::container::Style {
 <a href=#79 id=79 data-nosnippet>79</a>            text_color: <span class="prelude-val">None</span>,
-<a href=#80 id=80 data-nosnippet>80</a>            background_color: <span class="prelude-val">Some</span>(<span class="self">self</span>.background_color),
+<a href=#80 id=80 data-nosnippet>80</a>            background: <span class="prelude-val">Some</span>(Background::Color(<span class="self">self</span>.background_color)),
 <a href=#81 id=81 data-nosnippet>81</a>            border: <span class="prelude-val">Some</span>(snowcap_api::widget::Border {
 <a href=#82 id=82 data-nosnippet>82</a>                color: <span class="prelude-val">Some</span>(<span class="self">self</span>.border_color),
 <a href=#83 id=83 data-nosnippet>83</a>                width: <span class="prelude-val">Some</span>(<span class="self">self</span>.border_thickness),
@@ -387,7 +387,7 @@
 <a href=#387 id=387 data-nosnippet>387</a>        .horizontal_alignment(Alignment::Center)
 <a href=#388 id=388 data-nosnippet>388</a>        .style(snowcap_api::widget::container::Style {
 <a href=#389 id=389 data-nosnippet>389</a>            text_color: <span class="prelude-val">None</span>,
-<a href=#390 id=390 data-nosnippet>390</a>            background_color: <span class="prelude-val">Some</span>(<span class="self">self</span>.background_color),
+<a href=#390 id=390 data-nosnippet>390</a>            background: <span class="prelude-val">Some</span>(Background::Color(<span class="self">self</span>.background_color)),
 <a href=#391 id=391 data-nosnippet>391</a>            border: <span class="prelude-val">Some</span>(snowcap_api::widget::Border {
 <a href=#392 id=392 data-nosnippet>392</a>                color: <span class="prelude-val">Some</span>(<span class="self">self</span>.border_color),
 <a href=#393 id=393 data-nosnippet>393</a>                width: <span class="prelude-val">Some</span>(<span class="self">self</span>.border_thickness),
@@ -526,7 +526,7 @@
 <a href=#526 id=526 data-nosnippet>526</a>        .horizontal_alignment(Alignment::Center)
 <a href=#527 id=527 data-nosnippet>527</a>        .style(snowcap_api::widget::container::Style {
 <a href=#528 id=528 data-nosnippet>528</a>            text_color: <span class="prelude-val">None</span>,
-<a href=#529 id=529 data-nosnippet>529</a>            background_color: <span class="prelude-val">Some</span>(<span class="self">self</span>.background_color),
+<a href=#529 id=529 data-nosnippet>529</a>            background: <span class="prelude-val">Some</span>(Background::Color(<span class="self">self</span>.background_color)),
 <a href=#530 id=530 data-nosnippet>530</a>            border: <span class="prelude-val">Some</span>(snowcap_api::widget::Border {
 <a href=#531 id=531 data-nosnippet>531</a>                color: <span class="prelude-val">Some</span>(<span class="self">self</span>.border_color),
 <a href=#532 id=532 data-nosnippet>532</a>                width: <span class="prelude-val">Some</span>(<span class="self">self</span>.border_thickness),
@@ -841,7 +841,7 @@
 <a href=#841 id=841 data-nosnippet>841</a>                    .padding(Padding::from(<span class="number">4.0</span>))
 <a href=#842 id=842 data-nosnippet>842</a>                    .style(
 <a href=#843 id=843 data-nosnippet>843</a>                        Styles {
-<a href=#844 id=844 data-nosnippet>844</a>                            active: <span class="prelude-val">Some</span>(button::Style::new().background_color({
+<a href=#844 id=844 data-nosnippet>844</a>                            active: <span class="prelude-val">Some</span>(button::Style::new().background(Background::Color({
 <a href=#845 id=845 data-nosnippet>845</a>                                <span class="kw">let </span><span class="kw-2">mut </span>color = <span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#846 id=846 data-nosnippet>846</a>                                    <span class="self">self</span>.focused_color
 <a href=#847 id=847 data-nosnippet>847</a>                                } <span class="kw">else </span>{
@@ -851,8 +851,8 @@
 <a href=#851 id=851 data-nosnippet>851</a>                                color.green += <span class="number">0.3</span>;
 <a href=#852 id=852 data-nosnippet>852</a>                                color.blue += <span class="number">0.3</span>;
 <a href=#853 id=853 data-nosnippet>853</a>                                color
-<a href=#854 id=854 data-nosnippet>854</a>                            })),
-<a href=#855 id=855 data-nosnippet>855</a>                            hovered: <span class="prelude-val">Some</span>(button::Style::new().background_color({
+<a href=#854 id=854 data-nosnippet>854</a>                            }))),
+<a href=#855 id=855 data-nosnippet>855</a>                            hovered: <span class="prelude-val">Some</span>(button::Style::new().background(Background::Color({
 <a href=#856 id=856 data-nosnippet>856</a>                                <span class="kw">let </span><span class="kw-2">mut </span>color = <span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#857 id=857 data-nosnippet>857</a>                                    <span class="self">self</span>.focused_color
 <a href=#858 id=858 data-nosnippet>858</a>                                } <span class="kw">else </span>{
@@ -862,8 +862,8 @@
 <a href=#862 id=862 data-nosnippet>862</a>                                color.green += <span class="number">0.4</span>;
 <a href=#863 id=863 data-nosnippet>863</a>                                color.blue += <span class="number">0.4</span>;
 <a href=#864 id=864 data-nosnippet>864</a>                                color
-<a href=#865 id=865 data-nosnippet>865</a>                            })),
-<a href=#866 id=866 data-nosnippet>866</a>                            pressed: <span class="prelude-val">Some</span>(button::Style::new().background_color({
+<a href=#865 id=865 data-nosnippet>865</a>                            }))),
+<a href=#866 id=866 data-nosnippet>866</a>                            pressed: <span class="prelude-val">Some</span>(button::Style::new().background(Background::Color({
 <a href=#867 id=867 data-nosnippet>867</a>                                <span class="kw">let </span><span class="kw-2">mut </span>color = <span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#868 id=868 data-nosnippet>868</a>                                    <span class="self">self</span>.focused_color
 <a href=#869 id=869 data-nosnippet>869</a>                                } <span class="kw">else </span>{
@@ -873,7 +873,7 @@
 <a href=#873 id=873 data-nosnippet>873</a>                                color.green += <span class="number">0.5</span>;
 <a href=#874 id=874 data-nosnippet>874</a>                                color.blue += <span class="number">0.5</span>;
 <a href=#875 id=875 data-nosnippet>875</a>                                color
-<a href=#876 id=876 data-nosnippet>876</a>                            })),
+<a href=#876 id=876 data-nosnippet>876</a>                            }))),
 <a href=#877 id=877 data-nosnippet>877</a>                            disabled: <span class="prelude-val">None</span>,
 <a href=#878 id=878 data-nosnippet>878</a>                        }
 <a href=#879 id=879 data-nosnippet>879</a>                        .border(Border {
@@ -901,7 +901,7 @@
 <a href=#901 id=901 data-nosnippet>901</a>                    .padding(Padding::from(<span class="number">4.0</span>))
 <a href=#902 id=902 data-nosnippet>902</a>                    .style(
 <a href=#903 id=903 data-nosnippet>903</a>                        Styles {
-<a href=#904 id=904 data-nosnippet>904</a>                            active: <span class="prelude-val">Some</span>(button::Style::new().background_color({
+<a href=#904 id=904 data-nosnippet>904</a>                            active: <span class="prelude-val">Some</span>(button::Style::new().background(Background::Color({
 <a href=#905 id=905 data-nosnippet>905</a>                                <span class="kw">let </span><span class="kw-2">mut </span>color = <span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#906 id=906 data-nosnippet>906</a>                                    <span class="self">self</span>.focused_color
 <a href=#907 id=907 data-nosnippet>907</a>                                } <span class="kw">else </span>{
@@ -911,8 +911,8 @@
 <a href=#911 id=911 data-nosnippet>911</a>                                color.green += <span class="number">0.3</span>;
 <a href=#912 id=912 data-nosnippet>912</a>                                color.blue += <span class="number">0.3</span>;
 <a href=#913 id=913 data-nosnippet>913</a>                                color
-<a href=#914 id=914 data-nosnippet>914</a>                            })),
-<a href=#915 id=915 data-nosnippet>915</a>                            hovered: <span class="prelude-val">Some</span>(button::Style::new().background_color({
+<a href=#914 id=914 data-nosnippet>914</a>                            }))),
+<a href=#915 id=915 data-nosnippet>915</a>                            hovered: <span class="prelude-val">Some</span>(button::Style::new().background(Background::Color({
 <a href=#916 id=916 data-nosnippet>916</a>                                <span class="kw">let </span><span class="kw-2">mut </span>color = <span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#917 id=917 data-nosnippet>917</a>                                    <span class="self">self</span>.focused_color
 <a href=#918 id=918 data-nosnippet>918</a>                                } <span class="kw">else </span>{
@@ -922,8 +922,8 @@
 <a href=#922 id=922 data-nosnippet>922</a>                                color.green += <span class="number">0.4</span>;
 <a href=#923 id=923 data-nosnippet>923</a>                                color.blue += <span class="number">0.4</span>;
 <a href=#924 id=924 data-nosnippet>924</a>                                color
-<a href=#925 id=925 data-nosnippet>925</a>                            })),
-<a href=#926 id=926 data-nosnippet>926</a>                            pressed: <span class="prelude-val">Some</span>(button::Style::new().background_color({
+<a href=#925 id=925 data-nosnippet>925</a>                            }))),
+<a href=#926 id=926 data-nosnippet>926</a>                            pressed: <span class="prelude-val">Some</span>(button::Style::new().background(Background::Color({
 <a href=#927 id=927 data-nosnippet>927</a>                                <span class="kw">let </span><span class="kw-2">mut </span>color = <span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#928 id=928 data-nosnippet>928</a>                                    <span class="self">self</span>.focused_color
 <a href=#929 id=929 data-nosnippet>929</a>                                } <span class="kw">else </span>{
@@ -933,7 +933,7 @@
 <a href=#933 id=933 data-nosnippet>933</a>                                color.green += <span class="number">0.5</span>;
 <a href=#934 id=934 data-nosnippet>934</a>                                color.blue += <span class="number">0.5</span>;
 <a href=#935 id=935 data-nosnippet>935</a>                                color
-<a href=#936 id=936 data-nosnippet>936</a>                            })),
+<a href=#936 id=936 data-nosnippet>936</a>                            }))),
 <a href=#937 id=937 data-nosnippet>937</a>                            disabled: <span class="prelude-val">None</span>,
 <a href=#938 id=938 data-nosnippet>938</a>                        }
 <a href=#939 id=939 data-nosnippet>939</a>                        .border(Border {
@@ -952,11 +952,11 @@
 <a href=#952 id=952 data-nosnippet>952</a>            )
 <a href=#953 id=953 data-nosnippet>953</a>            .style(snowcap_api::widget::container::Style {
 <a href=#954 id=954 data-nosnippet>954</a>                text_color: <span class="prelude-val">None</span>,
-<a href=#955 id=955 data-nosnippet>955</a>                background_color: <span class="prelude-val">Some</span>(<span class="kw">if </span><span class="self">self</span>.focused {
+<a href=#955 id=955 data-nosnippet>955</a>                background: <span class="prelude-val">Some</span>(Background::Color(<span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#956 id=956 data-nosnippet>956</a>                    <span class="self">self</span>.focused_color
 <a href=#957 id=957 data-nosnippet>957</a>                } <span class="kw">else </span>{
 <a href=#958 id=958 data-nosnippet>958</a>                    <span class="self">self</span>.unfocused_color
-<a href=#959 id=959 data-nosnippet>959</a>                }),
+<a href=#959 id=959 data-nosnippet>959</a>                })),
 <a href=#960 id=960 data-nosnippet>960</a>                border: <span class="prelude-val">None</span>,
 <a href=#961 id=961 data-nosnippet>961</a>            })
 <a href=#962 id=962 data-nosnippet>962</a>            .padding(Padding {
@@ -979,7 +979,7 @@
 <a href=#979 id=979 data-nosnippet>979</a>        .padding(Padding::from(<span class="self">self</span>.thickness <span class="kw">as </span>f32))
 <a href=#980 id=980 data-nosnippet>980</a>        .style(
 <a href=#981 id=981 data-nosnippet>981</a>            snowcap_api::widget::container::Style::new()
-<a href=#982 id=982 data-nosnippet>982</a>                .background_color(Color::from([<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]))
+<a href=#982 id=982 data-nosnippet>982</a>                .background(Background::Color(Color::from([<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>])))
 <a href=#983 id=983 data-nosnippet>983</a>                .border(snowcap_api::widget::Border {
 <a href=#984 id=984 data-nosnippet>984</a>                    color: <span class="prelude-val">Some</span>(<span class="kw">if </span><span class="self">self</span>.focused {
 <a href=#985 id=985 data-nosnippet>985</a>                        <span class="self">self</span>.focused_color
