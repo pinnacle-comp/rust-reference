@@ -1,0 +1,1 @@
+rd_("lpinnacle_apietokio")
