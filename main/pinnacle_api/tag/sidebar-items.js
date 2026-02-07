@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["add","connect_signal","get","get_all","get_all_async","get_async","get_on_output","get_on_output_async","remove"],"struct":["TagHandle"]};
+window.SIDEBAR_ITEMS = {"enum":["MoveToOutputError"],"fn":["add","connect_signal","get","get_all","get_all_async","get_async","get_on_output","get_on_output_async","move_to_output","remove"],"struct":["TagHandle"]};
