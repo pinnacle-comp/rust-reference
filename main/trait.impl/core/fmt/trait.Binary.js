@@ -1,9 +1,9 @@
 (function() {
-    var implementors = Object.fromEntries([["pinnacle_api",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.93.0/core/fmt/trait.Binary.html\" title=\"trait core::fmt::Binary\">Binary</a> for <a class=\"struct\" href=\"pinnacle_api/input/libinput/struct.Capability.html\" title=\"struct pinnacle_api::input::libinput::Capability\">Capability</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.93.0/core/fmt/trait.Binary.html\" title=\"trait core::fmt::Binary\">Binary</a> for <a class=\"struct\" href=\"pinnacle_api/input/struct.Mod.html\" title=\"struct pinnacle_api::input::Mod\">Mod</a>"]]]]);
+    const implementors = Object.fromEntries([["pinnacle_api",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.96.0/core/fmt/trait.Binary.html\" title=\"trait core::fmt::Binary\">Binary</a> for <a class=\"struct\" href=\"pinnacle_api/input/libinput/struct.Capability.html\" title=\"struct pinnacle_api::input::libinput::Capability\">Capability</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.96.0/core/fmt/trait.Binary.html\" title=\"trait core::fmt::Binary\">Binary</a> for <a class=\"struct\" href=\"pinnacle_api/input/struct.Mod.html\" title=\"struct pinnacle_api::input::Mod\">Mod</a>",0]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
         window.pending_implementors = implementors;
     }
 })()
-//{"start":57,"fragment_lengths":[578]}
+//{"start":59,"fragment_lengths":[582]}
